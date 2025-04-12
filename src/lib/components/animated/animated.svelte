@@ -34,7 +34,7 @@
       },
       duration: {
         fast: 'duration-150',
-        default: 'duration-300',
+        default: 'duration-200',
         slow: 'duration-500'
       }
     },
@@ -82,8 +82,6 @@
     }
   }
 
-  $inspect('visible', visible, animationComplete);
-
   $effect(() => {
     // Reset animation complete when visibility changes
     if (visible) {
@@ -94,11 +92,13 @@
   const dataState = $derived(visible ? 'visible' : 'hidden');
 </script>
 
+<span class=""></span>
+
 <div
   class={cn(
     animationComplete && !visible ? 'hidden' : '',
     animatedVariants({ animation, duration }),
-    'transition',
+    'transition contents',
     className
   )}
   onanimationend={handleAnimationEnd}
