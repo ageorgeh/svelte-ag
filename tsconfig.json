@@ -1,8 +1,6 @@
 {
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "composite": true,
-    "noEmit": true
-  },
-  "include": ["./src/**/*", "./src/**/*.svelte"]
+    "baseUrl": "./.svelte-kit"
+  }
 }

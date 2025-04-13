@@ -30,7 +30,8 @@
         slideDown: `
           data-[state="visible"]:animate-in data-[state="visible"]:slide-in-from-top
           data-[state="hidden"]:animate-out data-[state="hidden"]:slide-out-to-top
-        `
+        `,
+        growHeight: `overflow-hidden`
       },
       duration: {
         fast: 'duration-150',
@@ -50,8 +51,9 @@
 <script lang="ts">
   import { cn, type HTMLDivAttributes } from '$utils';
   import type { WithElementRef } from 'svelte-toolbelt';
+  import { slide } from 'svelte/transition';
 
-  type Props = WithElementRef<HTMLDivAttributes> & {
+  export type Props = WithElementRef<HTMLDivAttributes> & {
     visible: boolean;
     animation?: AnimatedVariants['animation'];
     duration?: AnimatedVariants['duration'];
@@ -90,19 +92,37 @@
   });
 
   const dataState = $derived(visible ? 'visible' : 'hidden');
+
+  // Duration in ms for Svelte's slide animation
+  const slideDurationMap = {
+    fast: 150,
+    default: 200,
+    slow: 500
+  };
 </script>
 
-<span class=""></span>
-
-<div
-  class={cn(
-    animationComplete && !visible ? 'hidden' : '',
-    animatedVariants({ animation, duration }),
-    'transition',
-    className
-  )}
-  onanimationend={handleAnimationEnd}
-  data-state={dataState}
->
-  {@render children?.()}
-</div>
+{#if animation === 'growHeight'}
+  {#if visible}
+    <div
+      class={cn(animatedVariants({ animation, duration }), className)}
+      transition:slide={{ duration: slideDurationMap[duration || 'default'] }}
+      onintroend={() => onAnimationComplete?.(true)}
+      onoutroend={() => onAnimationComplete?.(false)}
+    >
+      {@render children?.()}
+    </div>
+  {/if}
+{:else}
+  <div
+    class={cn(
+      animationComplete && !visible ? 'hidden' : '',
+      animatedVariants({ animation, duration }),
+      'transition-all',
+      className
+    )}
+    onanimationend={handleAnimationEnd}
+    data-state={dataState}
+  >
+    {@render children?.()}
+  </div>
+{/if}

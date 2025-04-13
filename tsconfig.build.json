@@ -1,11 +1,6 @@
 {
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "declarationMap": true,
-    "paths": {
-      "$shadcn": ["../base/frontend/admin/dist/shadcn"],
-      "$shadcn/*": ["../base/frontend/admin/dist/shadcn/*"]
-    }
-  },
-  "include": ["./src/**/*", "./src/**/*.svelte"]
+    "declarationMap": true
+  }
 }
