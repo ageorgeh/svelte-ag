@@ -68,7 +68,7 @@
     children
   }: Props = $props();
 
-  let animationComplete = $state<boolean>(false);
+  let animationComplete = $state<boolean>(true);
 
   function handleAnimationEnd(e: AnimationEvent) {
     if (!visible) {
@@ -98,7 +98,7 @@
   class={cn(
     animationComplete && !visible ? 'hidden' : '',
     animatedVariants({ animation, duration }),
-    'transition contents',
+    'transition',
     className
   )}
   onanimationend={handleAnimationEnd}
