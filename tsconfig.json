@@ -1,6 +1,7 @@
 {
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./.svelte-kit"
+    "baseUrl": "./.svelte-kit",
+    "noEmit": true
   }
 }

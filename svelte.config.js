@@ -26,8 +26,8 @@ const config = {
 
         config.compilerOptions.paths = {
           ...config.compilerOptions.paths,
-          $shadcn: ['../base/frontend/admin/src/shadcn'],
-          '$shadcn/*': ['../base/frontend/admin/src/shadcn/*']
+          $shadcn: ['../../cmsWrapper/cms/base/frontend/admin/src/shadcn'],
+          '$shadcn/*': ['../../cmsWrapper/cms/base/frontend/admin/src/shadcn/*']
         };
 
         config.compilerOptions.isolatedModules = false;
