@@ -4,7 +4,7 @@
 
 /* Plugins */
 @plugin '@tailwindcss/typography';
-@plugin '@tailwindcss/forms';
+/* @plugin '@tailwindcss/forms'; */
 @plugin "@iconify/tailwind4";
 @plugin 'tailwind-scrollbar' {
   nocompatible: true;
