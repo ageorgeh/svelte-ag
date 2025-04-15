@@ -87,3 +87,7 @@ type BitsPrimitive<T> = Omit<T, 'style' | 'id' | 'children'> & {
 export type BitsPrimitiveFormAttributes = BitsPrimitive<HTMLFormAttributes>;
 
 export type HTMLDivAttributes = HTMLAttributes<HTMLDivElement>;
+
+export interface Test {
+  test: string;
+}

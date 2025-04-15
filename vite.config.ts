@@ -1,5 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
@@ -15,9 +15,6 @@ export default defineConfig({
   },
   build: {
     sourcemap: true
-  },
-  test: {
-    include: ['src/**/*.{test,spec}.{js,ts}']
   },
   css: {
     // https://stackoverflow.com/questions/75056422/how-to-use-vitepreprocess-with-global-scss-mixins-in-sveltekit

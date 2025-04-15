@@ -2,22 +2,30 @@
 </script>
 
 <script lang="ts">
-  import { cn, type HTMLDivAttributes } from '$utils';
-  import type { WithElementRef } from 'svelte-toolbelt';
+  import { cn } from '$utils/utils.js';
   import * as Popover from '$shadcn/popover/index.js';
   import { Button } from '$shadcn/button/index.js';
   import * as Command from '$shadcn/command/index.js';
   import { tick } from 'svelte';
+  // import type { HTMLAttributes } from 'svelte/elements';
 
-  export type Props = WithElementRef<HTMLDivAttributes> & {
+  // export type Props = WithElementRef<HTMLDivAttributes> & {
+  //   value: string;
+  //   class?: string;
+  //   items: { label: string; value: string }[];
+  // };
+
+  import type { HTMLDivAttributes } from '$utils';
+
+  type Props = HTMLDivAttributes & {
+    value: string;
     class?: string;
     items: { label: string; value: string }[];
   };
 
-  let { items, class: className = '', children, ...restProps }: Props = $props();
+  let { items, value = $bindable(), class: className = '', children, ...restProps }: Props = $props();
 
   let open = $state(false);
-  let value = $state('');
   let triggerRef = $state<HTMLButtonElement>(null!);
 
   const selectedValue = $derived(items.find((f) => f.value === value)?.label);
@@ -31,6 +39,8 @@
       triggerRef.focus();
     });
   }
+
+  // TODO add pagnation
 </script>
 
 <div {...restProps} class={cn(className)}>

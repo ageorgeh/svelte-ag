@@ -12,7 +12,7 @@ const config = {
   // https://kit.svelte.dev/docs/configuration#env
   kit: {
     alias: {
-      $utils: './src/lib/utils/index.js'
+      $utils: './src/lib/utils'
     },
     // env: {
     //   dir: '../../../../private/client/env/',
@@ -22,12 +22,11 @@ const config = {
       config: (config) => {
         // Modify the existing config
 
-        // config.extends = '../../../tsconfig.json';
-
         config.compilerOptions.paths = {
           ...config.compilerOptions.paths,
-          $shadcn: ['../../cmsWrapper/cms/base/frontend/admin/src/shadcn'],
-          '$shadcn/*': ['../../cmsWrapper/cms/base/frontend/admin/src/shadcn/*']
+          // Don't want these getting resolved but need it for tooling
+          $shadcn: ['../shadcn'],
+          '$shadcn/*': ['../shadcn/*']
         };
 
         config.compilerOptions.isolatedModules = false;
