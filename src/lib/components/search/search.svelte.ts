@@ -15,6 +15,7 @@ export type SearchRootStateProps = WithRefProps<
   ReadableBoxedValues<{
     items: Item[];
     searchWith?: string;
+    search?: (term: string) => Promise<Item[]>;
   }> &
     WritableBoxedValues<{
       value: string;
@@ -25,7 +26,7 @@ export class SearchRootState {
   // State
   searchState = $state({
     value: '',
-    sortedList: [] as (Item & { score: number })[],
+    sortedList: [] as (Item & { score?: number })[],
     showSuggestions: false
   });
   numPerPage = $state(0);
@@ -39,14 +40,16 @@ export class SearchRootState {
   constructor(readonly opts: SearchRootStateProps) {
     useRefById(opts);
 
-    // Watch for changes in items and update the sorted list
-    watch(
-      () => this.opts.items.current,
-      (newItems, oldItems) => {
-        if (dequal(newItems, oldItems)) return;
-        this.updateSortedList();
-      }
-    );
+    if (opts.items !== null) {
+      // Watch for changes in items and update the sorted list
+      watch(
+        () => this.opts.items.current,
+        (newItems, oldItems) => {
+          if (dequal(newItems, oldItems)) return;
+          this.search();
+        }
+      );
+    }
 
     watch(
       () => this.searchState.sortedList,
@@ -60,11 +63,22 @@ export class SearchRootState {
       this.end = this.numPerPage === 0 ? 0 : Math.min(filteredList.length, this.start + this.numPerPage);
     });
 
-    this.updateSortedList();
+    this.search();
     this.searchState.value = this.opts.value.current;
   }
 
-  search() {
+  /**
+   * This function needs to update the sorted list of items based on the search term.
+   */
+  async search() {
+    if (this.opts.search !== undefined) {
+      const func = this.opts.search.current;
+      if (func) {
+        this.searchState.sortedList = await func(this.searchState.value);
+        return;
+      }
+    }
+
     const searchTerm = this.opts.searchWith?.current ?? this.searchState.value;
     const scoredItems = this.opts.items.current.map((item) => ({
       ...item,
@@ -81,17 +95,8 @@ export class SearchRootState {
     this.searchState.sortedList = newSortedList;
   }
 
-  updateSortedList() {
-    const scoredItems = this.opts.items.current.map((item) => ({
-      ...item,
-      score: this.searchState.value ? computeCommandScore(item.label, this.searchState.value, []) : 1
-    }));
-
-    this.searchState.sortedList = scoredItems.sort((a, b) => a.label.localeCompare(b.label));
-  }
-
   getFilteredList() {
-    return this.searchState.sortedList.filter((item) => item.score > 0);
+    return this.searchState.sortedList.filter((item) => item.score === undefined || item.score > 0);
   }
 
   props = $derived.by(
@@ -198,6 +203,7 @@ export class SearchListState {
 export type SearchPagnationStateProps = WithRefProps<
   WritableBoxedValues<{
     page: number;
+    perPage: number;
   }>
 >;
 export class SearchPagnationState {
@@ -206,7 +212,14 @@ export class SearchPagnationState {
     readonly root: SearchRootState
   ) {
     useRefById(opts);
-    this.root.numPerPage = 2;
+    this.root.numPerPage = this.opts.perPage.current;
+
+    watch(
+      () => this.opts.perPage.current,
+      (perPage) => {
+        this.root.numPerPage = perPage;
+      }
+    );
 
     watch(
       () => this.opts.page.current,
@@ -226,6 +239,10 @@ export class SearchPagnationState {
 
   get length() {
     return this.root.getFilteredList().length;
+  }
+
+  get perPage() {
+    return this.opts.perPage.current;
   }
 
   get activeItems() {

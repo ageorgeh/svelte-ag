@@ -33,7 +33,7 @@
 {#if child}
   {@render child({ props: mergedProps })}
 {:else}
-  <div class="flex items-center border-b px-2" data-command-input-wrapper="">
+  <div class="flex w-full items-center border-b px-2" data-command-input-wrapper="">
     <span class="icon-[lucide--search] mr-2 size-4 shrink-0 opacity-50"></span>
     <input
       {...mergedProps}

@@ -8,9 +8,10 @@ export type Item = {
 
 // -------------------- Search Root --------------------
 export type SearchRootPropsWithoutHTML = WithChild<{
-  items: Item[];
+  items?: Item[];
   searchWith?: string;
   value?: string;
+  search?: (term: string) => Promise<Item[]>;
 }>;
 
 export type SearchProps = SearchRootPropsWithoutHTML & Without<BitsPrimitiveDivAttributes, SearchRootPropsWithoutHTML>;
@@ -34,6 +35,7 @@ export type SearchListProps = SearchListPropsWithoutHTML &
 // -------------------- Search Item --------------------
 export type SearchPagnationPropsWithoutHTML = WithChild<{
   page?: number;
+  perPage?: number;
 }>;
 
 export type SearchPagnationProps = SearchPagnationPropsWithoutHTML &

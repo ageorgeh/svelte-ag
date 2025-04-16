@@ -11,6 +11,7 @@
     id = useId(),
     ref = $bindable(null),
     searchWith = $bindable(),
+    search,
     value = $bindable(''),
     items = $bindable([]),
     ...restProps
@@ -30,7 +31,8 @@
     items: box.with(
       () => items,
       (v) => (items = v)
-    )
+    ),
+    search: box.with(() => search)
   });
 
   const mergedProps = $derived(mergeProps(restProps, rootState.props));

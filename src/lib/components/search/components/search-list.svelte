@@ -5,6 +5,8 @@
   import { useSearchList } from '../search.svelte';
   import { cn } from '$utils';
   import { Button } from '$shadcn/button';
+  import { flip } from 'svelte/animate';
+  import { bounceIn, sineIn, sineInOut, sineOut } from 'svelte/easing';
 
   let { children, child, id = useId(), ref = $bindable(null), item, ...restProps }: SearchListProps = $props();
 
@@ -22,14 +24,14 @@
 {#if child}
   {@render child({ props: mergedProps })}
 {:else}
-  <div {...mergedProps}>
+  <div {...mergedProps} class="flex flex-col justify-center">
     {#each listState.suggestions as listItem (listItem.value)}
       <Button
         variant="ghost"
         class={cn(
           `
             hover:bg-muted
-            flex size-fit cursor-pointer rounded-md p-2
+            flex h-fit w-full cursor-pointer rounded-md p-2
           `,
           listState.selected(listItem) && 'bg-muted',
           listState.visible(listItem) ? '' : 'hidden!',

@@ -12,6 +12,7 @@
     id = useId(),
     ref = $bindable(null),
     page = $bindable(1),
+    perPage = $bindable(2),
     ...restProps
   }: SearchPagnationProps = $props();
 
@@ -24,6 +25,10 @@
     page: box.with(
       () => page,
       (v) => (page = v)
+    ),
+    perPage: box.with(
+      () => perPage,
+      (v) => (perPage = v)
     )
   });
 
@@ -35,7 +40,7 @@
 {#if child}
   {@render child({ props: mergedProps })}
 {:else}
-  <Pagination.Root count={pagnationState.length} perPage={2} bind:page>
+  <Pagination.Root class="pb-2" count={pagnationState.length} perPage={pagnationState.perPage} bind:page>
     {#snippet children({ pages, currentPage })}
       <Pagination.Content>
         <Pagination.Item>
