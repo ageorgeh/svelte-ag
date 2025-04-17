@@ -1,21 +1,19 @@
+<script lang="ts" module>
+  export type SearchPopoverProps = {
+    items?: Search.RootProps['items'];
+    perPage?: Search.PagnationProps['perPage'];
+    item: Search.ListProps['item'];
+    value?: Search.RootProps['value'];
+    search?: Search.RootProps['search'];
+  };
+</script>
+
 <script lang="ts">
   import { Search } from '../index.js';
   import { Button } from '$shadcn/button/index.js';
   import * as Popover from '$shadcn/popover/index.js';
 
-  let {
-    items,
-    value = $bindable(),
-    perPage = $bindable(2),
-    item,
-    search
-  }: {
-    items?: Search.RootProps['items'];
-    perPage?: Search.PagnationProps['perPage'];
-    item: Search.ListProps['item'];
-    value: Search.RootProps['value'];
-    search: Search.RootProps['search'];
-  } = $props();
+  let { items, value = $bindable(), perPage = $bindable(2), item, search }: SearchPopoverProps = $props();
 
   let searchPagnation = $state<Search.Pagnation | null>(null);
 
