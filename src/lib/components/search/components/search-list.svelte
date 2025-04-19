@@ -4,9 +4,7 @@
   import { useId } from 'bits-ui';
   import { useSearchList } from '../search.svelte';
   import { cn } from '$utils';
-  import { Button } from '$shadcn/button';
-  import { flip } from 'svelte/animate';
-  import { bounceIn, sineIn, sineInOut, sineOut } from 'svelte/easing';
+  import { Button } from '$shadcn/button/index.js';
 
   let { children, child, id = useId(), ref = $bindable(null), item, ...restProps }: SearchListProps = $props();
 

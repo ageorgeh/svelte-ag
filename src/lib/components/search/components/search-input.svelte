@@ -3,7 +3,6 @@
   import type { SearchInputProps } from '../types';
   import { useId } from 'bits-ui';
   import { useSearchInput } from '../search.svelte';
-  import { Input } from '$shadcn/input';
   import { cn } from '$utils';
 
   let {

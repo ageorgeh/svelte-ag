@@ -12,7 +12,9 @@ const config = {
   // https://kit.svelte.dev/docs/configuration#env
   kit: {
     alias: {
-      $utils: './src/lib/utils'
+      $utils: './src/lib/utils',
+      $bits: './src/lib/bits',
+      $components: './src/lib/components'
     },
     // env: {
     //   dir: '../../../../private/client/env/',
