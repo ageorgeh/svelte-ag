@@ -51,7 +51,7 @@
 <script lang="ts">
   import { cn, type HTMLDivAttributes } from '$utils';
   import type { WithElementRef } from 'svelte-toolbelt';
-  import { slide } from 'svelte/transition';
+  import { tick } from 'svelte';
 
   export type Props = WithElementRef<HTMLDivAttributes> & {
     visible: boolean;
@@ -71,6 +71,7 @@
   }: Props = $props();
 
   let animationComplete = $state<boolean>(true);
+  let growHeightElement: HTMLDivElement;
 
   function handleAnimationEnd(e: AnimationEvent) {
     if (!visible) {
@@ -93,25 +94,89 @@
 
   const dataState = $derived(visible ? 'visible' : 'hidden');
 
-  // Duration in ms for Svelte's slide animation
-  const slideDurationMap = {
+  // Duration in ms for animations
+  const durationMap = {
     fast: 150,
     default: 200,
     slow: 500
   };
+
+  async function animateHeight() {
+    if (!growHeightElement) return;
+
+    const durationMs = durationMap[duration || 'default'];
+    growHeightElement.style.overflow = 'hidden';
+
+    if (visible) {
+      // First set height to 0 and make visible for measurement
+      growHeightElement.style.height = '0px';
+      // growHeightElement.style.opacity = '0';
+      growHeightElement.style.display = 'block';
+
+      await tick(); // Wait for render
+
+      const targetHeight = growHeightElement.scrollHeight;
+
+      // Start animation
+      const startTime = performance.now();
+      const animate = (time: number) => {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+
+        growHeightElement.style.height = `${targetHeight * progress}px`;
+        // growHeightElement.style.opacity = `${progress}`;
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          // Animation complete
+          growHeightElement.style.height = 'auto';
+          onAnimationComplete?.(true);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    } else {
+      // Get current height before collapsing
+      const startHeight = growHeightElement.offsetHeight;
+      growHeightElement.style.height = `${startHeight}px`;
+
+      // Start animation
+      const startTime = performance.now();
+      const animate = (time: number) => {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / durationMs, 1);
+
+        growHeightElement.style.height = `${startHeight * (1 - progress)}px`;
+        // growHeightElement.style.opacity = `${1 - progress}`;
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          growHeightElement.style.display = 'none';
+          onAnimationComplete?.(false);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    }
+  }
+
+  $effect(() => {
+    if (animation === 'growHeight') {
+      animateHeight();
+    }
+  });
 </script>
 
 {#if animation === 'growHeight'}
-  {#if visible}
-    <div
-      class={cn(animatedVariants({ animation, duration }), className)}
-      transition:slide={{ duration: slideDurationMap[duration || 'default'] }}
-      onintroend={() => onAnimationComplete?.(true)}
-      onoutroend={() => onAnimationComplete?.(false)}
-    >
-      {@render children?.()}
-    </div>
-  {/if}
+  <div
+    bind:this={growHeightElement}
+    class={cn(animatedVariants({ animation, duration }), className)}
+    data-state={dataState}
+  >
+    {@render children?.()}
+  </div>
 {:else}
   <div
     class={cn(
