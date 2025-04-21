@@ -18,7 +18,7 @@ export type SearchRootStateProps = WithRefProps<
     search?: (term: string) => Promise<Item[]>;
   }> &
     WritableBoxedValues<{
-      value: string;
+      value: Item;
     }>
 >;
 
@@ -64,7 +64,7 @@ export class SearchRootState {
     });
 
     this.search();
-    this.searchState.value = this.opts.value.current;
+    this.searchState.value = this.opts.value.current.value;
   }
 
   /**
@@ -190,10 +190,10 @@ export class SearchListState {
   }
 
   selected(item: Item) {
-    return this.root.opts.value.current === item.value;
+    return this.root.opts.value.current.value === item.value;
   }
   select(item: Item) {
-    this.root.opts.value.current = item.value;
+    this.root.opts.value.current = item;
     this.root.searchState.showSuggestions = false;
     this.root.inputRef?.focus();
   }

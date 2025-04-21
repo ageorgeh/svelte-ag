@@ -12,7 +12,7 @@
     ref = $bindable(null),
     searchWith = $bindable(),
     search,
-    value = $bindable(''),
+    value = $bindable(),
     items = $bindable([]),
     ...restProps
   }: SearchProps = $props();

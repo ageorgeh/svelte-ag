@@ -10,7 +10,7 @@ export type Item = {
 export type SearchRootPropsWithoutHTML = WithChild<{
   items?: Item[];
   searchWith?: string;
-  value?: string;
+  value: Item;
   search?: (term: string) => Promise<Item[]>;
 }>;
 
