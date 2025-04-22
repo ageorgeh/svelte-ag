@@ -20,7 +20,10 @@
     "vitest": "^3.1.1",
     "fuse.js": "^7.1.0",
     "dequal": "^2.0.3",
-    "@floating-ui/dom": "^1.6.13"
+    "@floating-ui/dom": "^1.6.13",
+    "@dnd-kit-svelte/core": "^0.0.8",
+    "@dnd-kit-svelte/sortable": "^0.0.8",
+    "@dnd-kit-svelte/utilities": "^0.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",

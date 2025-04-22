@@ -1,3 +1,6 @@
 @utility icon-loading {
   @apply icon-[svg-spinners--ring-resize];
 }
+@utility icon-draghandle {
+  @apply icon-[lucide--grip-vertical];
+}

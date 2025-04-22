@@ -26,16 +26,26 @@
   }: SearchPopoverProps = $props();
 
   let searchPagnation = $state<Search.Pagnation | null>(null);
+  let trigger: HTMLButtonElement | null = null;
+
+  export function focus() {
+    if (trigger) {
+      trigger.focus();
+    }
+  }
 
   export { searchPagnation };
+
+  // TODO make focus-ring a common style thing and include it in each project that uses this package
 </script>
 
 <Popover.Root>
   <Popover.Trigger {...restProps}>
     {#snippet child({ props })}
       <Button
+        bind:ref={trigger}
         variant="outline"
-        class={cn('h-fit w-full justify-between overflow-hidden', className)}
+        class={cn('focus-ring h-fit w-full justify-between overflow-hidden', className)}
         {...props}
         role="combobox"
       >

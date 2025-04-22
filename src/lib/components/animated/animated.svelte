@@ -52,12 +52,14 @@
   import { cn, type HTMLDivAttributes } from '$utils';
   import type { WithElementRef } from 'svelte-toolbelt';
   import { tick } from 'svelte';
+  import { watch } from 'runed';
 
   export type Props = WithElementRef<HTMLDivAttributes> & {
     visible: boolean;
     animation?: AnimatedVariants['animation'];
     duration?: AnimatedVariants['duration'];
     onAnimationComplete?: (visible: boolean) => void;
+    disableInitialAnimation?: boolean;
     class?: string;
   };
 
@@ -66,11 +68,14 @@
     animation = 'flyAndScale',
     duration = 'default',
     onAnimationComplete = undefined,
+    disableInitialAnimation = false,
     class: className = '',
     children
   }: Props = $props();
 
   let animationComplete = $state<boolean>(true);
+  let isInitialRender = $state(true);
+  //svelte-ignore non_reactive_update
   let growHeightElement: HTMLDivElement;
 
   function handleAnimationEnd(e: AnimationEvent) {
@@ -80,19 +85,35 @@
       animationComplete = false;
     }
 
+    // Mark initial render as complete after animation
+    isInitialRender = false;
+
     if (onAnimationComplete) {
       onAnimationComplete(visible);
     }
   }
 
+  // Reset animation state when visibility changes
+  watch(
+    () => visible,
+    (newValue) => {
+      if (newValue) {
+        animationComplete = false;
+      }
+    },
+    { lazy: true }
+  );
+
+  // Set initial render to false when component mounts if disableInitialAnimation is true
   $effect(() => {
-    // Reset animation complete when visibility changes
-    if (visible) {
-      animationComplete = false;
+    if (disableInitialAnimation) {
+      isInitialRender = false;
     }
   });
 
   const dataState = $derived(visible ? 'visible' : 'hidden');
+  // Skip animation classes on initial render when disableInitialAnimation is true
+  const shouldApplyAnimationClasses = $derived(!isInitialRender || !disableInitialAnimation);
 
   // Duration in ms for animations
   const durationMap = {
@@ -104,13 +125,20 @@
   async function animateHeight() {
     if (!growHeightElement) return;
 
+    // Skip animation for initial render if disableInitialAnimation is true
+    if (isInitialRender && disableInitialAnimation) {
+      growHeightElement.style.display = visible ? 'block' : 'none';
+      growHeightElement.style.height = visible ? 'auto' : '0px';
+      isInitialRender = false;
+      return;
+    }
+
     const durationMs = durationMap[duration || 'default'];
     growHeightElement.style.overflow = 'hidden';
 
     if (visible) {
       // First set height to 0 and make visible for measurement
       growHeightElement.style.height = '0px';
-      // growHeightElement.style.opacity = '0';
       growHeightElement.style.display = 'block';
 
       await tick(); // Wait for render
@@ -124,7 +152,6 @@
         const progress = Math.min(elapsed / durationMs, 1);
 
         growHeightElement.style.height = `${targetHeight * progress}px`;
-        // growHeightElement.style.opacity = `${progress}`;
 
         if (progress < 1) {
           requestAnimationFrame(animate);
@@ -148,7 +175,6 @@
         const progress = Math.min(elapsed / durationMs, 1);
 
         growHeightElement.style.height = `${startHeight * (1 - progress)}px`;
-        // growHeightElement.style.opacity = `${1 - progress}`;
 
         if (progress < 1) {
           requestAnimationFrame(animate);
@@ -172,7 +198,11 @@
 {#if animation === 'growHeight'}
   <div
     bind:this={growHeightElement}
-    class={cn(animatedVariants({ animation, duration }), className)}
+    class={cn(
+      shouldApplyAnimationClasses ? animatedVariants({ animation, duration }) : 'transition',
+      className,
+      visible ? 'block' : 'hidden'
+    )}
     data-state={dataState}
   >
     {@render children?.()}
@@ -181,7 +211,7 @@
   <div
     class={cn(
       animationComplete && !visible ? 'hidden' : '',
-      animatedVariants({ animation, duration }),
+      shouldApplyAnimationClasses ? animatedVariants({ animation, duration }) : 'transition',
       'transition-all',
       className
     )}
