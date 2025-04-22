@@ -1,5 +1,3 @@
-export { default as Test } from './Test.svelte';
-
 import { default as Context } from './dnd-context.svelte';
 import { default as Sortable } from './dnd-sortable-context.svelte';
 import { default as SortableItem } from './dnd-sortable-item.svelte';

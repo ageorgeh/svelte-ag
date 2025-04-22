@@ -30,7 +30,16 @@
     dnd.activeParent = d.parent;
   }
 
-  const sensors = useSensors(useSensor(TouchSensor), useSensor(KeyboardSensor), useSensor(MouseSensor));
+  const sensors = useSensors(
+    useSensor(TouchSensor),
+    useSensor(KeyboardSensor),
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        delay: 0,
+        tolerance: 0
+      }
+    })
+  );
 
   let { onDragEnd, onDragOver, children }: ContextProps = $props();
 </script>
