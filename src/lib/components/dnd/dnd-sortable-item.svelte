@@ -2,16 +2,15 @@
   import type { DataType } from './utils.svelte';
   import { getContext, setContext, type Snippet } from 'svelte';
 
+  export type SortableItemChildProps = {
+    isDragging: boolean;
+    isSorting: boolean;
+    isOver: boolean;
+    isOverlay: boolean;
+  };
+
   export type SortableItemProps = DataType & {
-    child: Snippet<
-      [
-        {
-          isDragging: boolean;
-          isSorting: boolean;
-          isOver: boolean;
-        }
-      ]
-    >;
+    child: Snippet<[SortableItemChildProps]>;
   };
 
   const itemSymbolKey = 'sortable-item';
@@ -63,6 +62,7 @@
   {@render child({
     isDragging: isDragging.current,
     isSorting: isSorting.current,
-    isOver: isOver.current
+    isOver: isOver.current,
+    isOverlay: false
   })}
 </div>

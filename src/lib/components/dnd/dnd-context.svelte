@@ -42,8 +42,4 @@
   onDragOver={(e) => onDragOver({ ...e, dnd })}
 >
   {@render children()}
-
-  <DragOverlay>
-    {dnd.activeItem.id}
-  </DragOverlay>
 </DndContext>
