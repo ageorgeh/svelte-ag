@@ -1,7 +1,7 @@
 {
   "name": "svelte-ag",
   "description": "Useful svelte components",
-  "version": "0.0.2-dev.71",
+  "version": "0.0.2-dev.72",
   "author": "Alexander Hornung",
   "bugs": "https://github.com/ageorgeh/cms/issues",
   "dependencies": {
@@ -73,6 +73,7 @@
     "components:watch": "svelte-package -i src -w --tsconfig tsconfig.json",
     "components:dev": "vite --config vite.config.ts dev",
     "svelte:sync": "svelte-kit sync",
-    "publish:local": "pnpm version prerelease --preid dev --no-git-tag-version && pnpm publish --registry http://localhost:4873 --tag dev --access public --no-git-checks --json > ./publishLocal.json"
+    "publish:local": "pnpm version prerelease --preid dev --no-git-tag-version && pnpm publish --registry http://localhost:4873 --tag dev --access public --no-git-checks --json > ./publishLocal.json",
+    "publish:prerelease": "pnpm publish --tag dev --access public --no-git-checks --registry=https://registry.npmjs.org/ --json > ./publish.json"
   }
 }
