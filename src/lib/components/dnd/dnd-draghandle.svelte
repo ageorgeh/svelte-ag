@@ -1,18 +1,22 @@
 <script lang="ts" module>
   export type DragHandleProps = {
     class?: string;
-    isOverlay: boolean;
   };
 </script>
 
 <script lang="ts">
   import { getItemContext } from './dnd-sortable-item.svelte';
-  let { class: className, isOverlay }: DragHandleProps = $props();
+  import { getOverlayContext } from './dnd-drag-overlay.svelte';
+  let { class: className }: DragHandleProps = $props();
+
+  // svelte-ignore non_reactive_update
+  let isOverlay = false;
+  try {
+    const overlay = getOverlayContext();
+    isOverlay = overlay.isOverlay;
+  } catch {}
 
   const { activatorNode, attributes, listeners } = !isOverlay ? getItemContext() : {};
-
-  // Maybe this needs to just get context from the overlay? that way we can
-  // 'automatically' bind the stuff if its not overlay
 </script>
 
 {#if isOverlay}

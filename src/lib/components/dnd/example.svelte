@@ -26,7 +26,7 @@
   <div
     class={`
       bg-card flex items-center justify-between rounded-2xl p-3
-      ${props.isDragging ? 'invisible' : ''}
+      ${props.isDragging ? 'opacity-0' : ''}
       ${props.isOver ? `bg-primary/5` : ''}
     `}
   >
@@ -35,7 +35,7 @@
       <p class="text-muted-foreground text-sm">{item.description}</p>
     </div>
 
-    <Dnd.DragHandle isOverlay={props.isOverlay} />
+    <Dnd.DragHandle />
   </div>
 {/snippet}
 
@@ -55,7 +55,7 @@
         <p class="text-sm font-medium">{item.data.description}</p>
       </div>
 
-      <Dnd.DragHandle isOverlay={props.isOverlay} />
+      <Dnd.DragHandle />
     </div>
 
     <div class="mt-3 grid gap-2">

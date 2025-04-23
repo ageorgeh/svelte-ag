@@ -122,6 +122,27 @@
     slow: 500
   };
 
+  // Map each animation type to the specific CSS properties that should be transitioned
+  function getTransitionProperties(animationType: AnimatedVariants['animation']): string {
+    switch (animationType) {
+      case 'flyAndScale':
+        return 'transition-opacity transition-transform';
+      case 'slide':
+        return 'transition-transform';
+      case 'fade':
+        return 'transition-opacity';
+      case 'zoom':
+        return 'transition-transform';
+      case 'slideUp':
+      case 'slideDown':
+        return 'transition-transform';
+      case 'growHeight':
+        return 'transition-height';
+      default:
+        return 'transition';
+    }
+  }
+
   async function animateHeight() {
     if (!growHeightElement) return;
 
@@ -199,7 +220,7 @@
   <div
     bind:this={growHeightElement}
     class={cn(
-      shouldApplyAnimationClasses ? animatedVariants({ animation, duration }) : 'transition',
+      shouldApplyAnimationClasses ? animatedVariants({ animation, duration }) : '',
       className,
       visible ? 'block' : 'hidden'
     )}
@@ -211,8 +232,8 @@
   <div
     class={cn(
       animationComplete && !visible ? 'hidden' : '',
-      shouldApplyAnimationClasses ? animatedVariants({ animation, duration }) : 'transition',
-      'transition-all',
+      shouldApplyAnimationClasses ? animatedVariants({ animation, duration }) : '',
+      getTransitionProperties(animation),
       className
     )}
     onanimationend={handleAnimationEnd}
