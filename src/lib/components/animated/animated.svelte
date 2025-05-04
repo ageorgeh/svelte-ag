@@ -76,7 +76,7 @@
   let animationComplete = $state<boolean>(true);
   let isInitialRender = $state(true);
   //svelte-ignore non_reactive_update
-  let growHeightElement: HTMLDivElement;
+  let growHeightElement: HTMLDivElement | undefined;
 
   function handleAnimationEnd(e: AnimationEvent) {
     if (!visible) {
@@ -161,10 +161,9 @@
       // First set height to 0 and make visible for measurement
       growHeightElement.style.height = '0px';
       growHeightElement.style.display = 'block';
+      const targetHeight = growHeightElement.scrollHeight;
 
       await tick(); // Wait for render
-
-      const targetHeight = growHeightElement.scrollHeight;
 
       // Start animation
       const startTime = performance.now();
@@ -172,13 +171,13 @@
         const elapsed = time - startTime;
         const progress = Math.min(elapsed / durationMs, 1);
 
-        growHeightElement.style.height = `${targetHeight * progress}px`;
+        if (growHeightElement) growHeightElement.style.height = `${targetHeight * progress}px`;
 
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           // Animation complete
-          growHeightElement.style.height = 'auto';
+          if (growHeightElement) growHeightElement.style.height = 'auto';
           onAnimationComplete?.(true);
         }
       };
@@ -195,12 +194,12 @@
         const elapsed = time - startTime;
         const progress = Math.min(elapsed / durationMs, 1);
 
-        growHeightElement.style.height = `${startHeight * (1 - progress)}px`;
+        if (growHeightElement) growHeightElement.style.height = `${startHeight * (1 - progress)}px`;
 
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
-          growHeightElement.style.display = 'none';
+          if (growHeightElement) growHeightElement.style.display = 'none';
           onAnimationComplete?.(false);
         }
       };

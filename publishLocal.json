@@ -1,12 +1,12 @@
 {
-  "id": "svelte-ag@0.0.2-dev.73",
+  "id": "svelte-ag@0.0.2-dev.78",
   "name": "svelte-ag",
-  "version": "0.0.2-dev.73",
-  "size": 124770,
-  "unpackedSize": 564711,
-  "shasum": "02ecd0c1411be205d10171ae470848dc6e2bcc2a",
-  "integrity": "sha512-YVbyhe7yEnebTZY7JreSaX4xc5xMhtKIgQcpcDOmoCGdQjLjpYzRUTit6XgNlZA1QUwY+HtFpT/U7NPDkYLoEg==",
-  "filename": "svelte-ag-0.0.2-dev.73.tgz",
+  "version": "0.0.2-dev.78",
+  "size": 124751,
+  "unpackedSize": 564419,
+  "shasum": "c7a2ea92cc4af8fa8b96378ab9097a4cbd56c9f4",
+  "integrity": "sha512-78npkrSxnqALln1utAtawsmwoCPQg81VirJN4QuxW3NtxARhF8uSeUrCctX4mvqE/nNM+7fonLyadZx3uGu5og==",
+  "filename": "svelte-ag-0.0.2-dev.78.tgz",
   "files": [
     {
       "path": "README.md",
@@ -575,7 +575,7 @@
     },
     {
       "path": "dist/lib/components/animated/animated.svelte",
-      "size": 7385,
+      "size": 7282,
       "mode": 420
     },
     {
@@ -1045,7 +1045,7 @@
     },
     {
       "path": "package.json",
-      "size": 2626,
+      "size": 2540,
       "mode": 420
     },
     {
@@ -1340,7 +1340,7 @@
     },
     {
       "path": "src/lib/components/animated/animated.svelte",
-      "size": 7380,
+      "size": 7277,
       "mode": 420
     },
     {
