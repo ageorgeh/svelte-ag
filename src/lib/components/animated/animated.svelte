@@ -36,7 +36,8 @@
       duration: {
         fast: 'duration-150',
         default: 'duration-200',
-        slow: 'duration-500'
+        slow: 'duration-500',
+        vSlow: 'duration-1000'
       }
     },
     defaultVariants: {
@@ -101,7 +102,7 @@
         animationComplete = false;
       }
     },
-    { lazy: true }
+    { lazy: false }
   );
 
   // Set initial render to false when component mounts if disableInitialAnimation is true
