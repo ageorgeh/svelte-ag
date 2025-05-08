@@ -1,12 +1,12 @@
 {
-  "id": "svelte-ag@0.0.2-dev.78",
+  "id": "svelte-ag@0.0.2-dev.80",
   "name": "svelte-ag",
-  "version": "0.0.2-dev.78",
-  "size": 124751,
-  "unpackedSize": 564419,
-  "shasum": "c7a2ea92cc4af8fa8b96378ab9097a4cbd56c9f4",
-  "integrity": "sha512-78npkrSxnqALln1utAtawsmwoCPQg81VirJN4QuxW3NtxARhF8uSeUrCctX4mvqE/nNM+7fonLyadZx3uGu5og==",
-  "filename": "svelte-ag-0.0.2-dev.78.tgz",
+  "version": "0.0.2-dev.80",
+  "size": 125012,
+  "unpackedSize": 567937,
+  "shasum": "19919f4423b9b9499a377cf2f30040f73e860f24",
+  "integrity": "sha512-2w2YNp2WLlNBqpX/blFbWC8sVQHIzRu9QlWzl9tzWkGbLkc3zQNxzqwErWR+WemlTLZyWVk0nZ+i1kNhv6au5g==",
+  "filename": "svelte-ag-0.0.2-dev.80.tgz",
   "files": [
     {
       "path": "README.md",
@@ -15,7 +15,7 @@
     },
     {
       "path": "dist/app.css",
-      "size": 6179,
+      "size": 6085,
       "mode": 420
     },
     {
@@ -575,12 +575,12 @@
     },
     {
       "path": "dist/lib/components/animated/animated.svelte",
-      "size": 7282,
+      "size": 7418,
       "mode": 420
     },
     {
       "path": "dist/lib/components/animated/animated.svelte.d.ts",
-      "size": 1770,
+      "size": 1839,
       "mode": 420
     },
     {
@@ -594,23 +594,83 @@
       "mode": 420
     },
     {
-      "path": "dist/lib/components/combo/combo.svelte",
-      "size": 5914,
+      "path": "dist/lib/components/carousel/carousel-content.svelte",
+      "size": 1288,
       "mode": 420
     },
     {
-      "path": "dist/lib/components/combo/combo.svelte.d.ts",
-      "size": 549,
+      "path": "dist/lib/components/carousel/carousel-content.svelte.d.ts",
+      "size": 380,
       "mode": 420
     },
     {
-      "path": "dist/lib/components/combo/index.d.ts",
-      "size": 54,
+      "path": "dist/lib/components/carousel/carousel-dots.svelte",
+      "size": 823,
       "mode": 420
     },
     {
-      "path": "dist/lib/components/combo/index.js",
-      "size": 54,
+      "path": "dist/lib/components/carousel/carousel-dots.svelte.d.ts",
+      "size": 344,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/carousel-item.svelte",
+      "size": 784,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/carousel-item.svelte.d.ts",
+      "size": 368,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/carousel-next.svelte",
+      "size": 1047,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/carousel-next.svelte.d.ts",
+      "size": 344,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/carousel-previous.svelte",
+      "size": 1048,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/carousel-previous.svelte.d.ts",
+      "size": 360,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/carousel.svelte",
+      "size": 2509,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/carousel.svelte.d.ts",
+      "size": 196,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/context.d.ts",
+      "size": 1658,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/context.js",
+      "size": 500,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/index.d.ts",
+      "size": 463,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/carousel/index.js",
+      "size": 467,
       "mode": 420
     },
     {
@@ -754,6 +814,26 @@
       "mode": 420
     },
     {
+      "path": "dist/lib/components/gradient/Gradient.svelte",
+      "size": 1761,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gradient/Gradient.svelte.d.ts",
+      "size": 297,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gradient/index.d.ts",
+      "size": 57,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gradient/index.js",
+      "size": 57,
+      "mode": 420
+    },
+    {
       "path": "dist/lib/components/search/combinations/searchPopover.svelte",
       "size": 1932,
       "mode": 420
@@ -851,16 +931,6 @@
     {
       "path": "dist/lib/components/search/types.js",
       "size": 11,
-      "mode": 420
-    },
-    {
-      "path": "dist/lib/components/Typeahead.svelte.d.ts",
-      "size": 1323,
-      "mode": 420
-    },
-    {
-      "path": "dist/lib/components/Typeahead.svelte.js",
-      "size": 5797,
       "mode": 420
     },
     {
@@ -1015,12 +1085,22 @@
     },
     {
       "path": "dist/lib/utils/index.d.ts",
-      "size": 97,
+      "size": 135,
       "mode": 420
     },
     {
       "path": "dist/lib/utils/index.js",
-      "size": 97,
+      "size": 135,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/utils/reactive.svelte.d.ts",
+      "size": 469,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/utils/reactive.svelte.js",
+      "size": 842,
       "mode": 420
     },
     {
@@ -1045,12 +1125,12 @@
     },
     {
       "path": "package.json",
-      "size": 2540,
+      "size": 2613,
       "mode": 420
     },
     {
       "path": "src/app.css",
-      "size": 6179,
+      "size": 6085,
       "mode": 420
     },
     {
@@ -1340,7 +1420,7 @@
     },
     {
       "path": "src/lib/components/animated/animated.svelte",
-      "size": 7277,
+      "size": 7413,
       "mode": 420
     },
     {
@@ -1349,13 +1429,43 @@
       "mode": 420
     },
     {
-      "path": "src/lib/components/combo/combo.svelte",
-      "size": 5904,
+      "path": "src/lib/components/carousel/carousel-content.svelte",
+      "size": 1288,
       "mode": 420
     },
     {
-      "path": "src/lib/components/combo/index.ts",
-      "size": 55,
+      "path": "src/lib/components/carousel/carousel-dots.svelte",
+      "size": 823,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/carousel/carousel-item.svelte",
+      "size": 784,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/carousel/carousel-next.svelte",
+      "size": 1047,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/carousel/carousel-previous.svelte",
+      "size": 1048,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/carousel/carousel.svelte",
+      "size": 2509,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/carousel/context.ts",
+      "size": 2038,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/carousel/index.ts",
+      "size": 493,
       "mode": 420
     },
     {
@@ -1429,6 +1539,16 @@
       "mode": 420
     },
     {
+      "path": "src/lib/components/gradient/Gradient.svelte",
+      "size": 1761,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/gradient/index.ts",
+      "size": 57,
+      "mode": 420
+    },
+    {
       "path": "src/lib/components/search/combinations/searchPopover.svelte",
       "size": 1924,
       "mode": 420
@@ -1476,11 +1596,6 @@
     {
       "path": "src/lib/components/search/types.ts",
       "size": 1620,
-      "mode": 420
-    },
-    {
-      "path": "src/lib/components/Typeahead.svelte.ts",
-      "size": 5967,
       "mode": 420
     },
     {
@@ -1560,7 +1675,12 @@
     },
     {
       "path": "src/lib/utils/index.ts",
-      "size": 97,
+      "size": 135,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/utils/reactive.svelte.ts",
+      "size": 885,
       "mode": 420
     },
     {
@@ -1574,6 +1694,6 @@
       "mode": 420
     }
   ],
-  "entryCount": 313,
+  "entryCount": 337,
   "bundled": []
 }
