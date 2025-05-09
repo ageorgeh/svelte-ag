@@ -17,12 +17,15 @@
     "embla-carousel-svelte": "^8.6.0",
     "svader": "^0.5.4",
     "runed": "^0.26.0",
-    "bits-ui": "^1.4.6"
+    "bits-ui": "^1.4.6",
+    "@rollup/pluginutils": "^5.1.4"
   },
   "peerDependencies": {
     "svelte": "^5.28.2",
     "tailwindcss": "^4.1.5",
-    "tw-animate-css": "^1.2.9"
+    "tw-animate-css": "^1.2.9",
+    "tailwind-variants": "^1.0.0",
+    "@lucide/svelte": "^0.508.0"
   },
   "devDependencies": {
     "svelte": "^5.28.2",
@@ -48,7 +51,9 @@
     "typescript-eslint": "^8.32.0",
     "vite": "^6.3.5",
     "vitest": "^3.1.3",
-    "npm-check-updates": "^18.0.1"
+    "npm-check-updates": "^18.0.1",
+    "@types/node": "^22.15.17",
+    "rollup": "^4.40.2"
   },
   "type": "module",
   "files": [
