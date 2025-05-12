@@ -118,6 +118,7 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
 
       for (const imp of imports) {
         if (!inComponent(code, imp.names)) continue;
+        // Currently we just naively use the directory of the import cause its assumed the imports are for .../index.js
         await addDir(imp.source, id, this, dirsForFile);
       }
 

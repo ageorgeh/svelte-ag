@@ -120,7 +120,8 @@
   const durationMap = {
     fast: 150,
     default: 200,
-    slow: 500
+    slow: 500,
+    vSlow: 1000
   };
 
   // Map each animation type to the specific CSS properties that should be transitioned
