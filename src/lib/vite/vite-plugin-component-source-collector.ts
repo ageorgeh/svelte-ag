@@ -65,12 +65,11 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
     return results;
   };
 
-  const inMarkup = (code: string, ids: string[]) => ids.some((id) => new RegExp(`<\\s*${id}(\\s|[>\\.])`).test(code));
-
   const inComponent = (code: string, ids: string[]) => {
+    // console.log('looking for ', ids, 'in ', code);
     for (const id of ids) {
       // Match $.component(node, () => SomeExpr, ...
-      const rx = new RegExp(`\\$\\.component\\([^,]+,\\s*\\(\\)\\s*=>\\s*(${id}(?:\\.[a-zA-Z_$][\\w$]*)?)`, 'g');
+      const rx = new RegExp(`<${id}[\\s\\S]*?(?:\\/>|>)`, 'g');
       if (rx.test(code)) return true;
     }
     return false;
@@ -117,7 +116,8 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
       const dirsForFile = new Set<string>();
 
       for (const imp of imports) {
-        if (!inComponent(code, imp.names)) continue;
+        const sourceCode = await fs.readFile(id, { encoding: 'utf8' });
+        if (!inComponent(sourceCode, imp.names)) continue;
         // Currently we just naively use the directory of the import cause its assumed the imports are for .../index.js
         await addDir(imp.source, id, this, dirsForFile);
       }

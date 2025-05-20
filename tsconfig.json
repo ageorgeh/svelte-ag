@@ -3,7 +3,7 @@
   "compilerOptions": {
     "declarationMap": true,
     "declaration": true,
-    "baseUrl": "./.svelte-kit"
+    "baseUrl": "./.svelte-kit",
     "plugins": [{
         "name": "typescript-svelte-plugin"
     }]

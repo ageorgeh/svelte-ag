@@ -35,6 +35,7 @@
     "@eslint/js": "^9.26.0",
     "@iconify/types": "^2.0.0",
     "@iconify/tailwind4": "^1.0.6",
+    "@iconify/json": "^2.2.339",
     "@lucide/svelte": "^0.508.0",
     "tailwindcss": "^4.1.5",
     "tw-animate-css": "^1.2.9",
@@ -64,8 +65,14 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/lib/index.ts",
-      "default": "./dist/lib/index.js"
+      "browser": {
+        "types": "./dist/lib/browser.d.ts",
+        "default": "./dist/lib/browser.js"
+      },
+      "default": {
+        "types": "./dist/lib/index.d.ts",
+        "default": "./dist/lib/index.js"
+      }
     },
     "./*": {
       "types": "./dist/lib/*",
