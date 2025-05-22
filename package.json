@@ -17,7 +17,7 @@
     "embla-carousel-svelte": "^8.6.0",
     "svader": "^0.5.4",
     "runed": "^0.26.0",
-    "bits-ui": "^1.4.7",
+    "bits-ui": "^1.5.3",
     "@rollup/pluginutils": "^5.1.4"
   },
   "peerDependencies": {

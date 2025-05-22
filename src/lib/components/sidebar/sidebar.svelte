@@ -59,10 +59,13 @@
 {:else}
   <div
     bind:this={ref}
-    class="
-      text-sidebar-foreground group peer relative hidden
-      md:flex
-    "
+    class={cn(
+      `
+        text-sidebar-foreground group peer relative hidden
+        md:flex
+      `,
+      className
+    )}
     data-state={sidebar.state[side]}
     data-collapsible={sidebar.state[side] === 'collapsed' ? collapsible : ''}
     data-variant={variant}
@@ -104,8 +107,7 @@
             group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)]
             group-data-[side=left]:border-r
             group-data-[side=right]:border-l
-          `,
-        className
+          `
       )}
       {...restProps}
     >
