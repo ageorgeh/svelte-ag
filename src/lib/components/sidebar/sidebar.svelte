@@ -61,6 +61,41 @@
     bind:this={ref}
     class={cn(
       `
+        text-sidebar-foreground peer bg-sidebar relative hidden w-[var(--sidebar-width)] flex-auto flex-grow-0 flex-col
+        overflow-hidden transition-[width] duration-200 ease-linear
+        data-[variant=floating]:border-sidebar-border data-[variant=floating]:rounded-lg data-[variant=floating]:border
+        data-[variant=floating]:shadow
+        data-[collapsible=offcanvas]:w-0
+        md:flex
+      `,
+      // 'data-[side=right]:rotate-180',
+      variant === 'floating' || variant === 'inset'
+        ? `
+          m-2
+          data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon))]
+        `
+        : `
+          data-[collapsible=icon]:w-[var(--sidebar-width-icon)]
+          data-[side=left]:border-r
+          data-[side=right]:border-l
+        `,
+
+      className
+    )}
+    data-sidebar="sidebar"
+    data-state={sidebar.state[side]}
+    data-collapsible={sidebar.state[side] === 'collapsed' ? collapsible : ''}
+    data-variant={variant}
+    data-side={side}
+    {...restProps}
+  >
+    {@render children?.()}
+  </div>
+
+  <!-- <div 
+    bind:this={ref}
+    class={cn(
+      `
         text-sidebar-foreground group peer relative hidden
         md:flex
       `,
@@ -70,8 +105,7 @@
     data-collapsible={sidebar.state[side] === 'collapsed' ? collapsible : ''}
     data-variant={variant}
     data-side={side}
-  >
-    <!-- This is what handles the sidebar gap on desktop -->
+                  
     <div
       class={cn(
         `relative w-[var(--sidebar-width)] flex-auto bg-transparent transition-[width] duration-200 ease-linear`,
@@ -110,7 +144,7 @@
           `
       )}
       {...restProps}
-    >
+  
       <div
         data-sidebar="sidebar"
         class="
@@ -118,9 +152,11 @@
           group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:rounded-lg
           group-data-[variant=floating]:border group-data-[variant=floating]:shadow
         "
-      >
+    
         {@render children?.()}
       </div>
     </div>
   </div>
+
+     -->
 {/if}

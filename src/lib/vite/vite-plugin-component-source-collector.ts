@@ -77,7 +77,7 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
 
   const addDir = async (src: string, importer: string, ctx: TransformPluginContext, collector: Set<string>) => {
     const r = await ctx.resolve(src, importer, { skipSelf: true });
-    if (r && !r.id.includes('.vite')) {
+    if (r && !r.id.includes('.vite') && !r.id.includes('.pnpm')) {
       collector.add(path.dirname(r.id));
     }
   };
