@@ -1,6 +1,6 @@
 <script lang="ts" module>
-  import type { DataType } from './utils.svelte';
-  import { getContext, setContext, type Snippet } from 'svelte';
+  import type { DataInputType, DataType } from './utils.svelte';
+  import { getContext, onMount, setContext, type Snippet } from 'svelte';
 
   export type SortableItemChildProps = {
     isDragging: boolean;
@@ -9,7 +9,7 @@
     isOverlay: boolean;
   };
 
-  export type SortableItemProps = DataType & {
+  export type SortableItemProps = DataInputType & {
     child: Snippet<[SortableItemChildProps]>;
   };
 
@@ -39,8 +39,12 @@
 
   const { attributes, listeners, node, activatorNode, transform, transition, isDragging, isSorting, isOver } =
     useSortable({
-      id: item.id,
-      data: { type, item, parent }
+      id: () => item.id,
+      data: () => ({
+        type: () => type,
+        item: () => item,
+        parent: () => parent
+      })
     });
 
   setItemContext({

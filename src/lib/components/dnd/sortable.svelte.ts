@@ -2,6 +2,9 @@ import type { DragEndEvent, DragOverEvent } from '@dnd-kit-svelte/core';
 import { data, moveIndex } from './utils.svelte';
 import type { DndState } from './context.svelte';
 
+// TODO - cleanly add in a way to parse in an order and then sort it here, instead of sorting by drag
+// Essentially this means only moving between lists - in the same list theyre pre sorted
+
 // --------------------- Handlers ---------------------
 
 export function onDragEnd({ active, over, dnd }: DragEndEvent & { dnd: DndState<any> }) {
@@ -11,7 +14,7 @@ export function onDragEnd({ active, over, dnd }: DragEndEvent & { dnd: DndState<
   // const { activeType, overType, accepts } = getTypeAndAccepts(active, over);
   const activeData = data(active);
   const overData = data(over);
-  //Add this in as well accepts.includes(activeType)
+  // Add this in as well accepts.includes(activeType)
   if (activeData.type === overData.type) {
     if (dnd.activeParent.id === overData.parent.id) {
       // Same containing list reorder

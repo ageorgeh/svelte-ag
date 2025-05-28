@@ -7,6 +7,7 @@
 <script lang="ts">
   import { getItemContext } from './dnd-sortable-item.svelte';
   import { getOverlayContext } from './dnd-drag-overlay.svelte';
+  import { cn } from '$utils/utils.js';
   let { class: className }: DragHandleProps = $props();
 
   // svelte-ignore non_reactive_update
@@ -24,7 +25,12 @@
     <span class="icon-draghandle text-muted-foreground size-6 cursor-pointer"></span>
   </div>
 {:else}
-  <div class={className} bind:this={activatorNode!.current} {...attributes!.current} {...listeners!.current}>
+  <div
+    class={cn('flex', className)}
+    bind:this={activatorNode!.current}
+    {...attributes!.current}
+    {...listeners!.current}
+  >
     <span class="icon-draghandle text-muted-foreground size-6 cursor-pointer"></span>
   </div>
 {/if}
