@@ -18,7 +18,8 @@
     "svader": "^0.5.4",
     "runed": "^0.26.0",
     "bits-ui": "^1.5.3",
-    "@rollup/pluginutils": "^5.1.4"
+    "@rollup/pluginutils": "^5.1.4",
+    "ts-ag": "workspace:*"
   },
   "peerDependencies": {
     "svelte": "^5.28.2",

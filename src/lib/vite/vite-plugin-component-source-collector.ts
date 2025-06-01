@@ -1,6 +1,6 @@
 import type { Plugin, ResolvedConfig } from 'vite';
 import { createFilter } from '@rollup/pluginutils';
-import fs from 'fs/promises';
+import { writeIfDifferent } from 'ts-ag';
 import path from 'path';
 import type { TransformPluginContext } from 'rollup';
 
@@ -45,7 +45,8 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
       .map((d) => `@source '${path.relative(path.dirname(outPath), d)}';`)
       .sort()
       .join('\n');
-    await fs.writeFile(outPath, lines, 'utf8');
+    // await fs.writeFile(outPath, lines, 'utf8');
+    await writeIfDifferent(outPath, lines);
   };
 
   const classRegex = /class(?:=|:)/;
