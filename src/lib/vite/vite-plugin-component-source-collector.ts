@@ -18,79 +18,37 @@ interface Options {
 }
 
 export default function componentSourceCollector(opts: Options = {}): Plugin {
-  const include = opts.include ?? /\.svelte$/;
-  const filter = createFilter(include);
   const outFile = opts.outputFile ?? 'component-sources.css';
 
   /** All unique component directories */
-  const componentDirs = new Set<string>();
-  /** Track which dirs each file contributed so we can update on HMR */
-  const fileContrib = new Map<string, Set<string>>();
+  const componentFiles = new Set<string>();
 
   let config: ResolvedConfig;
 
   /** ---- helpers ---------------------------------------------------------- */
+  let initialTransformDone = false;
+  let initialTransformTimer: NodeJS.Timeout | null = null;
 
-  const isExternal = (src: string) => !src.startsWith('.') && !src.startsWith('/') && !src.startsWith('virtual:');
-
-  const parseImports = (code: string) => {
-    // cheap-but-fast import scanner; good enough for Svelte script blocks
-    const rx = /import\s+([^'"]+?)\s+from\s+['"]([^'"]+)['"]/g;
-    const results: { names: string[]; source: string }[] = [];
-    let m: RegExpExecArray | null;
-    while ((m = rx.exec(code))) {
-      const clause = m[1].trim();
-      const source = m[2].trim();
-      if (!isExternal(source)) continue;
-
-      let names: string[] = [];
-
-      if (clause.startsWith('{')) {
-        // named import
-        names = clause
-          .slice(1, -1)
-          .split(',')
-          .map((s) => s.split(' as ').pop()!.trim());
-      } else if (clause.startsWith('*')) {
-        // namespace import: * as NS
-        const ns = clause.match(/\*\s+as\s+(\w+)/);
-        if (ns) names = [ns[1]];
-      } else {
-        // default (possibly followed by ", { … }")
-        names.push(clause.split(',')[0].trim());
+  function scheduleInitialWrite() {
+    if (initialTransformTimer) clearTimeout(initialTransformTimer);
+    initialTransformTimer = setTimeout(() => {
+      if (!initialTransformDone) {
+        writeOutFile();
+        initialTransformDone = true;
       }
-
-      results.push({ names, source });
-    }
-    return results;
-  };
-
-  const inComponent = (code: string, ids: string[]) => {
-    // console.log('looking for ', ids, 'in ', code);
-    for (const id of ids) {
-      // Match $.component(node, () => SomeExpr, ...
-      const rx = new RegExp(`<${id}[\\s\\S]*?(?:\\/>|>)`, 'g');
-      if (rx.test(code)) return true;
-    }
-    return false;
-  };
-
-  const addDir = async (src: string, importer: string, ctx: TransformPluginContext, collector: Set<string>) => {
-    const r = await ctx.resolve(src, importer, { skipSelf: true });
-    if (r && !r.id.includes('.vite') && !r.id.includes('.pnpm')) {
-      collector.add(path.dirname(r.id));
-    }
-  };
-
+    }, 1000); // adjust delay as needed
+  }
   const writeOutFile = async () => {
     if (!config) return;
     const outPath = path.resolve(config.root, outFile);
-    const lines = [...componentDirs]
+    const lines = [...componentFiles]
       .map((d) => `@source '${path.relative(path.dirname(outPath), d)}';`)
       .sort()
       .join('\n');
     await fs.writeFile(outPath, lines, 'utf8');
   };
+
+  const classRegex = /class(?:=|:)/;
 
   /** ---- plugin ----------------------------------------------------------- */
 
@@ -103,53 +61,43 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
     },
 
     buildStart() {
-      componentDirs.clear();
-      fileContrib.clear();
+      componentFiles.clear();
     },
 
     async transform(code, id) {
-      if (!filter(id)) return;
+      // if (id.includes('group-action')) {
+      //   console.log(id, code, classRegex.test(code), code.includes('class:'));
+      // }
+      if (classRegex.test(code)) {
+        componentFiles.add(id);
 
-      const imports = parseImports(code);
-      if (!imports.length) return;
-
-      const dirsForFile = new Set<string>();
-
-      for (const imp of imports) {
-        const sourceCode = await fs.readFile(id, { encoding: 'utf8' });
-        if (!inComponent(sourceCode, imp.names)) continue;
-        // Currently we just naively use the directory of the import cause its assumed the imports are for .../index.js
-        await addDir(imp.source, id, this, dirsForFile);
+        // dev‑mode: update file immediately
+        // if (config.command === 'serve') await writeOutFile();
       }
-
-      // store contributions for HMR diffing
-      fileContrib.set(id, dirsForFile);
-
-      // merge into global set
-      dirsForFile.forEach((d) => componentDirs.add(d));
-
-      // dev‑mode: update file immediately
-      if (config.command === 'serve') await writeOutFile();
+      if (!initialTransformDone) {
+        scheduleInitialWrite();
+      }
     },
 
     async handleHotUpdate(ctx) {
-      // drop previous dirs for this file
-      const prev = fileContrib.get(ctx.file);
-      if (prev) prev.forEach((d) => componentDirs.delete(d));
+      const output = await ctx.read();
+      const id = ctx.file;
 
-      const output = ctx.read();
-
-      if (typeof output !== 'string') {
-        // transform() will re‑add dirs; wait for it
-        output.then(async () => {
-          const current = fileContrib.get(ctx.file);
-          if (current) current.forEach((d) => componentDirs.add(d));
-          await writeOutFile();
-        });
+      if (classRegex.test(output)) {
+        componentFiles.add(id);
+      } else {
+        componentFiles.delete(id);
       }
+      await writeOutFile();
+    },
+
+    async buildEnd() {
+      console.log('build end');
+      await writeOutFile();
     },
 
     async generateBundle() {
+      console.log('generating the bundle');
       await writeOutFile();
     }
   };
