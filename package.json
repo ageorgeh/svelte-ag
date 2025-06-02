@@ -19,6 +19,9 @@
     "runed": "^0.26.0",
     "bits-ui": "^1.5.3",
     "@rollup/pluginutils": "^5.1.4",
+    "sveltekit-superforms": "2.25.0",
+    "formsnap": "2.0.1",
+    "valibot": "1.1.0",
     "ts-ag": "workspace:*"
   },
   "peerDependencies": {
