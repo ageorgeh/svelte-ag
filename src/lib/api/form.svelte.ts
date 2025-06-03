@@ -1,6 +1,6 @@
-import { superForm, defaults, setError } from 'sveltekit-superforms';
+import { superForm, defaults, setError, setMessage } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import type { ApiRequestFunction, HTTPMethod, ApiSchema, ApiEndpoints, ErrorBody } from 'ts-ag';
+import type { ApiRequestFunction, HTTPMethod, ApiEndpoints } from 'ts-ag';
 import type * as v from 'valibot';
 
 export type ApiRequestForm<API extends ApiEndpoints> = <
@@ -11,11 +11,14 @@ export type ApiRequestForm<API extends ApiEndpoints> = <
   method: Method
 ) => ReturnType<typeof superForm>;
 
-export function createFormFunction<API extends ApiEndpoints, Path extends API['path']>(
+export function createFormFunction<API extends ApiEndpoints>(
   schemas: Record<API['path'], Record<HTTPMethod, v.GenericSchema>>,
   request: ApiRequestFunction<API>
 ) {
-  return (path: Path, method: Extract<API, { path: Path }>['method']) => {
+  return <Path extends API['path'], Method extends Extract<API, { path: Path }>['method']>(
+    path: Path,
+    method: Method
+  ) => {
     const schema = schemas[path]?.[method];
     if (schema === undefined) throw new Error('Invalid schema for form');
 
@@ -35,6 +38,8 @@ export function createFormFunction<API extends ApiEndpoints, Path extends API['p
           const body = await res.json();
 
           setError(form, body.field.name, body.field.value, { status: res.status });
+        } else {
+          setMessage(form, 'Success');
         }
       }
     });
