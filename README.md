@@ -4,6 +4,11 @@ There is a `browser.ts` and `index.ts` file. There are 2 for the case of things 
 
 Majority of other things will just have an index file eg `lib/api/index.ts` and its assumed that this is serving the browser
 
+Anything that is only for a node environment will be exported by the index.ts file and this file will only serve node files.
+
+
+Keeping these separate is required so that we dont have any issues with node trying to import svelte files or svelte trying to import node stuff
+
 
 ### Typescript
 

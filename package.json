@@ -69,14 +69,12 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "browser": {
-        "types": "./dist/lib/browser.d.ts",
-        "default": "./dist/lib/browser.js"
-      },
-      "default": {
-        "types": "./dist/lib/index.d.ts",
-        "default": "./dist/lib/index.js"
-      }
+      "types": "./dist/lib/index.d.ts",
+      "default": "./dist/lib/index.js"
+    },
+    "./vite": {
+      "types": "./dist/lib/vite/index.d.ts",
+      "default": "./dist/lib/vite/index.js"
     },
     "./*": {
       "types": "./dist/lib/*",
