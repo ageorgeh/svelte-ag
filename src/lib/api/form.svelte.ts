@@ -1,6 +1,7 @@
-import { superForm, defaults, setError, setMessage, type SuperForm } from 'sveltekit-superforms';
+import { sleep } from 'radash';
+import { superForm, defaults, setError, setMessage, type SuperForm, type SuperValidated } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import type { ApiRequestFunction, HTTPMethod, ApiEndpoints, ApiInput } from 'ts-ag';
+import type { ApiRequestFunction, HTTPMethod, ApiEndpoints, ApiInput, ApiSuccessBody, ApiErrorBody } from 'ts-ag';
 import type * as v from 'valibot';
 
 export type ApiRequestForm<API extends ApiEndpoints> = <
@@ -8,17 +9,21 @@ export type ApiRequestForm<API extends ApiEndpoints> = <
   Method extends Extract<API, { path: Path }>['method']
 >(
   path: Path,
-  method: Method
+  method: Method,
+  actions: {
+    onSuccess?: (
+      form: SuperValidated<ApiInput<API, Path, Method>>,
+      response: ApiSuccessBody<API, Path, Method>
+    ) => void;
+    onFail?: (form: SuperValidated<ApiInput<API, Path, Method>>, response: ApiErrorBody<API, Path, Method>) => void;
+  }
 ) => SuperForm<ApiInput<API, Path, Method>>;
 
 export function createFormFunction<API extends ApiEndpoints>(
   schemas: Record<API['path'], Record<HTTPMethod, v.GenericSchema>>,
   request: ApiRequestFunction<API>
 ): ApiRequestForm<API> {
-  return <Path extends API['path'], Method extends Extract<API, { path: Path }>['method']>(
-    path: Path,
-    method: Method
-  ) => {
+  return (path, method, actions) => {
     const schema = schemas[path]?.[method];
     if (schema === undefined) throw new Error('Invalid schema for form');
 
@@ -26,15 +31,14 @@ export function createFormFunction<API extends ApiEndpoints>(
     //   schema = schema();
     // }
 
-    return superForm(defaults(valibot(schema)), {
+    return superForm<ApiInput<API, typeof path, typeof method>>(defaults(valibot(schema)), {
       SPA: true,
-      resetForm: false,
+      resetForm: true,
+      delayMs: 300,
       validators: valibot(schema),
       async onUpdate({ form }) {
         if (!form.valid) return;
 
-        console.log('valid', form.valid, form);
-        return;
         const res = await request(path, method, form.data);
 
         if (res.ok === false) {
@@ -45,10 +49,17 @@ export function createFormFunction<API extends ApiEndpoints>(
           } else {
             setError(form, body.field.name, body.field.value, { status: res.status });
           }
+          if (actions && actions.onFail) {
+            actions.onFail(form, body);
+          }
         } else {
           setMessage(form, 'Success');
+          if (actions && actions.onSuccess) {
+            const body = await res.json();
+            actions.onSuccess(form, body);
+          }
         }
       }
-    }) as unknown as SuperForm<ApiInput<API, Path, Method>>;
+    });
   };
 }

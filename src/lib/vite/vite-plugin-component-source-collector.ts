@@ -66,9 +66,6 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
     },
 
     async transform(code, id) {
-      // if (id.includes('group-action')) {
-      //   console.log(id, code, classRegex.test(code), code.includes('class:'));
-      // }
       if (classRegex.test(code)) {
         componentFiles.add(id);
 

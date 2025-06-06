@@ -22,6 +22,7 @@
     "sveltekit-superforms": "2.25.0",
     "formsnap": "2.0.1",
     "valibot": "1.1.0",
+    "radash": "12.1.0",
     "ts-ag": "workspace:*"
   },
   "peerDependencies": {
@@ -84,9 +85,8 @@
   },
   "repository": "ageorgeh/svelte-ag",
   "scripts": {
-    "components:package": "svelte-package -i src",
-    "components:watch": "svelte-package -i src -w",
-    "components:dev": "vite --config vite.config.ts dev",
+    "project:package": "svelte-package -i src",
+    "project:watch": "svelte-package -i src -w",
     "svelte:sync": "svelte-kit sync",
     "publish:local": "pnpm version prerelease --preid dev --no-git-tag-version && pnpm publish --registry http://localhost:4873 --tag dev --access public --no-git-checks --json > ./publishLocal.json",
     "publish:prerelease": "pnpm publish --tag dev --access public --no-git-checks --registry=https://registry.npmjs.org/ --json > ./publish.json",
