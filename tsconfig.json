@@ -4,8 +4,11 @@
     "declarationMap": true,
     "declaration": true,
     "baseUrl": "./.svelte-kit",
-    "plugins": [{
+    "plugins": [
+      {
         "name": "typescript-svelte-plugin"
-    }]
+      }
+    ],
+    "types": ["vite-plugin-glsl/ext"]
   }
 }

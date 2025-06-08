@@ -15,9 +15,13 @@ interface Options {
    * Filter for source files (default: `/\.svelte$/`)
    */
   include?: RegExp | RegExp[];
+
+  run: boolean;
 }
 
-export default function componentSourceCollector(opts: Options = {}): Plugin {
+export default function componentSourceCollector(opts: Options = { run: true }): Plugin {
+  if (opts.run === false) return { name: 'disabled' };
+
   const outFile = opts.outputFile ?? 'component-sources.css';
 
   /** All unique component directories */
@@ -39,7 +43,7 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
     }, 1000); // adjust delay as needed
   }
   const writeOutFile = async () => {
-    if (!config) return;
+    console.log('writing', componentFiles.size);
     const outPath = path.resolve(config.root, outFile);
     const lines = [...componentFiles]
       .map((d) => `@source '${path.relative(path.dirname(outPath), d)}';`)
@@ -47,6 +51,7 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
       .join('\n');
     // await fs.writeFile(outPath, lines, 'utf8');
     await writeIfDifferent(outPath, lines);
+    console.log('Wrote', lines.length);
   };
 
   const classRegex = /class(?:=|:)/;
@@ -59,13 +64,21 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
 
     configResolved(resolved) {
       config = resolved;
+      // componentFiles.clear();
+      console.log('tailwind-sources:configResolved', config.command);
     },
 
     buildStart() {
-      componentFiles.clear();
+      console.log('tailwind-sources:buildStart');
+      // componentFiles.clear();
     },
 
     async transform(code, id) {
+      if (id.includes('Account.svelte')) {
+        console.log(id, code, classRegex.test(code));
+      }
+      // componentFiles.add(id);
+      // console.log(componentFiles.size);
       if (classRegex.test(code)) {
         componentFiles.add(id);
 
@@ -90,12 +103,12 @@ export default function componentSourceCollector(opts: Options = {}): Plugin {
     },
 
     async buildEnd() {
-      console.log('build end');
+      console.log('tailwind-sources:buildEnd');
       await writeOutFile();
     },
 
     async generateBundle() {
-      console.log('generating the bundle');
+      console.log('tailwind-sources:generateBundle');
       await writeOutFile();
     }
   };

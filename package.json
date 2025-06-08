@@ -1,7 +1,7 @@
 {
   "name": "svelte-ag",
   "description": "Useful svelte components",
-  "version": "0.0.2-dev.80",
+  "version": "0.0.2-dev.81",
   "author": "Alexander Hornung",
   "bugs": "https://github.com/ageorgeh/cms/issues",
   "dependencies": {
@@ -16,6 +16,7 @@
     "@dnd-kit-svelte/utilities": "^0.0.8",
     "embla-carousel-svelte": "^8.6.0",
     "svader": "^0.5.4",
+    "vite-plugin-glsl": "1.4.2",
     "runed": "^0.26.0",
     "bits-ui": "^1.5.3",
     "@rollup/pluginutils": "^5.1.4",

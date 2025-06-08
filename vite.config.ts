@@ -1,9 +1,10 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
+import glsl from 'vite-plugin-glsl';
 
 export default defineConfig({
-  plugins: [sveltekit(), tailwindcss()],
+  plugins: [sveltekit(), tailwindcss(), glsl()],
   // https://stackoverflow.com/questions/73205096/run-sveltekit-dev-with-https
   server: {
     host: 'localhost',
