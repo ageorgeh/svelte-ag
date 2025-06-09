@@ -13,7 +13,7 @@
     ...restProps
   }: WithoutChildren<Props> & { symbol?: symbol } = $props();
 
-  const emblaCtx = getEmblaContext('<Carousel.Next/>', symbol);
+  const emblaCtx = getEmblaContext('<Carousel.Dots/>', symbol);
 </script>
 
 <div class={cn('flex justify-center gap-1.5', className)}>

@@ -17,7 +17,7 @@
 
   type ItemWithSize = Item & { size: Size };
 
-  let numCols = $state(3);
+  let numCols = $state(4);
 
   onMount(() => {
     containerSize((size) => {
@@ -46,7 +46,7 @@
     `
       @vsm:grid-cols-3
       @vmd:grid-cols-4
-      grid grid-cols-2 grid-rows-5 gap-2 py-4
+      grid grid-cols-2 gap-2
     `,
     className
   )}
