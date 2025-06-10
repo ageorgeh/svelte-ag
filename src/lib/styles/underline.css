@@ -1,9 +1,10 @@
-.underline-animation {
+@layer components {
+  .underline-animation {
     @apply relative hover:after:scale-x-100 hover:after:origin-bottom-left;
-}
-.underline-animation::after {
+  }
+  .underline-animation::after {
     @apply absolute content-[''] w-full h-[2px] left-0 bottom-0
     bg-primary scale-x-0  origin-bottom-right 
-    transition-transform duration-300 rounded-xl
+    transition-transform duration-300 rounded-xl;
+  }
 }
-

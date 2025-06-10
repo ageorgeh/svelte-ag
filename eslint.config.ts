@@ -4,7 +4,7 @@ import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 import ts from 'typescript-eslint';
 import imports from 'eslint-plugin-import';
-// eslint-disable-next-line
+
 import svelteConfig from './svelte.config.js';
 import eslintPluginReadableTailwind from 'eslint-plugin-readable-tailwind';
 
@@ -49,6 +49,21 @@ export default ts.config(
         svelteConfig
       }
     },
+    plugins: {
+      'readable-tailwind': eslintPluginReadableTailwind
+    },
+    rules: {
+      // enable all recommended rules to warn
+      ...eslintPluginReadableTailwind.configs.warning.rules,
+      'readable-tailwind/multiline': [
+        'warn',
+        { group: 'newLine', lineBreakStyle: isWindows ? 'windows' : 'unix', printWidth: 120 }
+      ]
+      // 'readable-tailwind/sort-classes': ['warn', { entryPoint: 'base/frontend/admin/src/app.css' }]
+    }
+  },
+  {
+    files: ['**/*.css'],
     plugins: {
       'readable-tailwind': eslintPluginReadableTailwind
     },
