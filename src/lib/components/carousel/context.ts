@@ -25,6 +25,7 @@ export type CarouselProps = {
   setApi?: (api: CarouselAPI | undefined) => void;
   pointerdown?: (api: CarouselAPI) => void;
   pointerup?: (api: CarouselAPI) => void;
+  onSelect?: (api: CarouselAPI) => void;
   orientation?: 'horizontal' | 'vertical';
 } & WithElementRef<HTMLAttributes<HTMLDivElement>>;
 

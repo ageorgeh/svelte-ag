@@ -12,13 +12,5 @@
 </script>
 
 {#if props.isDragging}
-  <div
-    class={cn(
-      `
-        border-primary bg-primary/10 absolute inset-0 hidden rounded-3xl border border-dashed
-        md:block
-      `,
-      className
-    )}
-  ></div>
+  <div class={cn(`border-primary bg-primary/10 absolute inset-0 rounded-3xl border border-dashed`, className)}></div>
 {/if}

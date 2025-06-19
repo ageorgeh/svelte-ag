@@ -74,47 +74,30 @@
     children
   }: Props = $props();
 
-  let animationComplete = $state<boolean>(true);
+  let animationComplete = $state<boolean>(disableInitialAnimation);
   let isInitialRender = $state(true);
   //svelte-ignore non_reactive_update
   let growHeightElement: HTMLDivElement | undefined;
 
   function handleAnimationEnd(e: AnimationEvent) {
-    if (!visible) {
-      animationComplete = true;
-    } else {
-      animationComplete = false;
-    }
-
-    // Mark initial render as complete after animation
-    isInitialRender = false;
-
-    if (onAnimationComplete) {
-      onAnimationComplete(visible);
-    }
+    animationComplete = true;
+    onAnimationComplete?.(visible);
   }
 
   // Reset animation state when visibility changes
   watch(
     () => visible,
-    (newValue) => {
-      if (newValue) {
-        animationComplete = false;
-      }
-    },
-    { lazy: false }
-  );
-
-  // Set initial render to false when component mounts if disableInitialAnimation is true
-  $effect(() => {
-    if (disableInitialAnimation) {
+    () => {
       isInitialRender = false;
-    }
-  });
+      animationComplete = false;
+    },
+    // Dont run on mount
+    { lazy: true }
+  );
 
   const dataState = $derived(visible ? 'visible' : 'hidden');
   // Skip animation classes on initial render when disableInitialAnimation is true
-  const shouldApplyAnimationClasses = $derived(!isInitialRender || !disableInitialAnimation);
+  const shouldApplyAnimationClasses = $derived(!(isInitialRender && disableInitialAnimation));
 
   // Duration in ms for animations
   const durationMap = {
@@ -210,11 +193,14 @@
     }
   }
 
-  $effect(() => {
-    if (animation === 'growHeight') {
-      animateHeight();
+  watch(
+    () => visible,
+    () => {
+      if (animation === 'growHeight') {
+        animateHeight();
+      }
     }
-  });
+  );
 </script>
 
 {#if animation === 'growHeight'}

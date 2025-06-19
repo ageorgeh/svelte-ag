@@ -8,7 +8,6 @@
       {
         "name": "typescript-svelte-plugin"
       }
-    ],
-    "types": ["vite-plugin-glsl/ext"]
+    ]
   }
 }

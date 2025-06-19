@@ -35,7 +35,16 @@
   import { useSortable } from '@dnd-kit-svelte/sortable';
   import type { DraggableAttributes } from '@dnd-kit-svelte/core';
   import type { ReadableBox, WritableBox } from 'svelte-toolbelt';
-  let { item, parent, type, child }: SortableItemProps = $props();
+  import type { HTMLDivAttributes } from '$utils/bits.js';
+  import { cn } from '$utils/utils.js';
+  let {
+    item,
+    parent,
+    type,
+    child,
+    class: className,
+    style: styleInput
+  }: SortableItemProps & HTMLDivAttributes = $props();
 
   const { attributes, listeners, node, activatorNode, transform, transition, isDragging, isSorting, isOver } =
     useSortable({
@@ -53,16 +62,25 @@
     activatorNode
   });
 
+  function pos(v: number, scale: number) {
+    if (scale >= 1) {
+      return v;
+    } else {
+      return v;
+    }
+  }
+
+  $inspect('tranform', CSS.Translate.toString(transform.current));
   const style = $derived(
     styleObjectToString({
-      transform: CSS.Transform.toString(transform.current),
+      transform: CSS.Translate.toString(transform.current),
       transition: isSorting.current ? transition.current : undefined,
       zIndex: isDragging.current ? 1 : undefined
     })
   );
 </script>
 
-<div class="relative" bind:this={node.current} {style}>
+<div class={cn('relative', className)} bind:this={node.current} style={`${style}; ${styleInput ?? ''}`}>
   {@render child({
     isDragging: isDragging.current,
     isSorting: isSorting.current,

@@ -35,7 +35,7 @@
 </script>
 
 <DragOverlay>
-  {@render child(dnd.activeType, dnd.activeItem, {
+  {@render child(dnd.activeType!, dnd.activeItem!, {
     isDragging: false,
     isSorting: false,
     isOver: false,

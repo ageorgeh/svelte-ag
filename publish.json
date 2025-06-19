@@ -1,12 +1,12 @@
 {
-  "id": "svelte-ag@0.0.2-dev.81",
+  "id": "svelte-ag@0.0.2-dev.83",
   "name": "svelte-ag",
-  "version": "0.0.2-dev.81",
-  "size": 164979,
-  "unpackedSize": 775838,
-  "shasum": "5dff2cc1af356b50c4213e1281f6b8d2eac5b135",
-  "integrity": "sha512-i8xxrrO/ORP9aS/QI+X79FF+Re8wEs6CgNVaCLsNS1gLutZI5+VtpTOwztc3nkcI328lj3QLJtBg4D/KcK88tw==",
-  "filename": "svelte-ag-0.0.2-dev.81.tgz",
+  "version": "0.0.2-dev.83",
+  "size": 172518,
+  "unpackedSize": 814450,
+  "shasum": "24ac20a7ae1c0443c5ac9e6c9babab0e3d758dcb",
+  "integrity": "sha512-Ja3+HCeCJHsc68RkleAIlUFlwUCYJVl+qxBKWYKq3TIQc3/7ebVGNkIiFTbFo3a6ecCCSNm8MubyqegB6SaH9g==",
+  "filename": "svelte-ag-0.0.2-dev.83.tgz",
   "files": [
     {
       "path": "README.md",
@@ -890,17 +890,17 @@
     },
     {
       "path": "dist/lib/components/animated/animated.svelte",
-      "size": 7435,
+      "size": 7119,
       "mode": 420
     },
     {
       "path": "dist/lib/components/animated/animated.svelte.d.ts",
-      "size": 1839,
+      "size": 1884,
       "mode": 420
     },
     {
       "path": "dist/lib/components/animated/animated.svelte.d.ts.map",
-      "size": 853,
+      "size": 854,
       "mode": 420
     },
     {
@@ -920,32 +920,32 @@
     },
     {
       "path": "dist/lib/components/carousel/carousel-content.svelte",
-      "size": 1288,
+      "size": 726,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-content.svelte.d.ts",
-      "size": 180,
+      "size": 433,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-content.svelte.d.ts.map",
-      "size": 276,
+      "size": 474,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-dots.svelte",
-      "size": 823,
+      "size": 779,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-dots.svelte.d.ts",
-      "size": 165,
+      "size": 394,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-dots.svelte.d.ts.map",
-      "size": 270,
+      "size": 453,
       "mode": 420
     },
     {
@@ -955,67 +955,67 @@
     },
     {
       "path": "dist/lib/components/carousel/carousel-item.svelte.d.ts",
-      "size": 165,
+      "size": 418,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-item.svelte.d.ts.map",
-      "size": 270,
+      "size": 468,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-next.svelte",
-      "size": 1047,
+      "size": 1388,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-next.svelte.d.ts",
-      "size": 165,
+      "size": 911,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-next.svelte.d.ts.map",
-      "size": 270,
+      "size": 425,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-previous.svelte",
-      "size": 1048,
+      "size": 1389,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-previous.svelte.d.ts",
-      "size": 185,
+      "size": 931,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel-previous.svelte.d.ts.map",
-      "size": 286,
+      "size": 441,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel.svelte",
-      "size": 2509,
+      "size": 3077,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel.svelte.d.ts",
-      "size": 144,
+      "size": 241,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/carousel.svelte.d.ts.map",
-      "size": 260,
+      "size": 309,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/context.d.ts",
-      "size": 1695,
+      "size": 1738,
       "mode": 420
     },
     {
       "path": "dist/lib/components/carousel/context.d.ts.map",
-      "size": 1747,
+      "size": 1803,
       "mode": 420
     },
     {
@@ -1060,7 +1060,7 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-context.svelte.d.ts",
-      "size": 1393,
+      "size": 1392,
       "mode": 420
     },
     {
@@ -1075,7 +1075,7 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-drag-overlay.svelte.d.ts",
-      "size": 1409,
+      "size": 1408,
       "mode": 420
     },
     {
@@ -1090,12 +1090,12 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-drag-placeholder.svelte.d.ts",
-      "size": 305,
+      "size": 358,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-drag-placeholder.svelte.d.ts.map",
-      "size": 406,
+      "size": 407,
       "mode": 420
     },
     {
@@ -1105,12 +1105,12 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-draghandle.svelte.d.ts",
-      "size": 225,
+      "size": 273,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-draghandle.svelte.d.ts.map",
-      "size": 334,
+      "size": 335,
       "mode": 420
     },
     {
@@ -1120,12 +1120,12 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-overlay.svelte.d.ts",
-      "size": 957,
+      "size": 942,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-overlay.svelte.d.ts.map",
-      "size": 685,
+      "size": 692,
       "mode": 420
     },
     {
@@ -1135,12 +1135,12 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-context.svelte.d.ts",
-      "size": 323,
+      "size": 376,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-context.svelte.d.ts.map",
-      "size": 443,
+      "size": 444,
       "mode": 420
     },
     {
@@ -1150,12 +1150,12 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-item.svelte.d.ts",
-      "size": 917,
+      "size": 967,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-item.svelte.d.ts.map",
-      "size": 956,
+      "size": 957,
       "mode": 420
     },
     {
@@ -1165,12 +1165,12 @@
     },
     {
       "path": "dist/lib/components/dnd/Droppable.svelte.d.ts",
-      "size": 149,
+      "size": 448,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/Droppable.svelte.d.ts.map",
-      "size": 257,
+      "size": 491,
       "mode": 420
     },
     {
@@ -1180,12 +1180,12 @@
     },
     {
       "path": "dist/lib/components/dnd/example.svelte.d.ts",
-      "size": 139,
+      "size": 193,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/example.svelte.d.ts.map",
-      "size": 253,
+      "size": 254,
       "mode": 420
     },
     {
@@ -1255,12 +1255,12 @@
     },
     {
       "path": "dist/lib/components/form/form-button.svelte.d.ts",
-      "size": 155,
+      "size": 254,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-button.svelte.d.ts.map",
-      "size": 262,
+      "size": 301,
       "mode": 420
     },
     {
@@ -1270,12 +1270,12 @@
     },
     {
       "path": "dist/lib/components/form/form-description.svelte.d.ts",
-      "size": 180,
+      "size": 303,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-description.svelte.d.ts.map",
-      "size": 272,
+      "size": 309,
       "mode": 420
     },
     {
@@ -1285,7 +1285,7 @@
     },
     {
       "path": "dist/lib/components/form/form-element-field.svelte.d.ts",
-      "size": 1309,
+      "size": 1311,
       "mode": 420
     },
     {
@@ -1300,12 +1300,12 @@
     },
     {
       "path": "dist/lib/components/form/form-field-errors.svelte.d.ts",
-      "size": 181,
+      "size": 220,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field-errors.svelte.d.ts.map",
-      "size": 274,
+      "size": 275,
       "mode": 420
     },
     {
@@ -1315,7 +1315,7 @@
     },
     {
       "path": "dist/lib/components/form/form-field.svelte.d.ts",
-      "size": 1243,
+      "size": 1245,
       "mode": 420
     },
     {
@@ -1330,7 +1330,7 @@
     },
     {
       "path": "dist/lib/components/form/form-fieldset.svelte.d.ts",
-      "size": 1354,
+      "size": 1356,
       "mode": 420
     },
     {
@@ -1345,12 +1345,12 @@
     },
     {
       "path": "dist/lib/components/form/form-label.svelte.d.ts",
-      "size": 150,
+      "size": 267,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-label.svelte.d.ts.map",
-      "size": 260,
+      "size": 297,
       "mode": 420
     },
     {
@@ -1360,12 +1360,12 @@
     },
     {
       "path": "dist/lib/components/form/form-legend.svelte.d.ts",
-      "size": 155,
+      "size": 273,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-legend.svelte.d.ts.map",
-      "size": 262,
+      "size": 299,
       "mode": 420
     },
     {
@@ -1375,12 +1375,12 @@
     },
     {
       "path": "dist/lib/components/form/form.svelte.d.ts",
-      "size": 341,
+      "size": 591,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form.svelte.d.ts.map",
-      "size": 423,
+      "size": 620,
       "mode": 420
     },
     {
@@ -1399,18 +1399,68 @@
       "mode": 420
     },
     {
+      "path": "dist/lib/components/gallery/gallery.svelte",
+      "size": 1837,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gallery/gallery.svelte.d.ts",
+      "size": 1428,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gallery/gallery.svelte.d.ts.map",
+      "size": 1249,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gallery/index.d.ts",
+      "size": 95,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gallery/index.d.ts.map",
+      "size": 198,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gallery/index.js",
+      "size": 60,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gallery/utils.d.ts",
+      "size": 671,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gallery/utils.d.ts.map",
+      "size": 435,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gallery/utils.js",
+      "size": 3548,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/gradient/gradient.frag",
+      "size": 1136,
+      "mode": 420
+    },
+    {
       "path": "dist/lib/components/gradient/Gradient.svelte",
-      "size": 1761,
+      "size": 1801,
       "mode": 420
     },
     {
       "path": "dist/lib/components/gradient/Gradient.svelte.d.ts",
-      "size": 144,
+      "size": 459,
       "mode": 420
     },
     {
       "path": "dist/lib/components/gradient/Gradient.svelte.d.ts.map",
-      "size": 260,
+      "size": 548,
       "mode": 420
     },
     {
@@ -1450,12 +1500,12 @@
     },
     {
       "path": "dist/lib/components/safe/safe.svelte.d.ts",
-      "size": 315,
+      "size": 353,
       "mode": 420
     },
     {
       "path": "dist/lib/components/safe/safe.svelte.d.ts.map",
-      "size": 438,
+      "size": 439,
       "mode": 420
     },
     {
@@ -1465,12 +1515,12 @@
     },
     {
       "path": "dist/lib/components/search/combinations/searchPopover.svelte.d.ts",
-      "size": 536,
+      "size": 900,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/combinations/searchPopover.svelte.d.ts.map",
-      "size": 719,
+      "size": 729,
       "mode": 420
     },
     {
@@ -1480,12 +1530,12 @@
     },
     {
       "path": "dist/lib/components/search/components/search-empty.svelte.d.ts",
-      "size": 160,
+      "size": 262,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/components/search-empty.svelte.d.ts.map",
-      "size": 280,
+      "size": 329,
       "mode": 420
     },
     {
@@ -1495,12 +1545,12 @@
     },
     {
       "path": "dist/lib/components/search/components/search-input.svelte.d.ts",
-      "size": 160,
+      "size": 272,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/components/search-input.svelte.d.ts.map",
-      "size": 280,
+      "size": 329,
       "mode": 420
     },
     {
@@ -1510,12 +1560,12 @@
     },
     {
       "path": "dist/lib/components/search/components/search-list.svelte.d.ts",
-      "size": 155,
+      "size": 255,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/components/search-list.svelte.d.ts.map",
-      "size": 278,
+      "size": 325,
       "mode": 420
     },
     {
@@ -1525,12 +1575,12 @@
     },
     {
       "path": "dist/lib/components/search/components/search-pagnation.svelte.d.ts",
-      "size": 180,
+      "size": 392,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/components/search-pagnation.svelte.d.ts.map",
-      "size": 288,
+      "size": 340,
       "mode": 420
     },
     {
@@ -1540,12 +1590,12 @@
     },
     {
       "path": "dist/lib/components/search/components/search.svelte.d.ts",
-      "size": 134,
+      "size": 261,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/components/search.svelte.d.ts.map",
-      "size": 268,
+      "size": 315,
       "mode": 420
     },
     {
@@ -1665,12 +1715,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-content.svelte.d.ts",
-      "size": 175,
+      "size": 356,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-content.svelte.d.ts.map",
-      "size": 273,
+      "size": 368,
       "mode": 420
     },
     {
@@ -1680,12 +1730,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-footer.svelte.d.ts",
-      "size": 170,
+      "size": 351,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-footer.svelte.d.ts.map",
-      "size": 271,
+      "size": 366,
       "mode": 420
     },
     {
@@ -1695,12 +1745,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-action.svelte.d.ts",
-      "size": 196,
+      "size": 535,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-action.svelte.d.ts.map",
-      "size": 291,
+      "size": 600,
       "mode": 420
     },
     {
@@ -1710,12 +1760,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-content.svelte.d.ts",
-      "size": 201,
+      "size": 385,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-content.svelte.d.ts.map",
-      "size": 293,
+      "size": 388,
       "mode": 420
     },
     {
@@ -1725,12 +1775,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-label.svelte.d.ts",
-      "size": 191,
+      "size": 531,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-label.svelte.d.ts.map",
-      "size": 289,
+      "size": 609,
       "mode": 420
     },
     {
@@ -1740,12 +1790,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group.svelte.d.ts",
-      "size": 165,
+      "size": 346,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group.svelte.d.ts.map",
-      "size": 269,
+      "size": 364,
       "mode": 420
     },
     {
@@ -1755,12 +1805,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-header.svelte.d.ts",
-      "size": 170,
+      "size": 351,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-header.svelte.d.ts.map",
-      "size": 271,
+      "size": 366,
       "mode": 420
     },
     {
@@ -1770,12 +1820,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-input.svelte.d.ts",
-      "size": 165,
+      "size": 645,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-input.svelte.d.ts.map",
-      "size": 269,
+      "size": 277,
       "mode": 420
     },
     {
@@ -1785,12 +1835,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-inset.svelte.d.ts",
-      "size": 165,
+      "size": 346,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-inset.svelte.d.ts.map",
-      "size": 269,
+      "size": 364,
       "mode": 420
     },
     {
@@ -1800,12 +1850,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-action.svelte.d.ts",
-      "size": 191,
+      "size": 557,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-action.svelte.d.ts.map",
-      "size": 289,
+      "size": 629,
       "mode": 420
     },
     {
@@ -1815,12 +1865,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-badge.svelte.d.ts",
-      "size": 186,
+      "size": 367,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-badge.svelte.d.ts.map",
-      "size": 287,
+      "size": 382,
       "mode": 420
     },
     {
@@ -1830,12 +1880,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-button.svelte.d.ts",
-      "size": 1129,
+      "size": 2060,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-button.svelte.d.ts.map",
-      "size": 551,
+      "size": 1379,
       "mode": 420
     },
     {
@@ -1845,12 +1895,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-item.svelte.d.ts",
-      "size": 181,
+      "size": 379,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-item.svelte.d.ts.map",
-      "size": 277,
+      "size": 372,
       "mode": 420
     },
     {
@@ -1860,12 +1910,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-skeleton.svelte.d.ts",
-      "size": 201,
+      "size": 454,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-skeleton.svelte.d.ts.map",
-      "size": 293,
+      "size": 492,
       "mode": 420
     },
     {
@@ -1875,12 +1925,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-sub-button.svelte.d.ts",
-      "size": 207,
+      "size": 594,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-sub-button.svelte.d.ts.map",
-      "size": 297,
+      "size": 678,
       "mode": 420
     },
     {
@@ -1890,12 +1940,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-sub-item.svelte.d.ts",
-      "size": 197,
+      "size": 380,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-sub-item.svelte.d.ts.map",
-      "size": 293,
+      "size": 388,
       "mode": 420
     },
     {
@@ -1905,12 +1955,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-sub.svelte.d.ts",
-      "size": 176,
+      "size": 362,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-sub.svelte.d.ts.map",
-      "size": 275,
+      "size": 370,
       "mode": 420
     },
     {
@@ -1920,12 +1970,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu.svelte.d.ts",
-      "size": 160,
+      "size": 364,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu.svelte.d.ts.map",
-      "size": 267,
+      "size": 362,
       "mode": 420
     },
     {
@@ -1935,12 +1985,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-provider.svelte.d.ts",
-      "size": 180,
+      "size": 556,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-provider.svelte.d.ts.map",
-      "size": 275,
+      "size": 610,
       "mode": 420
     },
     {
@@ -1950,12 +2000,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-rail.svelte.d.ts",
-      "size": 160,
+      "size": 443,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-rail.svelte.d.ts.map",
-      "size": 267,
+      "size": 490,
       "mode": 420
     },
     {
@@ -1965,12 +2015,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-separator.svelte.d.ts",
-      "size": 185,
+      "size": 224,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-separator.svelte.d.ts.map",
-      "size": 285,
+      "size": 286,
       "mode": 420
     },
     {
@@ -1980,12 +2030,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-trigger.svelte.d.ts",
-      "size": 175,
+      "size": 452,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-trigger.svelte.d.ts.map",
-      "size": 273,
+      "size": 523,
       "mode": 420
     },
     {
@@ -1995,12 +2045,12 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar.svelte.d.ts",
-      "size": 139,
+      "size": 497,
       "mode": 420
     },
     {
       "path": "dist/lib/components/sidebar/sidebar.svelte.d.ts.map",
-      "size": 257,
+      "size": 568,
       "mode": 420
     },
     {
@@ -2010,12 +2060,12 @@
     },
     {
       "path": "dist/lib/components/utilities/arrow/arrow.svelte.d.ts",
-      "size": 129,
+      "size": 165,
       "mode": 420
     },
     {
       "path": "dist/lib/components/utilities/arrow/arrow.svelte.d.ts.map",
-      "size": 264,
+      "size": 265,
       "mode": 420
     },
     {
@@ -2055,12 +2105,12 @@
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-anchor.svelte.d.ts",
-      "size": 201,
+      "size": 292,
       "mode": 420
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-anchor.svelte.d.ts.map",
-      "size": 327,
+      "size": 374,
       "mode": 420
     },
     {
@@ -2070,12 +2120,12 @@
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-arrow.svelte.d.ts",
-      "size": 196,
+      "size": 235,
       "mode": 420
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-arrow.svelte.d.ts.map",
-      "size": 325,
+      "size": 326,
       "mode": 420
     },
     {
@@ -2085,12 +2135,12 @@
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-content-static.svelte.d.ts",
-      "size": 237,
+      "size": 528,
       "mode": 420
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-content-static.svelte.d.ts.map",
-      "size": 343,
+      "size": 616,
       "mode": 420
     },
     {
@@ -2100,12 +2150,12 @@
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-content.svelte.d.ts",
-      "size": 206,
+      "size": 307,
       "mode": 420
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-content.svelte.d.ts.map",
-      "size": 329,
+      "size": 378,
       "mode": 420
     },
     {
@@ -2115,12 +2165,12 @@
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer.svelte.d.ts",
-      "size": 170,
+      "size": 311,
       "mode": 420
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer.svelte.d.ts.map",
-      "size": 305,
+      "size": 414,
       "mode": 420
     },
     {
@@ -2199,6 +2249,11 @@
       "mode": 420
     },
     {
+      "path": "dist/lib/styles/underline.css",
+      "size": 324,
+      "mode": 420
+    },
+    {
       "path": "dist/lib/utils/asyncDerived.svelte.d.ts",
       "size": 663,
       "mode": 420
@@ -2229,18 +2284,33 @@
       "mode": 420
     },
     {
+      "path": "dist/lib/utils/glsl.d.ts",
+      "size": 169,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/utils/glsl.d.ts.map",
+      "size": 314,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/utils/glsl.js",
+      "size": 11,
+      "mode": 420
+    },
+    {
       "path": "dist/lib/utils/index.d.ts",
-      "size": 170,
+      "size": 197,
       "mode": 420
     },
     {
       "path": "dist/lib/utils/index.d.ts.map",
-      "size": 206,
+      "size": 227,
       "mode": 420
     },
     {
       "path": "dist/lib/utils/index.js",
-      "size": 135,
+      "size": 162,
       "mode": 420
     },
     {
@@ -2310,17 +2380,17 @@
     },
     {
       "path": "dist/routes/+layout.svelte.d.ts",
-      "size": 941,
+      "size": 926,
       "mode": 420
     },
     {
       "path": "dist/routes/+layout.svelte.d.ts.map",
-      "size": 659,
+      "size": 666,
       "mode": 420
     },
     {
       "path": "package.json",
-      "size": 3011,
+      "size": 3044,
       "mode": 420
     },
     {
@@ -2630,7 +2700,7 @@
     },
     {
       "path": "src/lib/components/animated/animated.svelte",
-      "size": 7430,
+      "size": 7114,
       "mode": 420
     },
     {
@@ -2640,12 +2710,12 @@
     },
     {
       "path": "src/lib/components/carousel/carousel-content.svelte",
-      "size": 1288,
+      "size": 726,
       "mode": 420
     },
     {
       "path": "src/lib/components/carousel/carousel-dots.svelte",
-      "size": 823,
+      "size": 779,
       "mode": 420
     },
     {
@@ -2655,22 +2725,22 @@
     },
     {
       "path": "src/lib/components/carousel/carousel-next.svelte",
-      "size": 1047,
+      "size": 1388,
       "mode": 420
     },
     {
       "path": "src/lib/components/carousel/carousel-previous.svelte",
-      "size": 1048,
+      "size": 1389,
       "mode": 420
     },
     {
       "path": "src/lib/components/carousel/carousel.svelte",
-      "size": 2509,
+      "size": 3077,
       "mode": 420
     },
     {
       "path": "src/lib/components/carousel/context.ts",
-      "size": 2038,
+      "size": 2079,
       "mode": 420
     },
     {
@@ -2799,8 +2869,28 @@
       "mode": 420
     },
     {
+      "path": "src/lib/components/gallery/gallery.svelte",
+      "size": 1832,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/gallery/index.ts",
+      "size": 61,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/gallery/utils.ts",
+      "size": 3350,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/gradient/gradient.frag",
+      "size": 1136,
+      "mode": 420
+    },
+    {
       "path": "src/lib/components/gradient/Gradient.svelte",
-      "size": 1761,
+      "size": 1791,
       "mode": 420
     },
     {
@@ -3069,6 +3159,11 @@
       "mode": 420
     },
     {
+      "path": "src/lib/styles/underline.css",
+      "size": 324,
+      "mode": 420
+    },
+    {
       "path": "src/lib/utils/asyncDerived.svelte.ts",
       "size": 1119,
       "mode": 420
@@ -3079,8 +3174,13 @@
       "mode": 420
     },
     {
-      "path": "src/lib/utils/index.ts",
+      "path": "src/lib/utils/glsl.ts",
       "size": 135,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/utils/index.ts",
+      "size": 162,
       "mode": 420
     },
     {
@@ -3109,6 +3209,6 @@
       "mode": 420
     }
   ],
-  "entryCount": 620,
+  "entryCount": 640,
   "bundled": []
 }

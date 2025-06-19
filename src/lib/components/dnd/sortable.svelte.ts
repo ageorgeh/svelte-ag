@@ -57,24 +57,24 @@ export function onDragOver({ active, over, dnd }: DragOverEvent & { dnd: DndStat
     if (dnd.activeParent.id === overData.parent.id) {
       // Same list dragover - no action needed during dragover for same list
     } else {
-      // Move between containing lists during dragover
-
-      // Find the item in the source list
-      const item = activeData.item;
-      if (!item) return;
-
-      // Remove from source list
-      const sourceList = dnd.activeParent.children;
-      const sourceIndex = sourceList.indexOf(item);
-      if (sourceIndex !== -1) {
-        sourceList.splice(sourceIndex, 1);
-
-        // Add to target list
-        const targetList = overData.parent.children;
-        targetList.push(item);
-
-        dnd.activeParent = overData.parent;
-      }
+      // // Move between containing lists during dragover
+      //
+      // // Find the item in the source list
+      // const item = activeData.item;
+      // if (!item) return;
+      //
+      // // Remove from source list
+      // const sourceList = dnd.activeParent.children;
+      // const sourceIndex = sourceList.indexOf(item);
+      // if (sourceIndex !== -1) {
+      //   sourceList.splice(sourceIndex, 1);
+      //
+      //   // Add to target list
+      //   const targetList = overData.parent.children;
+      //   targetList.push(item);
+      //
+      //   dnd.activeParent = overData.parent;
+      // }
     }
   }
 }

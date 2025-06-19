@@ -8,11 +8,16 @@
 </script>
 
 <script lang="ts">
-  import { SortableContext } from '@dnd-kit-svelte/sortable';
+  import { SortableContext, verticalListSortingStrategy } from '@dnd-kit-svelte/sortable';
+  import type { HTMLDivAttributes } from '$utils/bits.js';
 
-  let { items, children }: SortableContextProps = $props();
+  let { items, children, class: className }: SortableContextProps & HTMLDivAttributes = $props();
+
+  // TODO add a flag for the different strategies here
 </script>
 
-<SortableContext {items}>
-  {@render children()}
+<SortableContext {items} strategy={verticalListSortingStrategy}>
+  <div class={className}>
+    {@render children()}
+  </div>
 </SortableContext>

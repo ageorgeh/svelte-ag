@@ -76,7 +76,13 @@
 {/snippet}
 
 <div class="flex flex-col gap-4 border-2 p-10">
-  <Dnd.Context {...Dnd.sortableProps}>
+  <Dnd.Context
+    onDragEnd={(p) => {
+      Dnd.sortableProps.onDragEnd(p);
+      // Reorder your data
+    }}
+    onDragOver={(p) => Dnd.sortableProps.onDragOver(p)}
+  >
     <Dnd.Sortable items={defaultItems.map((i) => i.id)}>
       <div
         class="

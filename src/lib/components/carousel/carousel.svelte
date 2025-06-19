@@ -1,6 +1,7 @@
 <script lang="ts">
   import { type CarouselAPI, type CarouselProps, type EmblaContext, setEmblaContext } from './context.js';
   import { cn } from '$shadcn/utils.js';
+  import emblaCarouselSvelte from 'embla-carousel-svelte';
 
   let {
     opts = {},
@@ -11,6 +12,7 @@
     children,
     pointerdown,
     pointerup,
+    onSelect: a_onSelect,
     symbol = undefined,
     ...restProps
   }: CarouselProps = $props();
@@ -48,6 +50,7 @@
     carouselState.canScrollPrev = api.canScrollPrev();
     carouselState.canScrollNext = api.canScrollNext();
     carouselState.selectedIndex = api.selectedScrollSnap();
+    a_onSelect?.(api);
   }
 
   function reinit(api: CarouselAPI) {
@@ -98,6 +101,23 @@
   });
 </script>
 
-<div class={cn('relative', className)} role="region" aria-roledescription="carousel" {...restProps}>
+<!-- svelte-ignore event_directive_deprecated -->
+<div
+  class={cn('relative', className)}
+  role="region"
+  aria-roledescription="carousel"
+  {...restProps}
+  use:emblaCarouselSvelte={{
+    options: {
+      container: `[data-embla-container="${symbol?.description ?? 'default'}"]`,
+      loop: true,
+      slides: `[data-embla-slide="${symbol?.description ?? 'default'}"]`,
+      ...carouselState.options,
+      axis: carouselState.orientation === 'horizontal' ? 'x' : 'y'
+    },
+    plugins: carouselState.plugins
+  }}
+  on:emblaInit={carouselState.onInit}
+>
   {@render children?.()}
 </div>
