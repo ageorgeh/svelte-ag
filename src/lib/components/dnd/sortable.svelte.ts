@@ -1,4 +1,4 @@
-import type { DragEndEvent, DragOverEvent } from '@dnd-kit-svelte/core';
+import type { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit-svelte/core';
 import { data, moveIndex } from './utils.svelte';
 import type { DndState } from './context.svelte';
 
@@ -6,6 +6,18 @@ import type { DndState } from './context.svelte';
 // Essentially this means only moving between lists - in the same list theyre pre sorted
 
 // --------------------- Handlers ---------------------
+
+/**
+ * Sets state for the active item when dragging starts
+ */
+function onDragStart({ active, dnd }: DragStartEvent) {
+  const d = data(active);
+  dnd.activeType = d.type.current;
+  dnd.activeItem = d.item.current;
+  dnd.activeParent = d.parent.current;
+
+  // console.log('Drag start', dnd.activeItem!.id);
+}
 
 export function onDragEnd({ active, over, dnd }: DragEndEvent & { dnd: DndState<any> }) {
   if (!over) return;
@@ -15,16 +27,19 @@ export function onDragEnd({ active, over, dnd }: DragEndEvent & { dnd: DndState<
   const activeData = data(active);
   const overData = data(over);
   // Add this in as well accepts.includes(activeType)
-  if (activeData.type === overData.type) {
-    if (dnd.activeParent.id === overData.parent.id) {
+
+  if (activeData.type.current === overData.type.current) {
+    if (dnd.activeParent.id === overData.parent.current.id) {
       // Same containing list reorder
       const oldIndex = dnd.activeParent.children.findIndex((item) => item.id === active.id);
-      const newIndex = overData.parent.children.findIndex((item) => item.id === over.id);
+      const newIndex = overData.parent.current.children.findIndex((item) => item.id === over.id);
+      // console.log('Drag end reorder', oldIndex, newIndex);
 
-      moveIndex(dnd.activeParent.children, oldIndex, newIndex);
+      if (oldIndex !== newIndex) moveIndex(dnd.activeParent.children, oldIndex, newIndex);
     } else {
       // Move between containing lists
 
+      console.log('Drag end moving between lists', activeData.item.current.id, overData.item.current.id);
       const item = activeData.item;
 
       // Remove from the old list
@@ -33,11 +48,11 @@ export function onDragEnd({ active, over, dnd }: DragEndEvent & { dnd: DndState<
       if (index !== -1) list.splice(index, 1);
 
       // Add to the new list
-      const targetList = overData.parent.children;
+      const targetList = overData.parent.current.children;
       const insertIndex = targetList.findIndex((sibling) => sibling.id === over.id);
-      overData.parent.children.splice(insertIndex, 0, item);
+      overData.parent.current.children.splice(insertIndex, 0, item);
 
-      dnd.activeParent = overData.parent;
+      dnd.activeParent = overData.parent.current;
     }
   }
 }
@@ -49,37 +64,37 @@ export function onDragOver({ active, over, dnd }: DragOverEvent & { dnd: DndStat
   const activeData = data(active);
   const overData = data(over);
 
-  //   dnd.activeType = activeType;
-
   // add this accepts.includes(activeType)
 
-  if (activeData.type === overData.type) {
-    if (dnd.activeParent.id === overData.parent.id) {
+  if (activeData.item.current.id === overData.item.current.id) return;
+  if (activeData.type.current === overData.type.current) {
+    if (dnd.activeParent.id === overData.parent.current.id) {
+      // console.log('Same list dragover');
       // Same list dragover - no action needed during dragover for same list
     } else {
-      // // Move between containing lists during dragover
-      //
-      // // Find the item in the source list
-      // const item = activeData.item;
-      // if (!item) return;
-      //
-      // // Remove from source list
-      // const sourceList = dnd.activeParent.children;
-      // const sourceIndex = sourceList.indexOf(item);
-      // if (sourceIndex !== -1) {
-      //   sourceList.splice(sourceIndex, 1);
-      //
-      //   // Add to target list
-      //   const targetList = overData.parent.children;
-      //   targetList.push(item);
-      //
-      //   dnd.activeParent = overData.parent;
-      // }
+      // console.log('Moving between lists', activeData.item.current.id, overData.item.current.id);
+      // console.log(dnd.activeParent.id, overData.parent.current.id);
+
+      // Move between containing lists during dragover
+
+      // Find the item in the source list
+      const item = activeData.item.current;
+
+      // Remove from source list
+      const sourceList = dnd.activeParent.children;
+      const sourceIndex = sourceList.indexOf(item);
+      const targetList = overData.parent.current.children;
+
+      sourceList.splice(sourceIndex, 1);
+      targetList.push(item);
+
+      dnd.activeParent = overData.parent.current;
     }
   }
 }
 
 export default {
   onDragEnd,
-  onDragOver
+  onDragOver,
+  onDragStart
 };

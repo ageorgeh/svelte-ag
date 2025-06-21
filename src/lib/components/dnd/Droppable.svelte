@@ -1,25 +1,27 @@
 <script lang="ts">
+  import { cn } from '$utils/utils';
+  /**
+   * This is a component for a droppable region.
+   * Rendering of the region and anything that is dropped in it is done separately to this
+   */
   import { useDroppable, type UseDroppableArguments } from '@dnd-kit-svelte/core';
   import type { ClassValue } from 'clsx';
   import type { Snippet } from 'svelte';
 
-  // This may come in handy for when sorting needs to be done manually
-  // in a situation where i might want to sort the items myself based on another
-  // method but still want to be able to drag items between regions?
-
   interface DroppableProps extends UseDroppableArguments {
-    children: Snippet;
+    child?: Snippet<[{ isOver: boolean }]>;
     class?: ClassValue;
   }
 
-  let { children, class: className, ...rest }: DroppableProps = $props();
+  let { child, class: className, ...rest }: DroppableProps = $props();
 
-  const droppable = useDroppable(rest);
+  const { node, isOver } = useDroppable(rest);
 </script>
 
-<div class={[className]} bind:this={droppable.node.current}>
-  {@render children()}
+<div class={cn(className, '')} bind:this={node.current}>
+  {@render child?.({ isOver: isOver.current })}
 </div>
 
+<!-- Example -->
 <!-- <Droppable id="container" data={{ accepts: ['container'] }}> -->
 <!-- </Droppable> -->

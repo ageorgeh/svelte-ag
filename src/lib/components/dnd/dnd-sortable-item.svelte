@@ -1,6 +1,6 @@
 <script lang="ts" module>
-  import type { DataInputType, DataType } from './utils.svelte';
-  import { getContext, onMount, setContext, type Snippet } from 'svelte';
+  import type { DataInputType } from './utils.svelte';
+  import { getContext, setContext, type Snippet } from 'svelte';
 
   export type SortableItemChildProps = {
     isDragging: boolean;
@@ -18,7 +18,7 @@
   export type ItemContext = {
     attributes: ReadableBox<DraggableAttributes>;
     listeners: ReadableBox<any>;
-    activatorNode: WritableBox<HTMLElement>;
+    activatorNode: WritableBox<HTMLElement | null>;
   };
 
   export function setItemContext(item: ItemContext) {
@@ -35,12 +35,13 @@
   import { useSortable } from '@dnd-kit-svelte/sortable';
   import type { DraggableAttributes } from '@dnd-kit-svelte/core';
   import type { ReadableBox, WritableBox } from 'svelte-toolbelt';
+  import { box } from 'svelte-toolbelt';
   import type { HTMLDivAttributes } from '$utils/bits.js';
   import { cn } from '$utils/utils.js';
   let {
-    item,
-    parent,
-    type,
+    item = $bindable(),
+    parent = $bindable(),
+    type = $bindable(),
     child,
     class: className,
     style: styleInput
@@ -50,30 +51,31 @@
     useSortable({
       id: () => item.id,
       data: () => ({
-        type: () => type,
-        item: () => item,
-        parent: () => parent
+        type: box.with(
+          () => type,
+          (v) => (type = v)
+        ),
+        item: box.with(
+          () => item,
+          (v) => (item = v)
+        ),
+        parent: box.with(
+          () => parent,
+          (v) => (parent = v)
+        )
       })
     });
 
+  // These are used by the drag handle
   setItemContext({
     attributes,
     listeners,
     activatorNode
   });
 
-  function pos(v: number, scale: number) {
-    if (scale >= 1) {
-      return v;
-    } else {
-      return v;
-    }
-  }
-
-  $inspect('tranform', CSS.Translate.toString(transform.current));
   const style = $derived(
     styleObjectToString({
-      transform: CSS.Translate.toString(transform.current),
+      transform: CSS.Transform.toString(transform.current),
       transition: isSorting.current ? transition.current : undefined,
       zIndex: isDragging.current ? 1 : undefined
     })

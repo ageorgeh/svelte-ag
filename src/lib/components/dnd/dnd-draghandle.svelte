@@ -21,7 +21,7 @@
 </script>
 
 {#if isOverlay}
-  <div class={className}>
+  <div class={cn('flex', className)}>
     <span class="icon-draghandle text-muted-foreground size-6 cursor-pointer"></span>
   </div>
 {:else}

@@ -1,4 +1,5 @@
 import type { Active, Over } from '@dnd-kit-svelte/core';
+import type { WritableBox } from 'svelte-toolbelt';
 
 // --------------------- Helpers ---------------------
 export function getTypeAndAccepts(active: Active, over: Over) {
@@ -19,9 +20,9 @@ export function moveIndex<T>(arr: T[], from: number, to: number): void {
 }
 
 export type DataType = {
-  type: string;
-  item: { id: string };
-  parent: { id: string; children: any[] };
+  type: WritableBox<string>;
+  item: WritableBox<{ id: string }>;
+  parent: WritableBox<{ id: string; children: any[] }>;
 };
 
 export type DataInputType = {
@@ -31,10 +32,15 @@ export type DataInputType = {
 };
 
 // See dnd-sortable-item.svelte for the input type for this data
-export function data(input: { data: any }): DataType {
+export function data(input: { data?: any }): DataType {
+  const data = input.data as {
+    type: WritableBox<string>;
+    item: WritableBox<any>;
+    parent: WritableBox<any>;
+  };
   return {
-    type: input.data?.type(),
-    item: input.data?.item(),
-    parent: input.data?.parent()
+    type: data.type,
+    item: data.item,
+    parent: data.parent
   };
 }
