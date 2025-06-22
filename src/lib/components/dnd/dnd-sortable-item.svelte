@@ -19,6 +19,7 @@
     attributes: ReadableBox<DraggableAttributes>;
     listeners: ReadableBox<any>;
     activatorNode: WritableBox<HTMLElement | null>;
+    isDragging: ReadableBox<boolean>;
   };
 
   export function setItemContext(item: ItemContext) {
@@ -70,7 +71,8 @@
   setItemContext({
     attributes,
     listeners,
-    activatorNode
+    activatorNode,
+    isDragging
   });
 
   const style = $derived(

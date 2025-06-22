@@ -56,18 +56,24 @@
   setItemContext({
     attributes,
     listeners,
-    activatorNode: box.with(() => null as unknown as HTMLElement, setActivatorNodeRef)
+    activatorNode: box.with(() => null as unknown as HTMLElement, setActivatorNodeRef),
+    isDragging
   });
 </script>
 
 {#if dragHandle}
-  <div class={cn(className)} style={`${style}; ${styleInput ?? ''}`} bind:this={node.current} {...rest}>
+  <div
+    class={cn('relative', className)}
+    style={`${!isDragging && style}; ${styleInput ?? ''}`}
+    bind:this={node.current}
+    {...rest}
+  >
     {@render child?.({ isDragging: isDragging.current, isOverlay: false })}
   </div>
 {:else}
   <div
-    class={cn(className)}
-    style={`${style}; ${styleInput ?? ''}`}
+    class={cn('relative', className)}
+    style={`${!isDragging && style}; ${styleInput ?? ''}`}
     bind:this={node.current}
     {...listeners.current}
     {...attributes.current}

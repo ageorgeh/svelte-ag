@@ -87,9 +87,11 @@
   // Reset animation state when visibility changes
   watch(
     () => visible,
-    () => {
-      isInitialRender = false;
-      animationComplete = false;
+    (newValue, oldValue) => {
+      if (newValue !== oldValue) {
+        isInitialRender = false;
+        animationComplete = false;
+      }
     },
     // Dont run on mount
     { lazy: true }
@@ -195,8 +197,8 @@
 
   watch(
     () => visible,
-    () => {
-      if (animation === 'growHeight') {
+    (newValue, oldValue) => {
+      if (animation === 'growHeight' && newValue !== oldValue) {
         animateHeight();
       }
     }

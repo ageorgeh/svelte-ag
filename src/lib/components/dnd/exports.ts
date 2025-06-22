@@ -10,6 +10,8 @@ import { default as Droppable } from './Droppable.svelte';
 export { default as sortableProps } from './sortable.svelte.js';
 export { default as defaultProps } from './default.svelte.js';
 
+export * from './types.js';
 export * from './dnd-sortable-item.svelte';
+export * from './utils.svelte.js';
 
 export { Context, Sortable, SortableItem, DragHandle, DragOverLay, DragPlaceholder, Droppable, Item };
