@@ -26,6 +26,8 @@
   }: SearchPopoverProps = $props();
 
   let searchPagnation = $state<Search.Pagnation | null>(null);
+
+  // svelte-ignore non_reactive_update
   let trigger: HTMLButtonElement | null = null;
 
   export function focus() {

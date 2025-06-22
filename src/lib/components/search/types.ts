@@ -1,8 +1,11 @@
 import type { BitsPrimitiveDivAttributes, WithChild, Without, BitsPrimitiveInputAttributes } from 'bits-ui';
 import type { Snippet } from 'svelte';
 
+// The label is searched for
+// The value is used for display
 export type Item = {
   label: string;
+  keywords?: string[];
   value: string;
 };
 

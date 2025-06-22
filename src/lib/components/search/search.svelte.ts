@@ -45,12 +45,14 @@ export class SearchRootState {
       watch(
         () => this.opts.items.current,
         (newItems, oldItems) => {
-          if (dequal(newItems, oldItems)) return;
-          this.search();
+          if (!dequal(newItems, oldItems)) {
+            this.search();
+          }
         }
       );
     }
 
+    // Move to the start of the list whenever it changes
     watch(
       () => this.searchState.sortedList,
       () => {
@@ -71,18 +73,21 @@ export class SearchRootState {
    * This function needs to update the sorted list of items based on the search term.
    */
   async search() {
+    const searchTerm = this.opts.searchWith?.current ?? this.searchState.value;
+
+    // Uses the custom search function if provided
     if (this.opts.search !== undefined) {
       const func = this.opts.search.current;
       if (func) {
-        this.searchState.sortedList = await func(this.searchState.value);
+        this.searchState.sortedList = await func(searchTerm);
         return;
       }
     }
 
-    const searchTerm = this.opts.searchWith?.current ?? this.searchState.value;
+    // Use the default search algo
     const scoredItems = this.opts.items.current.map((item) => ({
       ...item,
-      score: searchTerm ? computeCommandScore(item.label, searchTerm, []) : 1
+      score: searchTerm ? computeCommandScore(item.label, searchTerm, item.keywords) : 1
     }));
 
     // Sort items by score (highest first) then alphabetically
@@ -91,8 +96,9 @@ export class SearchRootState {
       return a.label.localeCompare(b.label);
     });
 
-    if (dequal(this.searchState.sortedList, newSortedList)) return;
-    this.searchState.sortedList = newSortedList;
+    if (!dequal(this.searchState.sortedList, newSortedList)) {
+      this.searchState.sortedList = newSortedList;
+    }
   }
 
   getFilteredList() {
@@ -132,6 +138,9 @@ export class SearchInputState {
 
     /**
      * This is essentially our oninput handler
+     * Sets the value of the search state with the new value
+     * Searches the list with that value
+     * Shows suggestions
      */
     watch(
       () => this.opts.value.current,
@@ -143,6 +152,7 @@ export class SearchInputState {
     );
   }
 
+  // Searches on focus
   onFocus = () => {
     this.root.search();
   };
