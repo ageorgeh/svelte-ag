@@ -1,6 +1,5 @@
 packages:
-  - ../ts-ag 
- 
-
+  - ../ts-ag
 onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
   - esbuild

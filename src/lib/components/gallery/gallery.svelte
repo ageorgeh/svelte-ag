@@ -53,9 +53,9 @@
   bind:this={ref}
   class={cn(
     `
+      grid grid-cols-2 gap-2
       @vsm:grid-cols-3
       @vmd:grid-cols-4
-      grid grid-cols-2 gap-2
     `,
     className
   )}

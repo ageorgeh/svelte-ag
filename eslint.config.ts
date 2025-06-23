@@ -6,7 +6,7 @@ import ts from 'typescript-eslint';
 import imports from 'eslint-plugin-import';
 
 import svelteConfig from './svelte.config.js';
-import eslintPluginReadableTailwind from 'eslint-plugin-readable-tailwind';
+import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
 
 const isWindows = process.platform === 'win32';
 
@@ -50,31 +50,35 @@ export default ts.config(
       }
     },
     plugins: {
-      'readable-tailwind': eslintPluginReadableTailwind
+      'better-tailwindcss': eslintPluginBetterTailwindcss
     },
     rules: {
       // enable all recommended rules to warn
-      ...eslintPluginReadableTailwind.configs.warning.rules,
-      'readable-tailwind/multiline': [
-        'warn',
-        { group: 'newLine', lineBreakStyle: isWindows ? 'windows' : 'unix', printWidth: 120 }
-      ]
-      // 'readable-tailwind/sort-classes': ['warn', { entryPoint: 'base/frontend/admin/src/app.css' }]
+      ...eslintPluginBetterTailwindcss.configs['stylistic-warn'].rules
+
+      // 'better-tailwindcss/multiline': [
+      //   'warn',
+      //   { group: 'newLine', lineBreakStyle: isWindows ? 'windows' : 'unix', printWidth: 120 }
+      // ]
+      // 'better-tailwindcss/sort-classes': ['warn', { entryPoint: 'base/frontend/admin/src/app.css' }]
+    },
+    settings: {
+      'better-tailwindcss': 'src/app.css'
     }
   },
   {
     files: ['**/*.css'],
     plugins: {
-      'readable-tailwind': eslintPluginReadableTailwind
+      'better-tailwindcss': eslintPluginBetterTailwindcss
     },
     rules: {
       // enable all recommended rules to warn
-      ...eslintPluginReadableTailwind.configs.warning.rules,
-      'readable-tailwind/multiline': [
+      ...eslintPluginBetterTailwindcss.configs['stylistic-warn'].rules,
+      'better-tailwindcss/multiline': [
         'warn',
         { group: 'newLine', lineBreakStyle: isWindows ? 'windows' : 'unix', printWidth: 120 }
       ]
-      // 'readable-tailwind/sort-classes': ['warn', { entryPoint: 'base/frontend/admin/src/app.css' }]
+      // 'better-tailwindcss/sort-classes': ['warn', { entryPoint: 'base/frontend/admin/src/app.css' }]
     }
   },
   {
