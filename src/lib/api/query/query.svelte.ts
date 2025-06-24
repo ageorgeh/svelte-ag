@@ -9,6 +9,7 @@ import { dequal } from 'dequal';
 import * as env from '$env/static/public';
 import { sleep } from 'radash';
 import { cacheKey } from './utils.svelte.js';
+import type { ApiBatchDetails, BatchDetails } from './entrypoint.svelte';
 
 export class Query<
   API extends ApiEndpoints,
@@ -70,7 +71,6 @@ export class Query<
   }
 
   async request(): Promise<ApiResponse<API, Path, Method>> {
-    console.log('Request');
     const cachedValue = this.#cache.get(this.#cacheKey);
     if (cachedValue !== null) {
       return cachedValue;
@@ -79,14 +79,13 @@ export class Query<
     this.#status = 'loading';
 
     if (this.#pendingRequest === null) {
-      console.log('Creating new request');
       this.#pendingRequest = this.#requestor.request(this.#input);
     }
     const res = await this.#pendingRequest;
     this.#pendingRequest = null;
 
     this.#cache.set(this.#cacheKey, res);
-    console.log('Response received', res.ok);
+
     if (res.ok === false) {
       const body = await res.json();
       this.#status = 'error';
@@ -147,7 +146,13 @@ export class Requestor<
   > = {};
   #batchTimers: Record<string, NodeJS.Timeout | null> = {};
 
-  constructor(path: Path, method: Method, request: ApiRequestFunction<API>, cache: Cache) {
+  constructor(
+    path: Path,
+    method: Method,
+    request: ApiRequestFunction<API>,
+    cache: Cache,
+    batchDetails?: BatchDetails<API, Path, Method>
+  ) {
     this.#path = path;
     this.#method = method;
     this.#request = request;
@@ -158,9 +163,9 @@ export class Requestor<
     this.#cache = cache;
 
     // TODO
-    this.#canBatch = () => false;
-    this.#batchInput = (inputs) => inputs;
-    this.#unBatchOutput = (output) => [output];
+    this.#canBatch = batchDetails ? batchDetails.canBatch : () => false;
+    this.#batchInput = batchDetails ? batchDetails.batchInput : (inputs) => inputs;
+    this.#unBatchOutput = batchDetails ? batchDetails.unBatchOutput : (output) => [output];
   }
 
   // Makes the actual call to the api
