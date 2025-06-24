@@ -1,8 +1,14 @@
 import type { ApiEndpoints, ApiInput, ApiRequestFunction, ApiSuccessBody, ApiErrorBody, ApiResponse } from 'ts-ag';
-import { dequal } from 'dequal';
 
 import { SvelteMap } from 'svelte/reactivity';
 import { stringify } from 'devalue';
+import Bottleneck from 'bottleneck';
+import type { Cache } from './cache.svelte';
+import { dequal } from 'dequal';
+
+import * as env from '$env/static/public';
+import { sleep } from 'radash';
+import { cacheKey } from './utils.svelte.js';
 
 export class Query<
   API extends ApiEndpoints,
@@ -10,45 +16,77 @@ export class Query<
   Method extends Extract<API, { path: Path }>['method']
 > {
   // -------- Constants --------
+  #TIMEOUT = 1000 * 60 * 5; // 5 minutes
 
   // -------- Set in constructor --------
   #path: Path;
   #method: Method;
   #input: ApiInput<API, Path, Method>;
-  #request: ApiRequestFunction<API>;
-  #batchQuery: BatchQuery<API, Path, Method>;
+  #inputString: string;
+  #cacheKey: string;
+
+  #requestor: Requestor<API, Path, Method>;
+  #cache: Cache;
 
   // -------- State --------
   // Requesting state
-  #pendingRequests = new SvelteMap<string, Promise<any>>();
+  #pendingRequest: Promise<ApiResponse<API, Path, Method>> | null = null;
 
   // Response state
   #status = $state<'idle' | 'loading' | 'success' | 'error'>('idle');
-  #data = $state<ApiSuccessBody<API, Path, Method> | undefined>(undefined);
-  #errorData = $state<ApiErrorBody<API, Path, Method> | undefined>(undefined);
+  #data = $state<ApiSuccessBody<API, Path, Method> | null>(null);
+  #errorData = $state<ApiErrorBody<API, Path, Method> | null>(null);
 
   // -------- Functions --------
-  constructor(
-    path: Path,
-    method: Method,
-    input: ApiInput<API, Path, Method>,
-    request: ApiRequestFunction<API>,
-    batchQuery: BatchQuery<API, Path, Method>
-  ) {
+  constructor({
+    path,
+    method,
+    input,
+    requestor,
+    cache
+  }: {
+    path: Path;
+    method: Method;
+    input: ApiInput<API, Path, Method>;
+    requestor: Requestor<API, Path, Method>;
+    cache: Cache;
+    opts?: {
+      cache?: Parameters<Cache['register']>[1];
+    };
+  }) {
+    this.#requestor = requestor;
+    this.#cache = cache;
+
     this.#path = path;
     this.#method = method;
+
+    // if (this.#cachekey) this.#cache.deregister(this.#cachekey);
+
     this.#input = input;
-    this.#request = request;
-    this.#batchQuery = batchQuery;
+    this.#inputString = stringify(input);
+    this.#cacheKey = cacheKey(path, method, input);
+
+    this.#cache.register(this.#cacheKey, { timeout: this.#TIMEOUT });
   }
 
-  async request() {
-    const inputString = stringify(this.#input);
-    if (this.#pendingRequests.has(inputString)) {
-      return this.#pendingRequests.get(inputString);
+  async request(): Promise<ApiResponse<API, Path, Method>> {
+    console.log('Request');
+    const cachedValue = this.#cache.get(this.#cacheKey);
+    if (cachedValue !== null) {
+      return cachedValue;
     }
-    const res = await this.#batchQuery.request(this.#input);
 
+    this.#status = 'loading';
+
+    if (this.#pendingRequest === null) {
+      console.log('Creating new request');
+      this.#pendingRequest = this.#requestor.request(this.#input);
+    }
+    const res = await this.#pendingRequest;
+    this.#pendingRequest = null;
+
+    this.#cache.set(this.#cacheKey, res);
+    console.log('Response received', res.ok);
     if (res.ok === false) {
       const body = await res.json();
       this.#status = 'error';
@@ -64,15 +102,21 @@ export class Query<
     }
   }
 
+  get cacheKey() {
+    return this.#cacheKey;
+  }
   get status() {
     return this.#status;
   }
-  get data() {
+  get data(): ApiSuccessBody<API, Path, Method> | null {
     return this.#data;
+  }
+  get errorData(): ApiErrorBody<API, Path, Method> | null {
+    return this.#errorData;
   }
 }
 
-export class BatchQuery<
+export class Requestor<
   API extends ApiEndpoints,
   Path extends API['path'],
   Method extends Extract<API, { path: Path }>['method']
@@ -89,6 +133,9 @@ export class BatchQuery<
   #batchInput: (inputs: ApiInput<API, Path, Method>[]) => ApiInput<API, Path, Method>;
   #unBatchOutput: (output: ApiResponse<API, Path, Method>) => ApiResponse<API, Path, Method>[];
 
+  #limiter: Bottleneck;
+  #cache: Cache;
+
   // -------- State --------
   #batchQueue: Record<
     string,
@@ -100,10 +147,15 @@ export class BatchQuery<
   > = {};
   #batchTimers: Record<string, NodeJS.Timeout | null> = {};
 
-  constructor(path: Path, method: Method, request: ApiRequestFunction<API>) {
+  constructor(path: Path, method: Method, request: ApiRequestFunction<API>, cache: Cache) {
     this.#path = path;
     this.#method = method;
     this.#request = request;
+    this.#limiter = new Bottleneck({
+      maxConcurrent: 5,
+      minTime: 100
+    });
+    this.#cache = cache;
 
     // TODO
     this.#canBatch = () => false;
@@ -111,11 +163,19 @@ export class BatchQuery<
     this.#unBatchOutput = (output) => [output];
   }
 
+  // Makes the actual call to the api
   private async fetch(input: ApiInput<API, Path, Method>): Promise<ApiResponse<API, Path, Method>> {
-    return this.#request(this.#path, this.#method, input);
+    if ('PUBLIC_ENVIRONMENT' in env && env.PUBLIC_ENVIRONMENT === 'development') {
+      await sleep(1000);
+    }
+    return await this.#limiter.schedule(() => this.#request(this.#path, this.#method, input));
   }
 
-  private async flushBatchQueue(batchId: string) {
+  /**
+   * Empties the batch queue for the id by combining the inputs.
+   * Then it separates the outputs and resolves each of the promises
+   */
+  private async flushBatchQueue(batchId: string): Promise<void> {
     const queue = this.#batchQueue[batchId];
     const batchedInput = this.#batchInput(queue.map((q) => q.input));
     const res = await this.fetch(batchedInput);
@@ -130,6 +190,7 @@ export class BatchQuery<
     });
   }
 
+  // Performs a request for a given input. Batches it if possible
   async request(input: ApiInput<API, Path, Method>): Promise<ApiResponse<API, Path, Method>> {
     const batchId = this.#canBatch(input);
     if (batchId !== false) {
@@ -140,35 +201,7 @@ export class BatchQuery<
         }
       });
     } else {
-      return this.fetch(input);
+      return await this.fetch(input);
     }
   }
-}
-
-const batchQueries = new SvelteMap<string, BatchQuery<any, any, any>>();
-function batchQueriesKey(path: string, method: string) {
-  return `${path}_${method}`;
-}
-
-/**
- * Helper function to use once so that creating queries is easier.
- *
- * @example
- * export const createQuery = createQueryFunction<YourApiEndpoints>(yourApiRequest);
- *
- */
-export function createQueryFunction<API extends ApiEndpoints>(request: ApiRequestFunction<API>) {
-  return <Path extends API['path'], Method extends Extract<API, { path: Path }>['method']>(
-    path: Path,
-    method: Method,
-    input: ApiInput<API, Path, Method>
-  ) => {
-    const key = batchQueriesKey(path, method);
-    if (!batchQueries.has(key)) {
-      batchQueries.set(key, new BatchQuery(path, method, request));
-    }
-    const batchQuery = batchQueries.get(key)!;
-
-    return new Query<API, Path, Method>(path, method, input, request, batchQuery);
-  };
 }

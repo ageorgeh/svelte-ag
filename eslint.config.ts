@@ -54,12 +54,11 @@ export default ts.config(
     },
     rules: {
       // enable all recommended rules to warn
-      ...eslintPluginBetterTailwindcss.configs['stylistic-warn'].rules
-
-      // 'better-tailwindcss/multiline': [
-      //   'warn',
-      //   { group: 'newLine', lineBreakStyle: isWindows ? 'windows' : 'unix', printWidth: 120 }
-      // ]
+      ...eslintPluginBetterTailwindcss.configs['stylistic-warn'].rules,
+      'better-tailwindcss/enforce-consistent-line-wrapping': [
+        'warn',
+        { group: 'newLine', lineBreakStyle: isWindows ? 'windows' : 'unix', printWidth: 120 }
+      ]
       // 'better-tailwindcss/sort-classes': ['warn', { entryPoint: 'base/frontend/admin/src/app.css' }]
     },
     settings: {
@@ -74,7 +73,7 @@ export default ts.config(
     rules: {
       // enable all recommended rules to warn
       ...eslintPluginBetterTailwindcss.configs['stylistic-warn'].rules,
-      'better-tailwindcss/multiline': [
+      'better-tailwindcss/enforce-consistent-line-wrapping': [
         'warn',
         { group: 'newLine', lineBreakStyle: isWindows ? 'windows' : 'unix', printWidth: 120 }
       ]
