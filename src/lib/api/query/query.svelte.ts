@@ -1,15 +1,15 @@
 import type { ApiEndpoints, ApiInput, ApiRequestFunction, ApiSuccessBody, ApiErrorBody, ApiResponse } from 'ts-ag';
 
-import { SvelteMap } from 'svelte/reactivity';
 import { stringify } from 'devalue';
 import Bottleneck from 'bottleneck';
 import type { Cache } from './cache.svelte';
-import { dequal } from 'dequal';
 
 import * as env from '$env/static/public';
 import { sleep } from 'radash';
 import { cacheKey } from './utils.svelte.js';
-import type { ApiBatchDetails, BatchDetails } from './entrypoint.svelte';
+import type { BatchDetails } from './entrypoint.svelte';
+
+export type QueryStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export class Query<
   API extends ApiEndpoints,
@@ -34,7 +34,7 @@ export class Query<
   #pendingRequest: Promise<ApiResponse<API, Path, Method>> | null = null;
 
   // Response state
-  #status = $state<'idle' | 'loading' | 'success' | 'error'>('idle');
+  #status = $state<QueryStatus>('idle');
   #data = $state<ApiSuccessBody<API, Path, Method> | null>(null);
   #errorData = $state<ApiErrorBody<API, Path, Method> | null>(null);
 
@@ -104,6 +104,9 @@ export class Query<
   get cacheKey() {
     return this.#cacheKey;
   }
+  get isCached() {
+    return this.#cache.has(this.#cacheKey);
+  }
   get status() {
     return this.#status;
   }
@@ -128,9 +131,9 @@ export class Requestor<
   #method: Method;
   #request: ApiRequestFunction<API>;
 
-  #canBatch: (input: ApiInput<API, Path, Method>) => string | false;
-  #batchInput: (inputs: ApiInput<API, Path, Method>[]) => ApiInput<API, Path, Method>;
-  #unBatchOutput: (output: ApiResponse<API, Path, Method>) => ApiResponse<API, Path, Method>[];
+  #canBatch: BatchDetails<API, Path, Method>['canBatch'];
+  #batchInput: BatchDetails<API, Path, Method>['batchInput'];
+  #unBatchOutput: BatchDetails<API, Path, Method>['unBatchOutput'];
 
   #limiter: Bottleneck;
   #cache: Cache;

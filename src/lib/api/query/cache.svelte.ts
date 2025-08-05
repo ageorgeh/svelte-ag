@@ -35,4 +35,16 @@ export class Cache {
 
     return null;
   }
+
+  has(key: string) {
+    const details = this.#cache.get(key);
+    if (!details) return false;
+
+    if (details.updatedAt !== null && (details.timeout === 'inf' || details.updatedAt + details.timeout > Date.now())) {
+      // Return cached value if its within the timeout or timeout is inf
+      return true;
+    }
+
+    return false;
+  }
 }

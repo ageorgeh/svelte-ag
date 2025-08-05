@@ -1,8 +1,6 @@
 import type { Plugin, ResolvedConfig } from 'vite';
-import { createFilter } from '@rollup/pluginutils';
 import { writeIfDifferent } from 'ts-ag';
 import path from 'path';
-import type { TransformPluginContext } from 'rollup';
 
 interface Options {
   /**
@@ -56,11 +54,13 @@ export default function componentSourceCollector(opts: Options = { run: true }):
 
   const classRegex = /class(?:=|:)/;
 
+  const importRegex = /@import\s+['"]([^'"]+)['"]/g;
+
   /** ---- plugin ----------------------------------------------------------- */
 
   return {
     name: 'vite-plugin-component-source-collector',
-    enforce: 'post',
+    enforce: 'pre',
 
     configResolved(resolved) {
       config = resolved;
@@ -74,15 +74,22 @@ export default function componentSourceCollector(opts: Options = { run: true }):
     },
 
     async transform(code, id) {
-      if (id.includes('Account.svelte')) {
-        console.log(id, code, classRegex.test(code));
+      // Adds all imports from css files
+      if (id.includes('css') && code.includes('@import')) {
+        const matches = code.matchAll(importRegex);
+
+        for (const match of matches) {
+          const resolved = await this.resolve(match[1], id);
+          if (resolved) {
+            componentFiles.add(resolved.id);
+          }
+        }
       }
-      // componentFiles.add(id);
-      // console.log(componentFiles.size);
+
+      // Adds all other files with the classRegex
       if (classRegex.test(code)) {
         componentFiles.add(id);
 
-        // dev‑mode: update file immediately
         // if (config.command === 'serve') await writeOutFile();
       }
       if (!initialTransformDone) {

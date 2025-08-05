@@ -19,7 +19,7 @@
     "runed": "0.29.0",
     "bits-ui": "2.8.8",
     "@rollup/pluginutils": "5.2.0",
-    "sveltekit-superforms": "2.27.0",
+    "sveltekit-superforms": "2.27.1",
     "formsnap": "2.0.1",
     "valibot": "1.1.0",
     "radash": "12.1.1",

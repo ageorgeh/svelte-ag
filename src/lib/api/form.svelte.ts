@@ -1,8 +1,9 @@
-import { sleep } from 'radash';
 import { superForm, defaults, setError, setMessage, type SuperForm, type SuperValidated } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type { ApiRequestFunction, HTTPMethod, ApiEndpoints, ApiInput, ApiSuccessBody, ApiErrorBody } from 'ts-ag';
 import type * as v from 'valibot';
+
+type ValidInput<E extends ApiEndpoints, P extends E['path'], M extends E['method']> = NonNullable<ApiInput<E, P, M>>;
 
 export type ApiRequestForm<API extends ApiEndpoints> = <
   Path extends API['path'],
@@ -12,12 +13,12 @@ export type ApiRequestForm<API extends ApiEndpoints> = <
   method: Method,
   actions: {
     onSuccess?: (
-      form: SuperValidated<ApiInput<API, Path, Method>>,
+      form: SuperValidated<ValidInput<API, Path, Method>>,
       response: ApiSuccessBody<API, Path, Method>
     ) => void;
-    onFail?: (form: SuperValidated<ApiInput<API, Path, Method>>, response: ApiErrorBody<API, Path, Method>) => void;
+    onFail?: (form: SuperValidated<ValidInput<API, Path, Method>>, response: ApiErrorBody<API, Path, Method>) => void;
   }
-) => SuperForm<ApiInput<API, Path, Method>>;
+) => SuperForm<ValidInput<API, Path, Method>>;
 
 export function createFormFunction<API extends ApiEndpoints>(
   schemas: Record<API['path'], Record<HTTPMethod, v.GenericSchema>>,
@@ -31,7 +32,7 @@ export function createFormFunction<API extends ApiEndpoints>(
     //   schema = schema();
     // }
 
-    return superForm<ApiInput<API, typeof path, typeof method>>(defaults(valibot(schema)), {
+    return superForm<ValidInput<API, typeof path, typeof method>>(defaults(valibot(schema)), {
       SPA: true,
       resetForm: true,
       delayMs: 300,
@@ -47,10 +48,10 @@ export function createFormFunction<API extends ApiEndpoints>(
           if (!body.field) {
             setError(form, '', body.message);
           } else {
-            setError(form, body.field.name, body.field.value, { status: res.status });
+            setError(form, body.field!.name, body.field.value, { status: res.status });
           }
           if (actions && actions.onFail) {
-            actions.onFail(form, body);
+            actions.onFail(form, body as ApiErrorBody<API, typeof path, typeof method>);
           }
         } else {
           setMessage(form, 'Success');

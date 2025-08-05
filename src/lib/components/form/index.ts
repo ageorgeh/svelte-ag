@@ -4,6 +4,7 @@ import Description from './form-description.svelte';
 import Label from './form-label.svelte';
 import FieldErrors from './form-field-errors.svelte';
 import Field from './form-field.svelte';
+import FieldFull from './form-field-full.svelte';
 import Fieldset from './form-fieldset.svelte';
 import Legend from './form-legend.svelte';
 import ElementField from './form-element-field.svelte';
@@ -14,6 +15,7 @@ const Control = FormPrimitive.Control;
 export {
   Root,
   Field,
+  FieldFull,
   Control,
   Label,
   Button,
@@ -25,6 +27,7 @@ export {
   //
   Root as FormRoot,
   Field as FormField,
+  FieldFull as FormFieldFull,
   Control as FormControl,
   Description as FormDescription,
   Label as FormLabel,
