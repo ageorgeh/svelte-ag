@@ -1,6 +1,5 @@
-import type { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit-svelte/core';
 import { data, moveIndex } from './utils.svelte';
-import type { DndState } from './context.svelte';
+import type { DragEndProps, DragOverProps, DragStartProps } from './types';
 
 // TODO - cleanly add in a way to parse in an order and then sort it here, instead of sorting by drag
 // Essentially this means only moving between lists - in the same list theyre pre sorted
@@ -10,16 +9,16 @@ import type { DndState } from './context.svelte';
 /**
  * Sets state for the active item when dragging starts
  */
-function onDragStart({ active, dnd }: DragStartEvent) {
+function onDragStart({ active, dnd }: DragStartProps) {
   const d = data(active);
   dnd.activeType = d.type.current;
   dnd.activeItem = d.item.current;
   dnd.activeParent = d.parent.current;
 
-  // console.log('Drag start', dnd.activeItem!.id);
+  console.log('Drag start', dnd.activeItem!.id);
 }
 
-export function onDragEnd({ active, over, dnd }: DragEndEvent & { dnd: DndState<any> }) {
+export function onDragEnd({ active, over, dnd }: DragEndProps) {
   if (!over) return;
   if (!dnd.activeParent) throw new Error('No active parent found');
 
@@ -57,7 +56,7 @@ export function onDragEnd({ active, over, dnd }: DragEndEvent & { dnd: DndState<
   }
 }
 
-export function onDragOver({ active, over, dnd }: DragOverEvent & { dnd: DndState<any> }) {
+export function onDragOver({ active, over, dnd }: DragOverProps) {
   if (!over) return;
   if (!dnd.activeParent) throw new Error('No active parent found');
 
