@@ -47,14 +47,18 @@ export default function componentSourceCollector(opts: Options = { run: true }):
       .map((d) => `@source '${path.relative(path.dirname(outPath), d)}';`)
       .sort()
       .join('\n');
-    // await fs.writeFile(outPath, lines, 'utf8');
-    await writeIfDifferent(outPath, lines);
-    console.log('Wrote', lines.length);
+
+    const didWrite = await writeIfDifferent(outPath, lines);
+    if (didWrite) console.log('Wrote', lines.length);
   };
 
   const classRegex = /class(?:=|:)/;
 
   const importRegex = /@import\s+['"]([^'"]+)['"]/g;
+
+  function shouldAdd(fileName: string) {
+    return !/\.pnpm|.vite/.test(fileName);
+  }
 
   /** ---- plugin ----------------------------------------------------------- */
 
@@ -74,20 +78,22 @@ export default function componentSourceCollector(opts: Options = { run: true }):
     },
 
     async transform(code, id) {
+      // console.log('tailwind-sources:transform', id);
       // Adds all imports from css files
       if (id.includes('css') && code.includes('@import')) {
         const matches = code.matchAll(importRegex);
 
         for (const match of matches) {
           const resolved = await this.resolve(match[1], id);
-          if (resolved) {
+          if (resolved && shouldAdd(resolved.id)) {
             componentFiles.add(resolved.id);
           }
         }
       }
+      // TODO ignore .vite files
 
       // Adds all other files with the classRegex
-      if (classRegex.test(code)) {
+      if (classRegex.test(code) && shouldAdd(id)) {
         componentFiles.add(id);
 
         // if (config.command === 'serve') await writeOutFile();
@@ -101,11 +107,13 @@ export default function componentSourceCollector(opts: Options = { run: true }):
       const output = await ctx.read();
       const id = ctx.file;
 
-      if (classRegex.test(output)) {
-        componentFiles.add(id);
-      } else {
-        componentFiles.delete(id);
-      }
+      console.log('Hot update sources', id, output, classRegex.test(output));
+
+      // if (classRegex.test(output)) {
+      //   componentFiles.add(id);
+      // } else {
+      //   componentFiles.delete(id);
+      // }
       await writeOutFile();
     },
 

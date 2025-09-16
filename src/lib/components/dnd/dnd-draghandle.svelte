@@ -10,19 +10,25 @@
   import { cn } from '$utils/utils.js';
   let { class: className }: DragHandleProps = $props();
 
-  // svelte-ignore non_reactive_update
-  let isOverlay = false;
+  let isOverlay = $state(false);
   try {
     const overlay = getOverlayContext();
     isOverlay = overlay.isOverlay;
   } catch {}
 
-  const { isDragging, activatorNode, attributes, listeners } = !isOverlay ? getItemContext() : {};
+  const { isDragging, activatorNode, attributes, listeners } = $derived(
+    !isOverlay
+      ? getItemContext()
+      : { isDragging: { current: false }, activatorNode: undefined, attributes: undefined, listeners: undefined }
+  );
 
   let handleClass = $derived(
     cn(
-      'icon-draghandle text-muted-foreground flex size-4',
-      isDragging?.current ? `cursor-grabbing` : `cursor-grab`,
+      `
+        icon-draghandle text-muted-foreground flex size-4 transition-colors duration-150
+        hover:text-foreground
+      `,
+      isDragging?.current || isOverlay ? `cursor-grabbing` : `cursor-grab`,
       className
     )
   );

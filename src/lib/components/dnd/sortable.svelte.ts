@@ -14,8 +14,6 @@ function onDragStart({ active, dnd }: DragStartProps) {
   dnd.activeType = d.type.current;
   dnd.activeItem = d.item.current;
   dnd.activeParent = d.parent.current;
-
-  console.log('Drag start', dnd.activeItem!.id);
 }
 
 export function onDragEnd({ active, over, dnd }: DragEndProps) {
