@@ -107,6 +107,12 @@ export class Query<
   get isCached() {
     return this.#cache.has(this.#cacheKey);
   }
+  resetCache() {
+    if (this.isCached) {
+      this.#cache.reset(this.#cacheKey);
+    }
+  }
+
   get status() {
     return this.#status;
   }
@@ -168,7 +174,7 @@ export class Requestor<
     // TODO
     this.#canBatch = batchDetails ? batchDetails.canBatch : () => false;
     this.#batchInput = batchDetails ? batchDetails.batchInput : (inputs) => inputs;
-    this.#unBatchOutput = batchDetails ? batchDetails.unBatchOutput : (output) => [output];
+    this.#unBatchOutput = batchDetails ? batchDetails.unBatchOutput : (inputs, output) => [output];
   }
 
   // Makes the actual call to the api
@@ -184,10 +190,15 @@ export class Requestor<
    * Then it separates the outputs and resolves each of the promises
    */
   private async flushBatchQueue(batchId: string): Promise<void> {
-    const queue = this.#batchQueue[batchId];
+    const queue = this.#batchQueue[batchId].splice(0);
+
     const batchedInput = this.#batchInput(queue.map((q) => q.input));
+
     const res = await this.fetch(batchedInput);
-    const output = this.#unBatchOutput(res);
+    const output = await this.#unBatchOutput(
+      queue.map((q) => q.input),
+      res
+    );
 
     queue.forEach(({ resolve, reject }, i) => {
       if (output[i].ok === true) {
@@ -203,9 +214,14 @@ export class Requestor<
     const batchId = this.#canBatch(input);
     if (batchId !== false) {
       return new Promise((resolve, reject) => {
+        if (!this.#batchQueue[batchId]) this.#batchQueue[batchId] = [];
+
         this.#batchQueue[batchId].push({ input, resolve, reject });
         if (!this.#batchTimers[batchId]) {
-          this.#batchTimers[batchId] = setTimeout(() => this.flushBatchQueue(batchId), this.#batchDelay);
+          this.#batchTimers[batchId] = setTimeout(() => {
+            this.flushBatchQueue(batchId);
+            delete this.#batchTimers[batchId];
+          }, this.#batchDelay);
         }
       });
     } else {

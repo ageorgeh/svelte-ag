@@ -19,6 +19,7 @@
     items,
     value = $bindable(),
     perPage = $bindable(2),
+    ref = $bindable(null),
     item,
     search,
     class: className,
@@ -62,7 +63,7 @@
   </Popover.Trigger>
   <Popover.Content class="w-fit p-0">
     <Search.Root {items} bind:value {search}>
-      <Search.Input></Search.Input>
+      <Search.Input bind:ref></Search.Input>
       <Search.List {item}></Search.List>
       <Search.Pagnation bind:this={searchPagnation} bind:perPage></Search.Pagnation>
     </Search.Root>

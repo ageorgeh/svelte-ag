@@ -21,7 +21,10 @@ export type BatchDetails<
 > = {
   canBatch: (input: ApiInput<API, Path, Method>) => string | false;
   batchInput: (inputs: ApiInput<API, Path, Method>[]) => ApiInput<API, Path, Method>;
-  unBatchOutput: (output: ApiResponse<API, Path, Method>) => ApiResponse<API, Path, Method>[];
+  unBatchOutput: (
+    inputs: ApiInput<API, Path, Method>[],
+    output: ApiResponse<API, Path, Method>
+  ) => ApiResponse<API, Path, Method>[] | Promise<ApiResponse<API, Path, Method>[]>;
 };
 
 export type ApiBatchDetails<API extends ApiEndpoints> = {

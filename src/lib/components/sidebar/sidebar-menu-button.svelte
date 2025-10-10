@@ -129,11 +129,13 @@
     <Tooltip.Provider>
       <Tooltip.Root delayDuration={0}>
         <Tooltip.Trigger>
-          <AlertDialog.Trigger>
-            {#snippet child({ props })}
-              {@render Button({ props })}
-            {/snippet}
-          </AlertDialog.Trigger>
+          {#snippet child({ props: tooltipProps })}
+            <AlertDialog.Trigger>
+              {#snippet child({ props })}
+                {@render Button({ props: mergeProps(tooltipProps, props) })}
+              {/snippet}
+            </AlertDialog.Trigger>
+          {/snippet}
         </Tooltip.Trigger>
         <Tooltip.Content
           side="right"

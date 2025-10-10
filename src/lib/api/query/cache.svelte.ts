@@ -36,6 +36,13 @@ export class Cache {
     return null;
   }
 
+  reset(key: string) {
+    const details = this.#cache.get(key);
+    if (!details) throw new Error(`The key ${key} is not registered in the cache`);
+
+    details.updatedAt = null;
+  }
+
   has(key: string) {
     const details = this.#cache.get(key);
     if (!details) return false;
