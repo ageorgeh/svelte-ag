@@ -15,9 +15,14 @@ interface Options {
   include?: RegExp | RegExp[];
 
   run: boolean;
+
+  /**
+   * node_modules packages that can be added to the component list
+   */
+  safePackages: string[];
 }
 
-export default function componentSourceCollector(opts: Options = { run: true }): Plugin {
+export default function componentSourceCollector(opts: Options = { run: true, safePackages: [] }): Plugin {
   if (opts.run === false) return { name: 'disabled' };
 
   const outFile = opts.outputFile ?? 'component-sources.css';
@@ -57,7 +62,7 @@ export default function componentSourceCollector(opts: Options = { run: true }):
   const importRegex = /@import\s+['"]([^'"]+)['"]/g;
 
   function shouldAdd(fileName: string) {
-    return !/\.pnpm|.vite/.test(fileName);
+    return !/\.pnpm|.vite/.test(fileName) || opts.safePackages.some((p) => fileName.includes(`node_modules/${p}`));
   }
 
   /** ---- plugin ----------------------------------------------------------- */
@@ -73,7 +78,7 @@ export default function componentSourceCollector(opts: Options = { run: true }):
     },
 
     buildStart() {
-      console.log('tailwind-sources:buildStart');
+      console.log('tailwind-sources:buildStart', componentFiles);
       // componentFiles.clear();
     },
 

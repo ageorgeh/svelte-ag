@@ -1,12 +1,12 @@
 {
-  "id": "svelte-ag@0.0.2-dev.83",
+  "id": "svelte-ag@1.0.0",
   "name": "svelte-ag",
-  "version": "0.0.2-dev.83",
-  "size": 172518,
-  "unpackedSize": 814450,
-  "shasum": "24ac20a7ae1c0443c5ac9e6c9babab0e3d758dcb",
-  "integrity": "sha512-Ja3+HCeCJHsc68RkleAIlUFlwUCYJVl+qxBKWYKq3TIQc3/7ebVGNkIiFTbFo3a6ecCCSNm8MubyqegB6SaH9g==",
-  "filename": "svelte-ag-0.0.2-dev.83.tgz",
+  "version": "1.0.0",
+  "size": 182293,
+  "unpackedSize": 862495,
+  "shasum": "e99e5fed6dd7f417b9005d2079b31f4d4b8455a4",
+  "integrity": "sha512-HZMTenWE+6xQN8HBiOqzM4upv/kZO2DcvRb2lxKPjwvVFG0Ujlzrw6XWNG+kirfLsWzHvq5KJ5+2t2Nt6er5Qg==",
+  "filename": "svelte-ag-1.0.0.tgz",
   "files": [
     {
       "path": "README.md",
@@ -35,22 +35,22 @@
     },
     {
       "path": "dist/lib/api/form.svelte.d.ts",
-      "size": 925,
+      "size": 1060,
       "mode": 420
     },
     {
       "path": "dist/lib/api/form.svelte.d.ts.map",
-      "size": 1155,
+      "size": 1326,
       "mode": 420
     },
     {
       "path": "dist/lib/api/form.svelte.js",
-      "size": 1653,
+      "size": 1621,
       "mode": 420
     },
     {
       "path": "dist/lib/api/index.d.ts",
-      "size": 104,
+      "size": 103,
       "mode": 420
     },
     {
@@ -60,22 +60,82 @@
     },
     {
       "path": "dist/lib/api/index.js",
-      "size": 69,
+      "size": 68,
       "mode": 420
     },
     {
-      "path": "dist/lib/api/query.svelte.d.ts",
-      "size": 920,
+      "path": "dist/lib/api/query/cache.svelte.d.ts",
+      "size": 350,
       "mode": 420
     },
     {
-      "path": "dist/lib/api/query.svelte.d.ts.map",
-      "size": 803,
+      "path": "dist/lib/api/query/cache.svelte.d.ts.map",
+      "size": 424,
       "mode": 420
     },
     {
-      "path": "dist/lib/api/query.svelte.js",
-      "size": 1230,
+      "path": "dist/lib/api/query/cache.svelte.js",
+      "size": 1649,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/entrypoint.svelte.d.ts",
+      "size": 1444,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/entrypoint.svelte.d.ts.map",
+      "size": 1663,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/entrypoint.svelte.js",
+      "size": 1307,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/index.d.ts",
+      "size": 180,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/index.d.ts.map",
+      "size": 217,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/index.js",
+      "size": 145,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/query.svelte.d.ts",
+      "size": 1676,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/query.svelte.d.ts.map",
+      "size": 1727,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/query.svelte.js",
+      "size": 5096,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/utils.svelte.d.ts",
+      "size": 203,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/utils.svelte.d.ts.map",
+      "size": 286,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/api/query/utils.svelte.js",
+      "size": 219,
       "mode": 420
     },
     {
@@ -465,7 +525,7 @@
     },
     {
       "path": "dist/lib/bits/internal/floating-svelte/use-floating.svelte.js",
-      "size": 3564,
+      "size": 3650,
       "mode": 420
     },
     {
@@ -890,7 +950,7 @@
     },
     {
       "path": "dist/lib/components/animated/animated.svelte",
-      "size": 7119,
+      "size": 7307,
       "mode": 420
     },
     {
@@ -1054,23 +1114,38 @@
       "mode": 420
     },
     {
+      "path": "dist/lib/components/dnd/default.svelte.d.ts",
+      "size": 572,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/dnd/default.svelte.d.ts.map",
+      "size": 450,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/dnd/default.svelte.js",
+      "size": 532,
+      "mode": 420
+    },
+    {
       "path": "dist/lib/components/dnd/dnd-context.svelte",
-      "size": 1381,
+      "size": 1176,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-context.svelte.d.ts",
-      "size": 1392,
+      "size": 1517,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-context.svelte.d.ts.map",
-      "size": 1591,
+      "size": 1723,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-drag-overlay.svelte",
-      "size": 1087,
+      "size": 1089,
       "mode": 420
     },
     {
@@ -1085,7 +1160,7 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-drag-placeholder.svelte",
-      "size": 484,
+      "size": 419,
       "mode": 420
     },
     {
@@ -1100,7 +1175,7 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-draghandle.svelte",
-      "size": 992,
+      "size": 1266,
       "mode": 420
     },
     {
@@ -1114,68 +1189,68 @@
       "mode": 420
     },
     {
-      "path": "dist/lib/components/dnd/dnd-overlay.svelte",
-      "size": 0,
+      "path": "dist/lib/components/dnd/dnd-item.svelte",
+      "size": 2282,
       "mode": 420
     },
     {
-      "path": "dist/lib/components/dnd/dnd-overlay.svelte.d.ts",
-      "size": 942,
+      "path": "dist/lib/components/dnd/dnd-item.svelte.d.ts",
+      "size": 919,
       "mode": 420
     },
     {
-      "path": "dist/lib/components/dnd/dnd-overlay.svelte.d.ts.map",
-      "size": 692,
+      "path": "dist/lib/components/dnd/dnd-item.svelte.d.ts.map",
+      "size": 682,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-context.svelte",
-      "size": 392,
+      "size": 824,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-context.svelte.d.ts",
-      "size": 376,
+      "size": 551,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-context.svelte.d.ts.map",
-      "size": 444,
+      "size": 591,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-item.svelte",
-      "size": 2001,
+      "size": 2585,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-item.svelte.d.ts",
-      "size": 967,
+      "size": 1160,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-item.svelte.d.ts.map",
-      "size": 957,
+      "size": 1105,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/Droppable.svelte",
-      "size": 829,
+      "size": 864,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/Droppable.svelte.d.ts",
-      "size": 448,
+      "size": 632,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/Droppable.svelte.d.ts.map",
-      "size": 491,
+      "size": 558,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/example.svelte",
-      "size": 3383,
+      "size": 3515,
       "mode": 420
     },
     {
@@ -1190,17 +1265,17 @@
     },
     {
       "path": "dist/lib/components/dnd/exports.d.ts",
-      "size": 636,
+      "size": 894,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/exports.d.ts.map",
-      "size": 609,
+      "size": 832,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/exports.js",
-      "size": 599,
+      "size": 857,
       "mode": 420
     },
     {
@@ -1220,32 +1295,47 @@
     },
     {
       "path": "dist/lib/components/dnd/sortable.svelte.d.ts",
-      "size": 508,
+      "size": 570,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/sortable.svelte.d.ts.map",
-      "size": 520,
+      "size": 454,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/sortable.svelte.js",
-      "size": 2951,
+      "size": 3666,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/dnd/types.d.ts",
+      "size": 467,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/dnd/types.d.ts.map",
+      "size": 590,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/dnd/types.js",
+      "size": 11,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/utils.svelte.d.ts",
-      "size": 779,
+      "size": 871,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/utils.svelte.d.ts.map",
-      "size": 854,
+      "size": 953,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/utils.svelte.js",
-      "size": 788,
+      "size": 790,
       "mode": 420
     },
     {
@@ -1265,12 +1355,12 @@
     },
     {
       "path": "dist/lib/components/form/form-description.svelte",
-      "size": 404,
+      "size": 454,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-description.svelte.d.ts",
-      "size": 303,
+      "size": 304,
       "mode": 420
     },
     {
@@ -1309,18 +1399,33 @@
       "mode": 420
     },
     {
+      "path": "dist/lib/components/form/form-field-full.svelte",
+      "size": 1442,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/form/form-field-full.svelte.d.ts",
+      "size": 1625,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/form/form-field-full.svelte.d.ts.map",
+      "size": 1738,
+      "mode": 420
+    },
+    {
       "path": "dist/lib/components/form/form-field.svelte",
-      "size": 898,
+      "size": 948,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field.svelte.d.ts",
-      "size": 1245,
+      "size": 1497,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field.svelte.d.ts.map",
-      "size": 1543,
+      "size": 1676,
       "mode": 420
     },
     {
@@ -1385,17 +1490,17 @@
     },
     {
       "path": "dist/lib/components/form/index.d.ts",
-      "size": 933,
+      "size": 1022,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/index.d.ts.map",
-      "size": 828,
+      "size": 892,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/index.js",
-      "size": 854,
+      "size": 943,
       "mode": 420
     },
     {
@@ -1510,12 +1615,12 @@
     },
     {
       "path": "dist/lib/components/search/combinations/searchPopover.svelte",
-      "size": 1932,
+      "size": 2008,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/combinations/searchPopover.svelte.d.ts",
-      "size": 900,
+      "size": 908,
       "mode": 420
     },
     {
@@ -1640,17 +1745,17 @@
     },
     {
       "path": "dist/lib/components/search/search.svelte.js",
-      "size": 6464,
+      "size": 6776,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/types.d.ts",
-      "size": 1369,
+      "size": 1394,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/types.d.ts.map",
-      "size": 1300,
+      "size": 1336,
       "mode": 420
     },
     {
@@ -1770,7 +1875,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-label.svelte",
-      "size": 1000,
+      "size": 1082,
       "mode": 420
     },
     {
@@ -1875,7 +1980,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-button.svelte",
-      "size": 4979,
+      "size": 5095,
       "mode": 420
     },
     {
@@ -2370,7 +2475,7 @@
     },
     {
       "path": "dist/lib/vite/vite-plugin-component-source-collector.js",
-      "size": 3127,
+      "size": 3674,
       "mode": 420
     },
     {
@@ -2390,7 +2495,7 @@
     },
     {
       "path": "package.json",
-      "size": 3044,
+      "size": 3225,
       "mode": 420
     },
     {
@@ -2415,17 +2520,37 @@
     },
     {
       "path": "src/lib/api/form.svelte.ts",
-      "size": 2195,
+      "size": 2340,
       "mode": 420
     },
     {
       "path": "src/lib/api/index.ts",
-      "size": 69,
+      "size": 68,
       "mode": 420
     },
     {
-      "path": "src/lib/api/query.svelte.ts",
-      "size": 1737,
+      "path": "src/lib/api/query/cache.svelte.ts",
+      "size": 1637,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/api/query/entrypoint.svelte.ts",
+      "size": 2461,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/api/query/index.ts",
+      "size": 146,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/api/query/query.svelte.ts",
+      "size": 6397,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/api/query/utils.svelte.ts",
+      "size": 254,
       "mode": 420
     },
     {
@@ -2555,7 +2680,7 @@
     },
     {
       "path": "src/lib/bits/internal/floating-svelte/use-floating.svelte.ts",
-      "size": 3081,
+      "size": 3366,
       "mode": 420
     },
     {
@@ -2700,7 +2825,7 @@
     },
     {
       "path": "src/lib/components/animated/animated.svelte",
-      "size": 7114,
+      "size": 7302,
       "mode": 420
     },
     {
@@ -2754,53 +2879,58 @@
       "mode": 420
     },
     {
+      "path": "src/lib/components/dnd/default.svelte.ts",
+      "size": 646,
+      "mode": 420
+    },
+    {
       "path": "src/lib/components/dnd/dnd-context.svelte",
-      "size": 1381,
+      "size": 1176,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/dnd-drag-overlay.svelte",
-      "size": 1087,
+      "size": 1089,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/dnd-drag-placeholder.svelte",
-      "size": 479,
+      "size": 414,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/dnd-draghandle.svelte",
-      "size": 987,
+      "size": 1261,
       "mode": 420
     },
     {
-      "path": "src/lib/components/dnd/dnd-overlay.svelte",
-      "size": 0,
+      "path": "src/lib/components/dnd/dnd-item.svelte",
+      "size": 2277,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/dnd-sortable-context.svelte",
-      "size": 392,
+      "size": 819,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/dnd-sortable-item.svelte",
-      "size": 2001,
+      "size": 2575,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/Droppable.svelte",
-      "size": 829,
+      "size": 859,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/example.svelte",
-      "size": 3383,
+      "size": 3515,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/exports.ts",
-      "size": 602,
+      "size": 860,
       "mode": 420
     },
     {
@@ -2810,12 +2940,17 @@
     },
     {
       "path": "src/lib/components/dnd/sortable.svelte.ts",
-      "size": 2842,
+      "size": 3464,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/dnd/types.ts",
+      "size": 413,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/utils.svelte.ts",
-      "size": 1154,
+      "size": 1344,
       "mode": 420
     },
     {
@@ -2825,7 +2960,7 @@
     },
     {
       "path": "src/lib/components/form/form-description.svelte",
-      "size": 404,
+      "size": 454,
       "mode": 420
     },
     {
@@ -2839,8 +2974,13 @@
       "mode": 420
     },
     {
+      "path": "src/lib/components/form/form-field-full.svelte",
+      "size": 1437,
+      "mode": 420
+    },
+    {
       "path": "src/lib/components/form/form-field.svelte",
-      "size": 898,
+      "size": 943,
       "mode": 420
     },
     {
@@ -2865,7 +3005,7 @@
     },
     {
       "path": "src/lib/components/form/index.ts",
-      "size": 897,
+      "size": 990,
       "mode": 420
     },
     {
@@ -2910,7 +3050,7 @@
     },
     {
       "path": "src/lib/components/search/combinations/searchPopover.svelte",
-      "size": 1924,
+      "size": 2000,
       "mode": 420
     },
     {
@@ -2950,12 +3090,12 @@
     },
     {
       "path": "src/lib/components/search/search.svelte.ts",
-      "size": 7363,
+      "size": 7668,
       "mode": 420
     },
     {
       "path": "src/lib/components/search/types.ts",
-      "size": 1620,
+      "size": 1705,
       "mode": 420
     },
     {
@@ -3000,7 +3140,7 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-group-label.svelte",
-      "size": 1000,
+      "size": 1082,
       "mode": 420
     },
     {
@@ -3035,7 +3175,7 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-button.svelte",
-      "size": 4979,
+      "size": 5095,
       "mode": 420
     },
     {
@@ -3200,7 +3340,7 @@
     },
     {
       "path": "src/lib/vite/vite-plugin-component-source-collector.ts",
-      "size": 3265,
+      "size": 3702,
       "mode": 420
     },
     {
@@ -3209,6 +3349,6 @@
       "mode": 420
     }
   ],
-  "entryCount": 640,
+  "entryCount": 668,
   "bundled": []
 }
