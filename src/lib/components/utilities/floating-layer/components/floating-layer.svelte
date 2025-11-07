@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { Snippet } from "svelte";
-	import { useFloatingRootState } from "../use-floating-layer.svelte.js";
+  import type { Snippet } from 'svelte';
+  import { useFloatingRootState } from '../use-floating-layer.svelte.js';
 
-	let { children }: { children?: Snippet } = $props();
+  let { children }: { children?: Snippet } = $props();
 
-	useFloatingRootState();
+  useFloatingRootState();
 </script>
 
 {@render children?.()}

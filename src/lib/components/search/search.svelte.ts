@@ -1,7 +1,7 @@
 import { useRefById, type ReadableBoxedValues, type WithRefProps, type WritableBoxedValues } from 'svelte-toolbelt';
 import { Context, watch } from 'runed';
 import { computeCommandScore } from 'bits-ui';
-import type { Item } from './types';
+import type { Item } from './types.js';
 import { dequal } from 'dequal';
 
 const SEARCH_ROOT_ATTR = 'data-search-root';

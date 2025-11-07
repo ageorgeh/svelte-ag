@@ -25,14 +25,28 @@ export function onDragEnd({ active, over, dnd }: DragEndProps) {
   const overData = data(over);
   // Add this in as well accepts.includes(activeType)
 
+  console.log('Acitve/over', $state.snapshot(activeData), $state.snapshot(overData));
+  const usesId = 'id' in activeData.item.current;
+
   if (activeData.type.current === overData.type.current) {
     if (dnd.activeParent.id === overData.parent.current.id) {
       // Same containing list reorder
-      const oldIndex = dnd.activeParent.children.findIndex((item) => item.id === active.id);
-      const newIndex = overData.parent.current.children.findIndex((item) => item.id === over.id);
-      // console.log('Drag end reorder', oldIndex, newIndex);
+      const oldIndex = usesId
+        ? dnd.activeParent.children.findIndex((item) => item.id === active.id)
+        : activeData.item.current.idx;
+
+      const newIndex = usesId
+        ? overData.parent.current.children.findIndex((item) => item.id === over.id)
+        : overData.item.current.idx;
+
+      console.log('Drag end reorder', oldIndex, newIndex);
 
       if (oldIndex !== newIndex) moveIndex(dnd.activeParent.children, oldIndex, newIndex);
+
+      // const arr = $state.snapshot(dnd.activeParent.children);
+      // const [item] = arr.splice(oldIndex, 1);
+      // arr.splice(newIndex, 0, item);
+      // activeData.parent.current.setChildren(arr);
     } else {
       // Move between containing lists
 
@@ -61,9 +75,12 @@ export function onDragOver({ active, over, dnd }: DragOverProps) {
   const activeData = data(active);
   const overData = data(over);
 
+  const usesId = 'id' in activeData.item.current;
+
   // add this accepts.includes(activeType)
 
-  if (activeData.item.current.id === overData.item.current.id) return;
+  if (usesId && activeData.item.current.id === overData.item.current.id) return;
+
   if (activeData.type.current === overData.type.current) {
     if (dnd.activeParent.id === overData.parent.current.id) {
       // console.log('Same list dragover');

@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
 
   export type SortableContextProps = {
-    items: string[];
+    items: string[] | number[];
     children: Snippet<[]>;
   };
 </script>

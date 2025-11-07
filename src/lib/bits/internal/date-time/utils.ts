@@ -1,25 +1,25 @@
 import {
-	CalendarDate,
-	CalendarDateTime,
-	type DateValue,
-	ZonedDateTime,
-	getDayOfWeek,
-	getLocalTimeZone,
-	parseDate,
-	parseDateTime,
-	parseZonedDateTime,
-	toCalendar,
-} from "@internationalized/date";
-import type { DateMatcher, Granularity } from "$lib/shared/date/types.js";
+  CalendarDate,
+  CalendarDateTime,
+  type DateValue,
+  ZonedDateTime,
+  getDayOfWeek,
+  getLocalTimeZone,
+  parseDate,
+  parseDateTime,
+  parseZonedDateTime,
+  toCalendar
+} from '@internationalized/date';
+import type { DateMatcher, Granularity } from '$lib/shared/date/types.js';
 
 type GetDefaultDateProps = {
-	defaultValue?: DateValue | DateValue[] | undefined;
-	granularity?: Granularity;
+  defaultValue?: DateValue | DateValue[] | undefined;
+  granularity?: Granularity;
 };
 
 const defaultDateDefaults = {
-	defaultValue: undefined,
-	granularity: "day",
+  defaultValue: undefined,
+  granularity: 'day'
 };
 
 /**
@@ -33,28 +33,28 @@ const defaultDateDefaults = {
  *
  */
 export function getDefaultDate(opts: GetDefaultDateProps): DateValue {
-	const withDefaults = { ...defaultDateDefaults, ...opts };
-	const { defaultValue, granularity } = withDefaults;
+  const withDefaults = { ...defaultDateDefaults, ...opts };
+  const { defaultValue, granularity } = withDefaults;
 
-	if (Array.isArray(defaultValue) && defaultValue.length) {
-		return defaultValue[defaultValue.length - 1]!;
-	}
+  if (Array.isArray(defaultValue) && defaultValue.length) {
+    return defaultValue[defaultValue.length - 1]!;
+  }
 
-	if (defaultValue && !Array.isArray(defaultValue)) {
-		return defaultValue;
-	} else {
-		const date = new Date();
-		const year = date.getFullYear();
-		const month = date.getMonth() + 1;
-		const day = date.getDate();
-		const calendarDateTimeGranularities = ["hour", "minute", "second"];
+  if (defaultValue && !Array.isArray(defaultValue)) {
+    return defaultValue;
+  } else {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const calendarDateTimeGranularities = ['hour', 'minute', 'second'];
 
-		if (calendarDateTimeGranularities.includes(granularity ?? "day")) {
-			return new CalendarDateTime(year, month, day, 0, 0, 0);
-		}
+    if (calendarDateTimeGranularities.includes(granularity ?? 'day')) {
+      return new CalendarDateTime(year, month, day, 0, 0, 0);
+    }
 
-		return new CalendarDate(year, month, day);
-	}
+    return new CalendarDate(year, month, day);
+  }
 }
 
 /**
@@ -65,19 +65,17 @@ export function getDefaultDate(opts: GetDefaultDateProps): DateValue {
  * strings, to the same type being used by the date component.
  */
 export function parseStringToDateValue(dateStr: string, referenceVal: DateValue): DateValue {
-	let dateValue: DateValue;
-	if (referenceVal instanceof ZonedDateTime) {
-		dateValue = parseZonedDateTime(dateStr);
-	} else if (referenceVal instanceof CalendarDateTime) {
-		dateValue = parseDateTime(dateStr);
-	} else {
-		dateValue = parseDate(dateStr);
-	}
+  let dateValue: DateValue;
+  if (referenceVal instanceof ZonedDateTime) {
+    dateValue = parseZonedDateTime(dateStr);
+  } else if (referenceVal instanceof CalendarDateTime) {
+    dateValue = parseDateTime(dateStr);
+  } else {
+    dateValue = parseDate(dateStr);
+  }
 
-	// ensure the parsed date is in the same calendar as the reference date set by the user.
-	return dateValue.calendar !== referenceVal.calendar
-		? toCalendar(dateValue, referenceVal.calendar)
-		: dateValue;
+  // ensure the parsed date is in the same calendar as the reference date set by the user.
+  return dateValue.calendar !== referenceVal.calendar ? toCalendar(dateValue, referenceVal.calendar) : dateValue;
 }
 
 /**
@@ -86,61 +84,61 @@ export function parseStringToDateValue(dateStr: string, referenceVal: DateValue)
  * If no timezone is provided, the date will be converted to the local timezone.
  */
 export function toDate(dateValue: DateValue, tz: string = getLocalTimeZone()) {
-	if (dateValue instanceof ZonedDateTime) {
-		return dateValue.toDate();
-	} else {
-		return dateValue.toDate(tz);
-	}
+  if (dateValue instanceof ZonedDateTime) {
+    return dateValue.toDate();
+  } else {
+    return dateValue.toDate(tz);
+  }
 }
 
 export function getDateValueType(date: DateValue): string {
-	if (date instanceof CalendarDate) return "date";
-	if (date instanceof CalendarDateTime) return "datetime";
-	if (date instanceof ZonedDateTime) return "zoneddatetime";
-	throw new Error("Unknown date type");
+  if (date instanceof CalendarDate) return 'date';
+  if (date instanceof CalendarDateTime) return 'datetime';
+  if (date instanceof ZonedDateTime) return 'zoneddatetime';
+  throw new Error('Unknown date type');
 }
 
 export function parseAnyDateValue(value: string, type: string): DateValue {
-	switch (type) {
-		case "date":
-			return parseDate(value);
-		case "datetime":
-			return parseDateTime(value);
-		case "zoneddatetime":
-			return parseZonedDateTime(value);
-		default:
-			throw new Error(`Unknown date type: ${type}`);
-	}
+  switch (type) {
+    case 'date':
+      return parseDate(value);
+    case 'datetime':
+      return parseDateTime(value);
+    case 'zoneddatetime':
+      return parseZonedDateTime(value);
+    default:
+      throw new Error(`Unknown date type: ${type}`);
+  }
 }
 
 function isCalendarDateTime(dateValue: DateValue): dateValue is CalendarDateTime {
-	return dateValue instanceof CalendarDateTime;
+  return dateValue instanceof CalendarDateTime;
 }
 
 export function isZonedDateTime(dateValue: DateValue): dateValue is ZonedDateTime {
-	return dateValue instanceof ZonedDateTime;
+  return dateValue instanceof ZonedDateTime;
 }
 
 export function hasTime(dateValue: DateValue): dateValue is CalendarDateTime | ZonedDateTime {
-	return isCalendarDateTime(dateValue) || isZonedDateTime(dateValue);
+  return isCalendarDateTime(dateValue) || isZonedDateTime(dateValue);
 }
 
 /**
  * Given a date, return the number of days in the month.
  */
 export function getDaysInMonth(date: Date | DateValue) {
-	if (date instanceof Date) {
-		const year = date.getFullYear();
-		const month = date.getMonth() + 1;
-		/**
-		 * By using zero as the day, we get the
-		 * last day of the previous month, which
-		 * is the month we originally passed in.
-		 */
-		return new Date(year, month, 0).getDate();
-	} else {
-		return date.set({ day: 100 }).day;
-	}
+  if (date instanceof Date) {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    /**
+     * By using zero as the day, we get the
+     * last day of the previous month, which
+     * is the month we originally passed in.
+     */
+    return new Date(year, month, 0).getDate();
+  } else {
+    return date.set({ day: 100 }).day;
+  }
 }
 
 /**
@@ -151,7 +149,7 @@ export function getDaysInMonth(date: Date | DateValue) {
  * @see {@link isBeforeOrSame} for inclusive
  */
 export function isBefore(dateToCompare: DateValue, referenceDate: DateValue) {
-	return dateToCompare.compare(referenceDate) < 0;
+  return dateToCompare.compare(referenceDate) < 0;
 }
 
 /**
@@ -162,7 +160,7 @@ export function isBefore(dateToCompare: DateValue, referenceDate: DateValue) {
  * @see {@link isAfterOrSame} for inclusive
  */
 export function isAfter(dateToCompare: DateValue, referenceDate: DateValue) {
-	return dateToCompare.compare(referenceDate) > 0;
+  return dateToCompare.compare(referenceDate) > 0;
 }
 
 /**
@@ -174,7 +172,7 @@ export function isAfter(dateToCompare: DateValue, referenceDate: DateValue) {
  * @see {@link isBefore} for non-inclusive
  */
 function isBeforeOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
-	return dateToCompare.compare(referenceDate) <= 0;
+  return dateToCompare.compare(referenceDate) <= 0;
 }
 
 /**
@@ -186,7 +184,7 @@ function isBeforeOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
  * @see {@link isAfter} for non-inclusive
  */
 function isAfterOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
-	return dateToCompare.compare(referenceDate) >= 0;
+  return dateToCompare.compare(referenceDate) >= 0;
 }
 
 /**
@@ -199,63 +197,63 @@ function isAfterOrSame(dateToCompare: DateValue, referenceDate: DateValue) {
  * @see {@link isBetween} for non-inclusive
  */
 export function isBetweenInclusive(date: DateValue, start: DateValue, end: DateValue) {
-	return isAfterOrSame(date, start) && isBeforeOrSame(date, end);
+  return isAfterOrSame(date, start) && isBeforeOrSame(date, end);
 }
 
 export function getLastFirstDayOfWeek<T extends DateValue = DateValue>(
-	date: T,
-	firstDayOfWeek: number,
-	locale: string
+  date: T,
+  firstDayOfWeek: number,
+  locale: string
 ): T {
-	const day = getDayOfWeek(date, locale);
+  const day = getDayOfWeek(date, locale);
 
-	if (firstDayOfWeek > day) {
-		return date.subtract({ days: day + 7 - firstDayOfWeek }) as T;
-	}
-	if (firstDayOfWeek === day) {
-		return date as T;
-	}
-	return date.subtract({ days: day - firstDayOfWeek }) as T;
+  if (firstDayOfWeek > day) {
+    return date.subtract({ days: day + 7 - firstDayOfWeek }) as T;
+  }
+  if (firstDayOfWeek === day) {
+    return date as T;
+  }
+  return date.subtract({ days: day - firstDayOfWeek }) as T;
 }
 
 export function getNextLastDayOfWeek<T extends DateValue = DateValue>(
-	date: T,
-	firstDayOfWeek: number,
-	locale: string
+  date: T,
+  firstDayOfWeek: number,
+  locale: string
 ): T {
-	const day = getDayOfWeek(date, locale);
-	const lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+  const day = getDayOfWeek(date, locale);
+  const lastDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
 
-	if (day === lastDayOfWeek) {
-		return date as T;
-	}
+  if (day === lastDayOfWeek) {
+    return date as T;
+  }
 
-	if (day > lastDayOfWeek) {
-		return date.add({ days: 7 - day + lastDayOfWeek }) as T;
-	}
+  if (day > lastDayOfWeek) {
+    return date.add({ days: 7 - day + lastDayOfWeek }) as T;
+  }
 
-	return date.add({ days: lastDayOfWeek - day }) as T;
+  return date.add({ days: lastDayOfWeek - day }) as T;
 }
 
 export function areAllDaysBetweenValid(
-	start: DateValue,
-	end: DateValue,
-	isUnavailable: DateMatcher | undefined,
-	isDisabled: DateMatcher | undefined
+  start: DateValue,
+  end: DateValue,
+  isUnavailable: DateMatcher | undefined,
+  isDisabled: DateMatcher | undefined
 ) {
-	if (isUnavailable === undefined && isDisabled === undefined) {
-		return true;
-	}
-	let dCurrent = start.add({ days: 1 });
-	if (isDisabled?.(dCurrent) || isUnavailable?.(dCurrent)) {
-		return false;
-	}
-	const dEnd = end;
-	while (dCurrent.compare(dEnd) < 0) {
-		dCurrent = dCurrent.add({ days: 1 });
-		if (isDisabled?.(dCurrent) || isUnavailable?.(dCurrent)) {
-			return false;
-		}
-	}
-	return true;
+  if (isUnavailable === undefined && isDisabled === undefined) {
+    return true;
+  }
+  let dCurrent = start.add({ days: 1 });
+  if (isDisabled?.(dCurrent) || isUnavailable?.(dCurrent)) {
+    return false;
+  }
+  const dEnd = end;
+  while (dCurrent.compare(dEnd) < 0) {
+    dCurrent = dCurrent.add({ days: 1 });
+    if (isDisabled?.(dCurrent) || isUnavailable?.(dCurrent)) {
+      return false;
+    }
+  }
+  return true;
 }

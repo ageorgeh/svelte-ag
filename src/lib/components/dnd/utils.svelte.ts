@@ -21,14 +21,14 @@ export function moveIndex<T>(arr: T[], from: number, to: number): void {
 
 export type DataType = {
   type: WritableBox<string>;
-  item: WritableBox<{ id: string }>;
-  parent: WritableBox<{ id: string; children: any[] }>;
+  item: WritableBox<{ id: string } | { idx: number }>;
+  parent: WritableBox<{ id: string; children: any[]; setChildren: (i: any[]) => void }>;
 };
 
 export type DataInputType = {
   type: string;
-  item: { id: string };
-  parent: { id: string; children: any[] };
+  item: { id: string } | { idx: number };
+  parent: { id: string; children: any[]; setChildren: (i: any[]) => void };
 };
 
 // See dnd-sortable-item.svelte for the input type for this data

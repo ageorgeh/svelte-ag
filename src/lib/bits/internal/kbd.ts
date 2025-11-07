@@ -1,1 +1,1 @@
-export * as kbd from "./kbd-constants.js";
+export * as kbd from './kbd-constants.js';

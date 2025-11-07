@@ -22,14 +22,14 @@
 {#if child}
   {@render child({ props: mergedProps })}
 {:else}
-  <div {...mergedProps} class="flex w-full flex-col items-center justify-center">
+  <div {...mergedProps} class="grid w-full auto-rows-fr px-2">
     {#each listState.suggestions as listItem (listItem.value)}
       <Button
         variant="ghost"
         class={cn(
           `
             hover:bg-muted
-            flex h-fit w-8/10 cursor-pointer rounded-md p-2
+            flex h-full min-h-fit w-full min-w-fit flex-1 cursor-pointer rounded-md p-2
           `,
           listState.selected(listItem) && 'bg-muted',
           listState.visible(listItem) ? '' : 'hidden!',

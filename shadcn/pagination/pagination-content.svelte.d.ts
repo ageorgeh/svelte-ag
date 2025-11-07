@@ -1,5 +1,9 @@
-import type { HTMLAttributes } from "svelte/elements";
-import type { WithElementRef } from "bits-ui";
-declare const PaginationContent: import("svelte").Component<WithElementRef<HTMLAttributes<HTMLUListElement>>, {}, "ref">;
+import type { HTMLAttributes } from 'svelte/elements';
+import type { WithElementRef } from 'bits-ui';
+declare const PaginationContent: import('svelte').Component<
+  WithElementRef<HTMLAttributes<HTMLUListElement>>,
+  {},
+  'ref'
+>;
 type PaginationContent = ReturnType<typeof PaginationContent>;
 export default PaginationContent;

@@ -112,7 +112,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
       const output = await ctx.read();
       const id = ctx.file;
 
-      console.log('Hot update sources', id, output, classRegex.test(output));
+      // console.log('Hot update sources', id, output, classRegex.test(output));
 
       // if (classRegex.test(output)) {
       //   componentFiles.add(id);

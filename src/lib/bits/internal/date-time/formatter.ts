@@ -1,16 +1,16 @@
-import { DateFormatter, type DateValue } from "@internationalized/date";
-import { hasTime, isZonedDateTime, toDate } from "./utils.js";
-import type { HourCycle } from "$lib/shared/date/types.js";
+import { DateFormatter, type DateValue } from '@internationalized/date';
+import { hasTime, isZonedDateTime, toDate } from './utils.js';
+import type { HourCycle } from '$lib/shared/date/types.js';
 
 export type Formatter = ReturnType<typeof createFormatter>;
 
 const defaultPartOptions: Intl.DateTimeFormatOptions = {
-	year: "numeric",
-	month: "numeric",
-	day: "numeric",
-	hour: "numeric",
-	minute: "numeric",
-	second: "numeric",
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+  second: 'numeric'
 };
 
 /**
@@ -22,95 +22,91 @@ const defaultPartOptions: Intl.DateTimeFormatOptions = {
  * @see [DateFormatter](https://react-spectrum.adobe.com/internationalized/date/DateFormatter.html)
  */
 export function createFormatter(initialLocale: string) {
-	let locale = initialLocale;
+  let locale = initialLocale;
 
-	function setLocale(newLocale: string) {
-		locale = newLocale;
-	}
+  function setLocale(newLocale: string) {
+    locale = newLocale;
+  }
 
-	function getLocale() {
-		return locale;
-	}
+  function getLocale() {
+    return locale;
+  }
 
-	function custom(date: Date, options: Intl.DateTimeFormatOptions) {
-		return new DateFormatter(locale, options).format(date);
-	}
+  function custom(date: Date, options: Intl.DateTimeFormatOptions) {
+    return new DateFormatter(locale, options).format(date);
+  }
 
-	function selectedDate(date: DateValue, includeTime = true) {
-		if (hasTime(date) && includeTime) {
-			return custom(toDate(date), {
-				dateStyle: "long",
-				timeStyle: "long",
-			});
-		} else {
-			return custom(toDate(date), {
-				dateStyle: "long",
-			});
-		}
-	}
+  function selectedDate(date: DateValue, includeTime = true) {
+    if (hasTime(date) && includeTime) {
+      return custom(toDate(date), {
+        dateStyle: 'long',
+        timeStyle: 'long'
+      });
+    } else {
+      return custom(toDate(date), {
+        dateStyle: 'long'
+      });
+    }
+  }
 
-	function fullMonthAndYear(date: Date) {
-		return new DateFormatter(locale, { month: "long", year: "numeric" }).format(date);
-	}
+  function fullMonthAndYear(date: Date) {
+    return new DateFormatter(locale, { month: 'long', year: 'numeric' }).format(date);
+  }
 
-	function fullMonth(date: Date) {
-		return new DateFormatter(locale, { month: "long" }).format(date);
-	}
+  function fullMonth(date: Date) {
+    return new DateFormatter(locale, { month: 'long' }).format(date);
+  }
 
-	function fullYear(date: Date) {
-		return new DateFormatter(locale, { year: "numeric" }).format(date);
-	}
+  function fullYear(date: Date) {
+    return new DateFormatter(locale, { year: 'numeric' }).format(date);
+  }
 
-	function toParts(date: DateValue, options?: Intl.DateTimeFormatOptions) {
-		if (isZonedDateTime(date)) {
-			return new DateFormatter(locale, {
-				...options,
-				timeZone: date.timeZone,
-			}).formatToParts(toDate(date));
-		} else {
-			return new DateFormatter(locale, options).formatToParts(toDate(date));
-		}
-	}
+  function toParts(date: DateValue, options?: Intl.DateTimeFormatOptions) {
+    if (isZonedDateTime(date)) {
+      return new DateFormatter(locale, {
+        ...options,
+        timeZone: date.timeZone
+      }).formatToParts(toDate(date));
+    } else {
+      return new DateFormatter(locale, options).formatToParts(toDate(date));
+    }
+  }
 
-	function dayOfWeek(date: Date, length: Intl.DateTimeFormatOptions["weekday"] = "narrow") {
-		return new DateFormatter(locale, { weekday: length }).format(date);
-	}
+  function dayOfWeek(date: Date, length: Intl.DateTimeFormatOptions['weekday'] = 'narrow') {
+    return new DateFormatter(locale, { weekday: length }).format(date);
+  }
 
-	function dayPeriod(date: Date, hourCycle: HourCycle | undefined = undefined) {
-		const parts = new DateFormatter(locale, {
-			hour: "numeric",
-			minute: "numeric",
-			hourCycle: hourCycle === 24 ? "h23" : undefined,
-		}).formatToParts(date);
-		const value = parts.find((p) => p.type === "dayPeriod")?.value;
-		if (value === "PM") {
-			return "PM";
-		}
-		return "AM";
-	}
+  function dayPeriod(date: Date, hourCycle: HourCycle | undefined = undefined) {
+    const parts = new DateFormatter(locale, {
+      hour: 'numeric',
+      minute: 'numeric',
+      hourCycle: hourCycle === 24 ? 'h23' : undefined
+    }).formatToParts(date);
+    const value = parts.find((p) => p.type === 'dayPeriod')?.value;
+    if (value === 'PM') {
+      return 'PM';
+    }
+    return 'AM';
+  }
 
-	function part(
-		dateObj: DateValue,
-		type: Intl.DateTimeFormatPartTypes,
-		options: Intl.DateTimeFormatOptions = {}
-	) {
-		const opts = { ...defaultPartOptions, ...options };
-		const parts = toParts(dateObj, opts);
-		const part = parts.find((p) => p.type === type);
-		return part ? part.value : "";
-	}
+  function part(dateObj: DateValue, type: Intl.DateTimeFormatPartTypes, options: Intl.DateTimeFormatOptions = {}) {
+    const opts = { ...defaultPartOptions, ...options };
+    const parts = toParts(dateObj, opts);
+    const part = parts.find((p) => p.type === type);
+    return part ? part.value : '';
+  }
 
-	return {
-		setLocale,
-		getLocale,
-		fullMonth,
-		fullYear,
-		fullMonthAndYear,
-		toParts,
-		custom,
-		part,
-		dayPeriod,
-		selectedDate,
-		dayOfWeek,
-	};
+  return {
+    setLocale,
+    getLocale,
+    fullMonth,
+    fullYear,
+    fullMonthAndYear,
+    toParts,
+    custom,
+    part,
+    dayPeriod,
+    selectedDate,
+    dayOfWeek
+  };
 }

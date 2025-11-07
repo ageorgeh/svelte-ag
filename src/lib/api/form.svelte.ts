@@ -8,23 +8,27 @@ type ValidInput<E extends ApiEndpoints, P extends E['path'], M extends E['method
 export type ApiRequestForm<API extends ApiEndpoints> = <
   Path extends API['path'],
   Method extends Extract<API, { path: Path }>['method']
->(
-  path: Path,
-  method: Method,
-  actions: {
+>(a: {
+  path: Path;
+  method: Method;
+  actions?: {
     onSuccess?: (
       form: SuperValidated<ValidInput<API, Path, Method>>,
       response: ApiSuccessBody<API, Path, Method>
-    ) => void;
-    onFail?: (form: SuperValidated<ValidInput<API, Path, Method>>, response: ApiErrorBody<API, Path, Method>) => void;
-  }
-) => SuperForm<ValidInput<API, Path, Method>>;
+    ) => void | Promise<void>;
+    onFail?: (
+      form: SuperValidated<ValidInput<API, Path, Method>>,
+      response: ApiErrorBody<API, Path, Method>
+    ) => void | Promise<void>;
+  };
+  defaultValue?: Partial<ApiInput<API, Path, Method>>;
+}) => SuperForm<ValidInput<API, Path, Method>>;
 
 export function createFormFunction<API extends ApiEndpoints>(
   schemas: Record<API['path'], Record<HTTPMethod, v.GenericSchema>>,
   request: ApiRequestFunction<API>
 ): ApiRequestForm<API> {
-  return (path, method, actions) => {
+  return ({ path, method, actions, defaultValue }) => {
     const schema = schemas[path]?.[method];
     if (schema === undefined) throw new Error('Invalid schema for form');
 
@@ -32,9 +36,10 @@ export function createFormFunction<API extends ApiEndpoints>(
     //   schema = schema();
     // }
 
-    return superForm<ValidInput<API, typeof path, typeof method>>(defaults(valibot(schema)), {
+    return superForm<ValidInput<API, typeof path, typeof method>>(defaults(defaultValue, valibot(schema)), {
       SPA: true,
       resetForm: true,
+      applyAction: false, // Prevents the form redirecting to the same page on submit
       delayMs: 300,
       validators: valibot(schema),
       async onUpdate({ form }) {
@@ -51,13 +56,13 @@ export function createFormFunction<API extends ApiEndpoints>(
             setError(form, body.field!.name, body.field.value, { status: res.status });
           }
           if (actions && actions.onFail) {
-            actions.onFail(form, body as ApiErrorBody<API, typeof path, typeof method>);
+            await actions.onFail(form, body as ApiErrorBody<API, typeof path, typeof method>);
           }
         } else {
           setMessage(form, 'Success');
           if (actions && actions.onSuccess) {
             const body = await res.json();
-            actions.onSuccess(form, body);
+            await actions.onSuccess(form, body);
           }
         }
       }

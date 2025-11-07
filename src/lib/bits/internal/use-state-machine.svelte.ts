@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { box } from "svelte-toolbelt";
+import { box } from 'svelte-toolbelt';
 
 interface Machine<S> {
-	[k: string]: { [k: string]: S };
+  [k: string]: { [k: string]: S };
 }
 type MachineState<T> = keyof T;
 type MachineEvent<T> = keyof UnionToIntersection<T[keyof T]>;
 
 // 🤯 https://fettblog.eu/typescript-union-to-intersection/
-type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any
-	? R
-	: never;
+type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x: infer R) => any ? R : never;
 
 /**
  * The `useStateMachine` function is a TypeScript function that creates a state machine and returns the
@@ -23,24 +21,21 @@ type UnionToIntersection<T> = (T extends any ? (x: T) => any : never) extends (x
  * @returns The `useStateMachine` function returns an object with two properties: `state` and
  * `dispatch`.
  */
-export function useStateMachine<M>(
-	initialState: MachineState<M>,
-	machine: M & Machine<MachineState<M>>
-) {
-	const state = box(initialState);
+export function useStateMachine<M>(initialState: MachineState<M>, machine: M & Machine<MachineState<M>>) {
+  const state = box(initialState);
 
-	function reducer(event: MachineEvent<M>) {
-		// @ts-expect-error  state.value is keyof M
-		const nextState = machine[state.current][event];
-		return nextState ?? state.current;
-	}
+  function reducer(event: MachineEvent<M>) {
+    // @ts-expect-error  state.value is keyof M
+    const nextState = machine[state.current][event];
+    return nextState ?? state.current;
+  }
 
-	const dispatch = (event: MachineEvent<M>) => {
-		state.current = reducer(event);
-	};
+  const dispatch = (event: MachineEvent<M>) => {
+    state.current = reducer(event);
+  };
 
-	return {
-		state,
-		dispatch,
-	};
+  return {
+    state,
+    dispatch
+  };
 }

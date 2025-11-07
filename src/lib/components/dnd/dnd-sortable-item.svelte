@@ -50,7 +50,7 @@
 
   const { attributes, listeners, node, activatorNode, transform, transition, isDragging, isSorting, isOver } =
     useSortable({
-      id: () => item.id,
+      id: () => ('id' in item ? item.id : item.idx),
       data: () => ({
         type: box.with(
           () => type,

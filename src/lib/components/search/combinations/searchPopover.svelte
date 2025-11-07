@@ -13,7 +13,7 @@
   import { Button } from '$shadcn/button/index.js';
   import * as Popover from '$shadcn/popover/index.js';
   import type { PopoverTriggerProps } from 'bits-ui';
-  import { cn } from '$utils';
+  import { cn } from '$utils/index.js';
 
   let {
     items,

@@ -1,4 +1,4 @@
-import { type Readable, derived } from "svelte/store";
+import { type Readable, derived } from 'svelte/store';
 
 /**
  * Creates a derived store whose value is transformed asynchronously.

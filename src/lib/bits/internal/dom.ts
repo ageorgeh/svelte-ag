@@ -1,25 +1,25 @@
 export function getDocument(element?: Element | null) {
-	return element?.ownerDocument ?? document;
+  return element?.ownerDocument ?? document;
 }
 
 export function activeElement(doc: Document) {
-	let activeElement = doc.activeElement;
+  let activeElement = doc.activeElement;
 
-	while (activeElement?.shadowRoot?.activeElement != null) {
-		activeElement = activeElement.shadowRoot.activeElement;
-	}
+  while (activeElement?.shadowRoot?.activeElement != null) {
+    activeElement = activeElement.shadowRoot.activeElement;
+  }
 
-	return activeElement;
+  return activeElement;
 }
 
 export function getFirstNonCommentChild(element: HTMLElement | null) {
-	if (!element) return null;
-	for (const child of element.childNodes) {
-		if (child.nodeType !== Node.COMMENT_NODE) {
-			return child;
-		}
-	}
-	return null;
+  if (!element) return null;
+  for (const child of element.childNodes) {
+    if (child.nodeType !== Node.COMMENT_NODE) {
+      return child;
+    }
+  }
+  return null;
 }
 
 /**
@@ -28,20 +28,18 @@ export function getFirstNonCommentChild(element: HTMLElement | null) {
  * into the DOM but visually appear inside the content.
  */
 export function isClickTrulyOutside(event: PointerEvent, contentNode: HTMLElement): boolean {
-	const { clientX, clientY } = event;
-	const rect = contentNode.getBoundingClientRect();
+  const { clientX, clientY } = event;
+  const rect = contentNode.getBoundingClientRect();
 
-	return (
-		clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom
-	);
+  return clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom;
 }
 
 export function getTarget(event: Event) {
-	if ("composedPath" in event) {
-		return event.composedPath()[0];
-	}
+  if ('composedPath' in event) {
+    return event.composedPath()[0];
+  }
 
-	// TS thinks `event` is of type never as it assumes all browsers support
-	// `composedPath()`, but browsers without shadow DOM don't.
-	return (event as Event).target;
+  // TS thinks `event` is of type never as it assumes all browsers support
+  // `composedPath()`, but browsers without shadow DOM don't.
+  return (event as Event).target;
 }

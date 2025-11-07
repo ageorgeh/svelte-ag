@@ -1,16 +1,16 @@
 {
-  "id": "svelte-ag@1.0.0",
+  "id": "svelte-ag@1.0.6",
   "name": "svelte-ag",
-  "version": "1.0.0",
-  "size": 182293,
-  "unpackedSize": 862495,
-  "shasum": "e99e5fed6dd7f417b9005d2079b31f4d4b8455a4",
-  "integrity": "sha512-HZMTenWE+6xQN8HBiOqzM4upv/kZO2DcvRb2lxKPjwvVFG0Ujlzrw6XWNG+kirfLsWzHvq5KJ5+2t2Nt6er5Qg==",
-  "filename": "svelte-ag-1.0.0.tgz",
+  "version": "1.0.6",
+  "size": 181630,
+  "unpackedSize": 870367,
+  "shasum": "1a62aa2714645ddac550442859c05f62c5db204e",
+  "integrity": "sha512-jHfHeKitMGucv2YLrqQbGRLE/XGtaXsIZ3d6S0G+yAX0578dhA/fmiqrFrKstjbNfPDxMhqQWG7iUpNFUBnHnw==",
+  "filename": "svelte-ag-1.0.6.tgz",
   "files": [
     {
       "path": "README.md",
-      "size": 889,
+      "size": 887,
       "mode": 420
     },
     {
@@ -35,17 +35,17 @@
     },
     {
       "path": "dist/lib/api/form.svelte.d.ts",
-      "size": 1060,
+      "size": 1182,
       "mode": 420
     },
     {
       "path": "dist/lib/api/form.svelte.d.ts.map",
-      "size": 1326,
+      "size": 1500,
       "mode": 420
     },
     {
       "path": "dist/lib/api/form.svelte.js",
-      "size": 1621,
+      "size": 1757,
       "mode": 420
     },
     {
@@ -145,7 +145,7 @@
     },
     {
       "path": "dist/lib/bits/internal/arrays.d.ts.map",
-      "size": 1259,
+      "size": 1257,
       "mode": 420
     },
     {
@@ -165,7 +165,7 @@
     },
     {
       "path": "dist/lib/bits/internal/arrays.test.js",
-      "size": 17117,
+      "size": 17113,
       "mode": 420
     },
     {
@@ -175,7 +175,7 @@
     },
     {
       "path": "dist/lib/bits/internal/attrs.d.ts.map",
-      "size": 1581,
+      "size": 1574,
       "mode": 420
     },
     {
@@ -255,7 +255,7 @@
     },
     {
       "path": "dist/lib/bits/internal/create-event-hook.svelte.js",
-      "size": 721,
+      "size": 720,
       "mode": 420
     },
     {
@@ -280,27 +280,27 @@
     },
     {
       "path": "dist/lib/bits/internal/date-time/announcer.d.ts.map",
-      "size": 296,
+      "size": 294,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/date-time/announcer.js",
-      "size": 2606,
+      "size": 2604,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/date-time/calendar-helpers.svelte.d.ts",
-      "size": 8024,
+      "size": 8013,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/date-time/calendar-helpers.svelte.d.ts.map",
-      "size": 5438,
+      "size": 5436,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/date-time/calendar-helpers.svelte.js",
-      "size": 19088,
+      "size": 19021,
       "mode": 420
     },
     {
@@ -310,12 +310,12 @@
     },
     {
       "path": "dist/lib/bits/internal/date-time/field/helpers.d.ts.map",
-      "size": 1810,
+      "size": 1807,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/date-time/field/helpers.js",
-      "size": 12788,
+      "size": 12766,
       "mode": 420
     },
     {
@@ -325,12 +325,12 @@
     },
     {
       "path": "dist/lib/bits/internal/date-time/field/parts.d.ts.map",
-      "size": 360,
+      "size": 361,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/date-time/field/parts.js",
-      "size": 494,
+      "size": 483,
       "mode": 420
     },
     {
@@ -345,7 +345,7 @@
     },
     {
       "path": "dist/lib/bits/internal/date-time/field/segments.js",
-      "size": 4015,
+      "size": 4013,
       "mode": 420
     },
     {
@@ -370,12 +370,12 @@
     },
     {
       "path": "dist/lib/bits/internal/date-time/formatter.d.ts.map",
-      "size": 631,
+      "size": 630,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/date-time/formatter.js",
-      "size": 3048,
+      "size": 3042,
       "mode": 420
     },
     {
@@ -385,12 +385,12 @@
     },
     {
       "path": "dist/lib/bits/internal/date-time/placeholders.d.ts.map",
-      "size": 657,
+      "size": 656,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/date-time/placeholders.js",
-      "size": 5809,
+      "size": 5808,
       "mode": 420
     },
     {
@@ -405,7 +405,7 @@
     },
     {
       "path": "dist/lib/bits/internal/date-time/utils.js",
-      "size": 7408,
+      "size": 7390,
       "mode": 420
     },
     {
@@ -450,7 +450,7 @@
     },
     {
       "path": "dist/lib/bits/internal/dom.js",
-      "size": 1345,
+      "size": 1343,
       "mode": 420
     },
     {
@@ -475,12 +475,12 @@
     },
     {
       "path": "dist/lib/bits/internal/events.d.ts.map",
-      "size": 1546,
+      "size": 1544,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/events.js",
-      "size": 1987,
+      "size": 1986,
       "mode": 420
     },
     {
@@ -495,7 +495,7 @@
     },
     {
       "path": "dist/lib/bits/internal/floating-svelte/floating-utils.svelte.js",
-      "size": 969,
+      "size": 952,
       "mode": 420
     },
     {
@@ -505,7 +505,7 @@
     },
     {
       "path": "dist/lib/bits/internal/floating-svelte/types.d.ts.map",
-      "size": 1637,
+      "size": 1634,
       "mode": 420
     },
     {
@@ -540,7 +540,7 @@
     },
     {
       "path": "dist/lib/bits/internal/focus.js",
-      "size": 4335,
+      "size": 4333,
       "mode": 420
     },
     {
@@ -550,12 +550,12 @@
     },
     {
       "path": "dist/lib/bits/internal/get-directional-keys.d.ts.map",
-      "size": 581,
+      "size": 579,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/get-directional-keys.js",
-      "size": 1354,
+      "size": 1351,
       "mode": 420
     },
     {
@@ -570,7 +570,7 @@
     },
     {
       "path": "dist/lib/bits/internal/get-directional-keys.test.js",
-      "size": 1784,
+      "size": 1778,
       "mode": 420
     },
     {
@@ -580,12 +580,12 @@
     },
     {
       "path": "dist/lib/bits/internal/is.d.ts.map",
-      "size": 1006,
+      "size": 1005,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/is.js",
-      "size": 2050,
+      "size": 2034,
       "mode": 420
     },
     {
@@ -660,7 +660,7 @@
     },
     {
       "path": "dist/lib/bits/internal/math.js",
-      "size": 1502,
+      "size": 1486,
       "mode": 420
     },
     {
@@ -695,7 +695,7 @@
     },
     {
       "path": "dist/lib/bits/internal/should-trap-focus.d.ts",
-      "size": 235,
+      "size": 234,
       "mode": 420
     },
     {
@@ -705,7 +705,7 @@
     },
     {
       "path": "dist/lib/bits/internal/should-trap-focus.js",
-      "size": 182,
+      "size": 181,
       "mode": 420
     },
     {
@@ -730,12 +730,12 @@
     },
     {
       "path": "dist/lib/bits/internal/tabbable.d.ts.map",
-      "size": 420,
+      "size": 419,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/tabbable.js",
-      "size": 2848,
+      "size": 2801,
       "mode": 420
     },
     {
@@ -780,7 +780,7 @@
     },
     {
       "path": "dist/lib/bits/internal/use-arrow-navigation.js",
-      "size": 2966,
+      "size": 2955,
       "mode": 420
     },
     {
@@ -795,7 +795,7 @@
     },
     {
       "path": "dist/lib/bits/internal/use-body-scroll-lock.svelte.js",
-      "size": 3944,
+      "size": 3942,
       "mode": 420
     },
     {
@@ -810,7 +810,7 @@
     },
     {
       "path": "dist/lib/bits/internal/use-data-typeahead.svelte.js",
-      "size": 1117,
+      "size": 1116,
       "mode": 420
     },
     {
@@ -825,7 +825,7 @@
     },
     {
       "path": "dist/lib/bits/internal/use-dom-typeahead.svelte.js",
-      "size": 1172,
+      "size": 1171,
       "mode": 420
     },
     {
@@ -840,7 +840,7 @@
     },
     {
       "path": "dist/lib/bits/internal/use-form-control.svelte.js",
-      "size": 387,
+      "size": 386,
       "mode": 420
     },
     {
@@ -855,7 +855,7 @@
     },
     {
       "path": "dist/lib/bits/internal/use-grace-area.svelte.js",
-      "size": 7315,
+      "size": 7309,
       "mode": 420
     },
     {
@@ -900,7 +900,7 @@
     },
     {
       "path": "dist/lib/bits/internal/use-roving-focus.svelte.js",
-      "size": 3173,
+      "size": 3171,
       "mode": 420
     },
     {
@@ -915,7 +915,7 @@
     },
     {
       "path": "dist/lib/bits/internal/use-size.svelte.js",
-      "size": 1677,
+      "size": 1635,
       "mode": 420
     },
     {
@@ -925,12 +925,12 @@
     },
     {
       "path": "dist/lib/bits/internal/use-state-machine.svelte.d.ts.map",
-      "size": 753,
+      "size": 752,
       "mode": 420
     },
     {
       "path": "dist/lib/bits/internal/use-state-machine.svelte.js",
-      "size": 1251,
+      "size": 1250,
       "mode": 420
     },
     {
@@ -945,7 +945,7 @@
     },
     {
       "path": "dist/lib/bits/internal/use-timeout-fn.svelte.js",
-      "size": 928,
+      "size": 927,
       "mode": 420
     },
     {
@@ -1205,22 +1205,22 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-context.svelte",
-      "size": 824,
+      "size": 835,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-context.svelte.d.ts",
-      "size": 551,
+      "size": 562,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-context.svelte.d.ts.map",
-      "size": 591,
+      "size": 606,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-sortable-item.svelte",
-      "size": 2585,
+      "size": 2613,
       "mode": 420
     },
     {
@@ -1305,7 +1305,7 @@
     },
     {
       "path": "dist/lib/components/dnd/sortable.svelte.js",
-      "size": 3666,
+      "size": 4236,
       "mode": 420
     },
     {
@@ -1325,12 +1325,12 @@
     },
     {
       "path": "dist/lib/components/dnd/utils.svelte.d.ts",
-      "size": 871,
+      "size": 1015,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/utils.svelte.d.ts.map",
-      "size": 953,
+      "size": 1133,
       "mode": 420
     },
     {
@@ -1370,7 +1370,7 @@
     },
     {
       "path": "dist/lib/components/form/form-element-field.svelte",
-      "size": 894,
+      "size": 919,
       "mode": 420
     },
     {
@@ -1385,7 +1385,7 @@
     },
     {
       "path": "dist/lib/components/form/form-field-errors.svelte",
-      "size": 758,
+      "size": 792,
       "mode": 420
     },
     {
@@ -1430,7 +1430,7 @@
     },
     {
       "path": "dist/lib/components/form/form-fieldset.svelte",
-      "size": 504,
+      "size": 519,
       "mode": 420
     },
     {
@@ -1445,7 +1445,7 @@
     },
     {
       "path": "dist/lib/components/form/form-label.svelte",
-      "size": 578,
+      "size": 588,
       "mode": 420
     },
     {
@@ -1460,7 +1460,7 @@
     },
     {
       "path": "dist/lib/components/form/form-legend.svelte",
-      "size": 400,
+      "size": 399,
       "mode": 420
     },
     {
@@ -1470,7 +1470,7 @@
     },
     {
       "path": "dist/lib/components/form/form-legend.svelte.d.ts.map",
-      "size": 299,
+      "size": 298,
       "mode": 420
     },
     {
@@ -1505,17 +1505,17 @@
     },
     {
       "path": "dist/lib/components/gallery/gallery.svelte",
-      "size": 1837,
+      "size": 1700,
       "mode": 420
     },
     {
       "path": "dist/lib/components/gallery/gallery.svelte.d.ts",
-      "size": 1428,
+      "size": 1514,
       "mode": 420
     },
     {
       "path": "dist/lib/components/gallery/gallery.svelte.d.ts.map",
-      "size": 1249,
+      "size": 1307,
       "mode": 420
     },
     {
@@ -1815,7 +1815,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-content.svelte",
-      "size": 537,
+      "size": 560,
       "mode": 420
     },
     {
@@ -1830,7 +1830,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-footer.svelte",
-      "size": 458,
+      "size": 467,
       "mode": 420
     },
     {
@@ -1845,7 +1845,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-action.svelte",
-      "size": 1115,
+      "size": 1163,
       "mode": 420
     },
     {
@@ -1860,7 +1860,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-content.svelte",
-      "size": 459,
+      "size": 468,
       "mode": 420
     },
     {
@@ -1890,7 +1890,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group.svelte",
-      "size": 475,
+      "size": 493,
       "mode": 420
     },
     {
@@ -1905,7 +1905,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-header.svelte",
-      "size": 458,
+      "size": 467,
       "mode": 420
     },
     {
@@ -1920,7 +1920,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-input.svelte",
-      "size": 497,
+      "size": 508,
       "mode": 420
     },
     {
@@ -1965,7 +1965,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-badge.svelte",
-      "size": 918,
+      "size": 951,
       "mode": 420
     },
     {
@@ -1995,7 +1995,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-item.svelte",
-      "size": 477,
+      "size": 486,
       "mode": 420
     },
     {
@@ -2010,7 +2010,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-skeleton.svelte",
-      "size": 922,
+      "size": 960,
       "mode": 420
     },
     {
@@ -2055,7 +2055,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-sub.svelte",
-      "size": 583,
+      "size": 608,
       "mode": 420
     },
     {
@@ -2070,7 +2070,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu.svelte",
-      "size": 488,
+      "size": 497,
       "mode": 420
     },
     {
@@ -2115,7 +2115,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-separator.svelte",
-      "size": 413,
+      "size": 406,
       "mode": 420
     },
     {
@@ -2235,17 +2235,17 @@
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-content-static.svelte",
-      "size": 353,
+      "size": 361,
       "mode": 420
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-content-static.svelte.d.ts",
-      "size": 528,
+      "size": 502,
       "mode": 420
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer-content-static.svelte.d.ts.map",
-      "size": 616,
+      "size": 615,
       "mode": 420
     },
     {
@@ -2265,7 +2265,7 @@
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/floating-layer.svelte",
-      "size": 247,
+      "size": 251,
       "mode": 420
     },
     {
@@ -2280,7 +2280,7 @@
     },
     {
       "path": "dist/lib/components/utilities/floating-layer/components/index.d.ts",
-      "size": 552,
+      "size": 551,
       "mode": 420
     },
     {
@@ -2465,17 +2465,17 @@
     },
     {
       "path": "dist/lib/vite/vite-plugin-component-source-collector.d.ts",
-      "size": 556,
+      "size": 669,
       "mode": 420
     },
     {
       "path": "dist/lib/vite/vite-plugin-component-source-collector.d.ts.map",
-      "size": 447,
+      "size": 489,
       "mode": 420
     },
     {
       "path": "dist/lib/vite/vite-plugin-component-source-collector.js",
-      "size": 3674,
+      "size": 3765,
       "mode": 420
     },
     {
@@ -2495,7 +2495,7 @@
     },
     {
       "path": "package.json",
-      "size": 3225,
+      "size": 3120,
       "mode": 420
     },
     {
@@ -2520,7 +2520,7 @@
     },
     {
       "path": "src/lib/api/form.svelte.ts",
-      "size": 2340,
+      "size": 2582,
       "mode": 420
     },
     {
@@ -2555,127 +2555,127 @@
     },
     {
       "path": "src/lib/bits/internal/arrays.test.ts",
-      "size": 15628,
+      "size": 16174,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/arrays.ts",
-      "size": 9920,
+      "size": 10115,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/attrs.ts",
-      "size": 2582,
+      "size": 2598,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/box-auto-reset.svelte.ts",
-      "size": 865,
+      "size": 911,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/box.svelte.ts",
-      "size": 1336,
+      "size": 1407,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/clamp.test.ts",
-      "size": 1126,
+      "size": 1168,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/clamp.ts",
-      "size": 168,
+      "size": 169,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/create-event-hook.svelte.ts",
-      "size": 1591,
+      "size": 1656,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/create-shared-hook.svelte.ts",
-      "size": 598,
+      "size": 652,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/date-time/announcer.ts",
-      "size": 2392,
+      "size": 2485,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/date-time/calendar-helpers.svelte.ts",
-      "size": 21435,
+      "size": 22234,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/date-time/field/helpers.ts",
-      "size": 12166,
+      "size": 12876,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/date-time/field/parts.ts",
-      "size": 533,
+      "size": 528,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/date-time/field/segments.ts",
-      "size": 3938,
+      "size": 3995,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/date-time/field/types.ts",
-      "size": 1182,
+      "size": 1191,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/date-time/formatter.ts",
-      "size": 3026,
+      "size": 3163,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/date-time/placeholders.ts",
-      "size": 5998,
+      "size": 6099,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/date-time/utils.ts",
-      "size": 7789,
+      "size": 7955,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/debounce.test.ts",
-      "size": 1895,
+      "size": 1977,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/debounce.ts",
-      "size": 488,
+      "size": 518,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/dom.ts",
-      "size": 1367,
+      "size": 1388,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/elements.ts",
-      "size": 234,
+      "size": 236,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/events.ts",
-      "size": 3037,
+      "size": 3088,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/floating-svelte/floating-utils.svelte.ts",
-      "size": 1038,
+      "size": 1051,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/floating-svelte/types.ts",
-      "size": 2576,
+      "size": 2652,
       "mode": 420
     },
     {
@@ -2685,27 +2685,27 @@
     },
     {
       "path": "src/lib/bits/internal/focus.ts",
-      "size": 4297,
+      "size": 4373,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/get-directional-keys.test.ts",
-      "size": 1557,
+      "size": 1633,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/get-directional-keys.ts",
-      "size": 1426,
+      "size": 1439,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/is.test.ts",
-      "size": 1426,
+      "size": 1474,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/is.ts",
-      "size": 2319,
+      "size": 2348,
       "mode": 420
     },
     {
@@ -2720,17 +2720,17 @@
     },
     {
       "path": "src/lib/bits/internal/locale.ts",
-      "size": 447,
+      "size": 450,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/math.test.ts",
-      "size": 2768,
+      "size": 2864,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/math.ts",
-      "size": 1442,
+      "size": 1485,
       "mode": 420
     },
     {
@@ -2740,87 +2740,87 @@
     },
     {
       "path": "src/lib/bits/internal/should-trap-focus.ts",
-      "size": 263,
+      "size": 275,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/sleep.ts",
-      "size": 97,
+      "size": 98,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/tabbable.ts",
-      "size": 2774,
+      "size": 2803,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/types.ts",
-      "size": 3362,
+      "size": 3408,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-after-animations.svelte.ts",
-      "size": 720,
+      "size": 762,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-arrow-navigation.ts",
-      "size": 4308,
+      "size": 4447,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-body-scroll-lock.svelte.ts",
-      "size": 3539,
+      "size": 3784,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-data-typeahead.svelte.ts",
-      "size": 1270,
+      "size": 1315,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-dom-typeahead.svelte.ts",
-      "size": 1294,
+      "size": 1334,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-form-control.svelte.ts",
-      "size": 383,
+      "size": 401,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-grace-area.svelte.ts",
-      "size": 6933,
+      "size": 7251,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-id.ts",
-      "size": 243,
+      "size": 245,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-resize-observer.svelte.ts",
-      "size": 491,
+      "size": 521,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-roving-focus.svelte.ts",
-      "size": 3596,
+      "size": 3763,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-size.svelte.ts",
-      "size": 1360,
+      "size": 1460,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-state-machine.svelte.ts",
-      "size": 1616,
+      "size": 1629,
       "mode": 420
     },
     {
       "path": "src/lib/bits/internal/use-timeout-fn.svelte.ts",
-      "size": 1431,
+      "size": 1509,
       "mode": 420
     },
     {
@@ -2910,12 +2910,12 @@
     },
     {
       "path": "src/lib/components/dnd/dnd-sortable-context.svelte",
-      "size": 819,
+      "size": 830,
       "mode": 420
     },
     {
       "path": "src/lib/components/dnd/dnd-sortable-item.svelte",
-      "size": 2575,
+      "size": 2603,
       "mode": 420
     },
     {
@@ -2940,7 +2940,7 @@
     },
     {
       "path": "src/lib/components/dnd/sortable.svelte.ts",
-      "size": 3464,
+      "size": 3978,
       "mode": 420
     },
     {
@@ -2950,7 +2950,7 @@
     },
     {
       "path": "src/lib/components/dnd/utils.svelte.ts",
-      "size": 1344,
+      "size": 1446,
       "mode": 420
     },
     {
@@ -2965,12 +2965,12 @@
     },
     {
       "path": "src/lib/components/form/form-element-field.svelte",
-      "size": 894,
+      "size": 919,
       "mode": 420
     },
     {
       "path": "src/lib/components/form/form-field-errors.svelte",
-      "size": 758,
+      "size": 792,
       "mode": 420
     },
     {
@@ -2985,17 +2985,17 @@
     },
     {
       "path": "src/lib/components/form/form-fieldset.svelte",
-      "size": 504,
+      "size": 519,
       "mode": 420
     },
     {
       "path": "src/lib/components/form/form-label.svelte",
-      "size": 578,
+      "size": 588,
       "mode": 420
     },
     {
       "path": "src/lib/components/form/form-legend.svelte",
-      "size": 400,
+      "size": 399,
       "mode": 420
     },
     {
@@ -3010,7 +3010,7 @@
     },
     {
       "path": "src/lib/components/gallery/gallery.svelte",
-      "size": 1832,
+      "size": 1695,
       "mode": 420
     },
     {
@@ -3120,22 +3120,22 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-content.svelte",
-      "size": 537,
+      "size": 560,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-footer.svelte",
-      "size": 458,
+      "size": 467,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-group-action.svelte",
-      "size": 1115,
+      "size": 1163,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-group-content.svelte",
-      "size": 459,
+      "size": 468,
       "mode": 420
     },
     {
@@ -3145,17 +3145,17 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-group.svelte",
-      "size": 475,
+      "size": 493,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-header.svelte",
-      "size": 458,
+      "size": 467,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-input.svelte",
-      "size": 497,
+      "size": 508,
       "mode": 420
     },
     {
@@ -3170,7 +3170,7 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-badge.svelte",
-      "size": 918,
+      "size": 951,
       "mode": 420
     },
     {
@@ -3180,12 +3180,12 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-item.svelte",
-      "size": 477,
+      "size": 486,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-skeleton.svelte",
-      "size": 922,
+      "size": 960,
       "mode": 420
     },
     {
@@ -3200,12 +3200,12 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-sub.svelte",
-      "size": 583,
+      "size": 608,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu.svelte",
-      "size": 488,
+      "size": 497,
       "mode": 420
     },
     {
@@ -3220,7 +3220,7 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-separator.svelte",
-      "size": 413,
+      "size": 406,
       "mode": 420
     },
     {
@@ -3245,7 +3245,7 @@
     },
     {
       "path": "src/lib/components/utilities/arrow/types.ts",
-      "size": 449,
+      "size": 461,
       "mode": 420
     },
     {
@@ -3260,7 +3260,7 @@
     },
     {
       "path": "src/lib/components/utilities/floating-layer/components/floating-layer-content-static.svelte",
-      "size": 353,
+      "size": 361,
       "mode": 420
     },
     {
@@ -3270,12 +3270,12 @@
     },
     {
       "path": "src/lib/components/utilities/floating-layer/components/floating-layer.svelte",
-      "size": 247,
+      "size": 251,
       "mode": 420
     },
     {
       "path": "src/lib/components/utilities/floating-layer/components/index.ts",
-      "size": 521,
+      "size": 523,
       "mode": 420
     },
     {
@@ -3340,7 +3340,7 @@
     },
     {
       "path": "src/lib/vite/vite-plugin-component-source-collector.ts",
-      "size": 3702,
+      "size": 3899,
       "mode": 420
     },
     {

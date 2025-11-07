@@ -2,58 +2,58 @@
  * Checks if two arrays are equal by comparing their values.
  */
 export function arraysAreEqual<T extends Array<unknown>>(arr1: T, arr2: T): boolean {
-	if (arr1.length !== arr2.length) {
-		return false;
-	}
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
 
-	return arr1.every((value, index) => isEqual(value, arr2[index]));
+  return arr1.every((value, index) => isEqual(value, arr2[index]));
 }
 
 /**
  * A utility function that compares two values for equality.
  */
 function isEqual(a: unknown, b: unknown): boolean {
-	if (Number.isNaN(a as number) && Number.isNaN(b as number)) {
-		return true;
-	}
+  if (Number.isNaN(a as number) && Number.isNaN(b as number)) {
+    return true;
+  }
 
-	if (Array.isArray(a) && Array.isArray(b)) {
-		return arraysAreEqual(a as unknown[], b as unknown[]);
-	}
+  if (Array.isArray(a) && Array.isArray(b)) {
+    return arraysAreEqual(a as unknown[], b as unknown[]);
+  }
 
-	if (typeof a === "object" && typeof b === "object") {
-		return isDeepEqual(a, b);
-	}
+  if (typeof a === 'object' && typeof b === 'object') {
+    return isDeepEqual(a, b);
+  }
 
-	return Object.is(a, b);
+  return Object.is(a, b);
 }
 
 /**
  * A utility function that compares two values for deep equality.
  */
 function isDeepEqual(a: unknown, b: unknown): boolean {
-	if (typeof a !== "object" || typeof b !== "object" || a === null || b === null) {
-		return false;
-	}
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+    return false;
+  }
 
-	const aKeys = Object.keys(a);
-	const bKeys = Object.keys(b);
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
 
-	if (aKeys.length !== bKeys.length) {
-		return false;
-	}
+  if (aKeys.length !== bKeys.length) {
+    return false;
+  }
 
-	for (const key of aKeys) {
-		if (!bKeys.includes(key)) {
-			return false;
-		}
+  for (const key of aKeys) {
+    if (!bKeys.includes(key)) {
+      return false;
+    }
 
-		if (!isEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])) {
-			return false;
-		}
-	}
+    if (!isEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])) {
+      return false;
+    }
+  }
 
-	return true;
+  return true;
 }
 
 /**
@@ -68,15 +68,15 @@ function isDeepEqual(a: unknown, b: unknown): boolean {
  * ```
  */
 export function chunk<T>(arr: T[], size: number): T[][] {
-	if (size <= 0) {
-		return [];
-	}
+  if (size <= 0) {
+    return [];
+  }
 
-	const result = [];
-	for (let i = 0; i < arr.length; i += size) {
-		result.push(arr.slice(i, i + size));
-	}
-	return result;
+  const result = [];
+  for (let i = 0; i < arr.length; i += size) {
+    result.push(arr.slice(i, i + size));
+  }
+  return result;
 }
 
 /**
@@ -87,7 +87,7 @@ export function chunk<T>(arr: T[], size: number): T[][] {
  */
 
 export function isValidIndex(index: number, arr: unknown[]) {
-	return index >= 0 && index < arr.length;
+  return index >= 0 && index < arr.length;
 }
 
 /**
@@ -104,16 +104,16 @@ export function isValidIndex(index: number, arr: unknown[]) {
  * @param loop loop to the beginning of the array if the next index is out of bounds?
  */
 export function next<T>(array: T[], index: number, loop = true): T | undefined {
-	if (array.length === 0 || index < 0 || index >= array.length) {
-		return undefined;
-	}
-	if (array.length === 1 && index === 0) {
-		return array[0];
-	}
-	if (index === array.length - 1) {
-		return loop ? array[0] : undefined;
-	}
-	return array[index + 1];
+  if (array.length === 0 || index < 0 || index >= array.length) {
+    return undefined;
+  }
+  if (array.length === 1 && index === 0) {
+    return array[0];
+  }
+  if (index === array.length - 1) {
+    return loop ? array[0] : undefined;
+  }
+  return array[index + 1];
 }
 
 /**
@@ -124,16 +124,16 @@ export function next<T>(array: T[], index: number, loop = true): T | undefined {
  * @param loop loop to the end of the array if the previous index is out of bounds?
  */
 export function prev<T>(array: T[], index: number, loop = true): T | undefined {
-	if (array.length === 0 || index < 0 || index >= array.length) {
-		return undefined;
-	}
-	if (array.length === 1 && index === 0) {
-		return array[0];
-	}
-	if (index === 0) {
-		return loop ? array[array.length - 1] : undefined;
-	}
-	return array[index - 1];
+  if (array.length === 0 || index < 0 || index >= array.length) {
+    return undefined;
+  }
+  if (array.length === 1 && index === 0) {
+    return array[0];
+  }
+  if (index === 0) {
+    return loop ? array[array.length - 1] : undefined;
+  }
+  return array[index - 1];
 }
 
 /**
@@ -146,27 +146,22 @@ export function prev<T>(array: T[], index: number, loop = true): T | undefined {
  * @param increment the number of elements to move forward (can be negative).
  * @param loop loop around the array if the target index is out of bounds?
  */
-export function forward<T>(
-	array: T[],
-	index: number,
-	increment: number,
-	loop = true
-): T | undefined {
-	if (array.length === 0 || index < 0 || index >= array.length) {
-		return undefined;
-	}
+export function forward<T>(array: T[], index: number, increment: number, loop = true): T | undefined {
+  if (array.length === 0 || index < 0 || index >= array.length) {
+    return undefined;
+  }
 
-	let targetIndex = index + increment;
+  let targetIndex = index + increment;
 
-	if (loop) {
-		// Ensure positive modulus
-		targetIndex = ((targetIndex % array.length) + array.length) % array.length;
-	} else {
-		// Clamp to array bounds when not looping
-		targetIndex = Math.max(0, Math.min(targetIndex, array.length - 1));
-	}
+  if (loop) {
+    // Ensure positive modulus
+    targetIndex = ((targetIndex % array.length) + array.length) % array.length;
+  } else {
+    // Clamp to array bounds when not looping
+    targetIndex = Math.max(0, Math.min(targetIndex, array.length - 1));
+  }
 
-	return array[targetIndex];
+  return array[targetIndex];
 }
 
 /**
@@ -179,27 +174,22 @@ export function forward<T>(
  * @param decrement the number of elements to move backward (can be negative).
  * @param loop loop around the array if the target index is out of bounds?
  */
-export function backward<T>(
-	array: T[],
-	index: number,
-	decrement: number,
-	loop = true
-): T | undefined {
-	if (array.length === 0 || index < 0 || index >= array.length) {
-		return undefined;
-	}
+export function backward<T>(array: T[], index: number, decrement: number, loop = true): T | undefined {
+  if (array.length === 0 || index < 0 || index >= array.length) {
+    return undefined;
+  }
 
-	let targetIndex = index - decrement;
+  let targetIndex = index - decrement;
 
-	if (loop) {
-		// Ensure positive modulus
-		targetIndex = ((targetIndex % array.length) + array.length) % array.length;
-	} else {
-		// Clamp to array bounds when not looping
-		targetIndex = Math.max(0, Math.min(targetIndex, array.length - 1));
-	}
+  if (loop) {
+    // Ensure positive modulus
+    targetIndex = ((targetIndex % array.length) + array.length) % array.length;
+  } else {
+    // Clamp to array bounds when not looping
+    targetIndex = Math.max(0, Math.min(targetIndex, array.length - 1));
+  }
 
-	return array[targetIndex];
+  return array[targetIndex];
 }
 
 /**
@@ -225,71 +215,67 @@ export function backward<T>(
  * @returns The next matching value that should be selected, or undefined if no match is found
  */
 export function getNextMatch(values: string[], search: string, currentMatch?: string) {
-	const lowerSearch = search.toLowerCase();
+  const lowerSearch = search.toLowerCase();
 
-	if (lowerSearch.endsWith(" ")) {
-		const searchWithoutSpace = lowerSearch.slice(0, -1);
-		const matchesWithoutSpace = values.filter((value) =>
-			value.toLowerCase().startsWith(searchWithoutSpace)
-		);
+  if (lowerSearch.endsWith(' ')) {
+    const searchWithoutSpace = lowerSearch.slice(0, -1);
+    const matchesWithoutSpace = values.filter((value) => value.toLowerCase().startsWith(searchWithoutSpace));
 
-		/**
-		 * If there's only one match for the prefix without space, we don't
-		 * watch to match with space.
-		 */
-		if (matchesWithoutSpace.length <= 1) {
-			return getNextMatch(values, searchWithoutSpace, currentMatch);
-		}
+    /**
+     * If there's only one match for the prefix without space, we don't
+     * watch to match with space.
+     */
+    if (matchesWithoutSpace.length <= 1) {
+      return getNextMatch(values, searchWithoutSpace, currentMatch);
+    }
 
-		const currentMatchLowercase = currentMatch?.toLowerCase();
+    const currentMatchLowercase = currentMatch?.toLowerCase();
 
-		/**
-		 * If the current match already starts with the search prefix and has a space afterward,
-		 * and the user has only typed up to that space, keep the current match until they
-		 * disambiguate.
-		 */
-		if (
-			currentMatchLowercase &&
-			currentMatchLowercase.startsWith(searchWithoutSpace) &&
-			currentMatchLowercase.charAt(searchWithoutSpace.length) === " " &&
-			search.trim() === searchWithoutSpace
-		) {
-			return currentMatch;
-		}
+    /**
+     * If the current match already starts with the search prefix and has a space afterward,
+     * and the user has only typed up to that space, keep the current match until they
+     * disambiguate.
+     */
+    if (
+      currentMatchLowercase &&
+      currentMatchLowercase.startsWith(searchWithoutSpace) &&
+      currentMatchLowercase.charAt(searchWithoutSpace.length) === ' ' &&
+      search.trim() === searchWithoutSpace
+    ) {
+      return currentMatch;
+    }
 
-		/**
-		 * With multiple matches, find items that match the full search string with space
-		 */
-		const spacedMatches = values.filter((value) => value.toLowerCase().startsWith(lowerSearch));
+    /**
+     * With multiple matches, find items that match the full search string with space
+     */
+    const spacedMatches = values.filter((value) => value.toLowerCase().startsWith(lowerSearch));
 
-		/**
-		 * If we found matches with the space, use the first one that's not the current match
-		 */
-		if (spacedMatches.length > 0) {
-			const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
-			let wrappedMatches = wrapArray(spacedMatches, Math.max(currentMatchIndex, 0));
+    /**
+     * If we found matches with the space, use the first one that's not the current match
+     */
+    if (spacedMatches.length > 0) {
+      const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
+      let wrappedMatches = wrapArray(spacedMatches, Math.max(currentMatchIndex, 0));
 
-			// return the first match that is not the current one.
-			const nextMatch = wrappedMatches.find((match) => match !== currentMatch);
-			// fallback to current if no other is found.
-			return nextMatch || currentMatch;
-		}
-	}
+      // return the first match that is not the current one.
+      const nextMatch = wrappedMatches.find((match) => match !== currentMatch);
+      // fallback to current if no other is found.
+      return nextMatch || currentMatch;
+    }
+  }
 
-	const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
-	const normalizedSearch = isRepeated ? search[0]! : search;
-	const normalizedLowerSearch = normalizedSearch.toLowerCase();
+  const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+  const normalizedSearch = isRepeated ? search[0]! : search;
+  const normalizedLowerSearch = normalizedSearch.toLowerCase();
 
-	const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
-	let wrappedValues = wrapArray(values, Math.max(currentMatchIndex, 0));
-	const excludeCurrentMatch = normalizedSearch.length === 1;
-	if (excludeCurrentMatch) wrappedValues = wrappedValues.filter((v) => v !== currentMatch);
+  const currentMatchIndex = currentMatch ? values.indexOf(currentMatch) : -1;
+  let wrappedValues = wrapArray(values, Math.max(currentMatchIndex, 0));
+  const excludeCurrentMatch = normalizedSearch.length === 1;
+  if (excludeCurrentMatch) wrappedValues = wrappedValues.filter((v) => v !== currentMatch);
 
-	const nextMatch = wrappedValues.find((value) =>
-		value?.toLowerCase().startsWith(normalizedLowerSearch)
-	);
+  const nextMatch = wrappedValues.find((value) => value?.toLowerCase().startsWith(normalizedLowerSearch));
 
-	return nextMatch !== currentMatch ? nextMatch : undefined;
+  return nextMatch !== currentMatch ? nextMatch : undefined;
 }
 
 /**
@@ -297,5 +283,5 @@ export function getNextMatch(values: string[], search: string, currentMatch?: st
  * Example: `wrapArray(['a', 'b', 'c', 'd'], 2) === ['c', 'd', 'a', 'b']`
  */
 export function wrapArray<T>(array: T[], startIndex: number) {
-	return array.map((_, index) => array[(startIndex + index) % array.length]) as T[];
+  return array.map((_, index) => array[(startIndex + index) % array.length]) as T[];
 }

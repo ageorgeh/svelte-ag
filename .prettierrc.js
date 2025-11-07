@@ -1,15 +1,12 @@
-
 // import sveltePlugin from 'prettier-plugin-svelte';
 // import tailwindPlugin from 'prettier-plugin-tailwindcss';
-
- 
 
 /**
  * @see https://prettier.io/docs/configuration
  * @type {import("prettier").Config}
  */
 const config = {
-  useTabs: false, 
+  useTabs: false,
   singleQuote: true,
   trailingComma: 'none',
   printWidth: 120,
@@ -18,15 +15,15 @@ const config = {
   svelteSortOrder: 'scripts-options-markup-styles',
   // Took that out cause im using the multiline eslint plugin which sorts better IMO
   //'prettier-plugin-tailwindcss'
-  plugins: ['prettier-plugin-svelte'],
+  plugins: ['prettier-plugin-svelte', 'prettier-plugin-packagejson'],
   overrides: [
     {
       files: '*.svelte',
       options: {
-        parser: 'svelte',   
-      },
-    },
-  ],
-}
- 
-export default config;    
+        parser: 'svelte'
+      }
+    }
+  ]
+};
+
+export default config;
