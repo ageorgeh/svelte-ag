@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Button } from '$shadcn/button/index.js';
-  import { cn } from '$shadcn/utils.js';
-  import PanelLeft from '@lucide/svelte/icons/panel-left';
+  import { cn } from '$utils/utils.js';
   import type { ComponentProps } from 'svelte';
   import { useSidebar } from './context.svelte.js';
 
@@ -28,9 +27,9 @@
   data-sidebar="trigger"
   variant="ghost"
   size="icon"
-  class={cn('h-7 w-7', className)}
+  class={cn('flex h-auto w-auto p-1', className)}
   {...restProps}
 >
-  <PanelLeft />
+  <span class="icon-[lucide--panel-left] size-4"></span>
   <span class="sr-only">Toggle Sidebar</span>
 </Button>

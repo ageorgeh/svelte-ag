@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Tooltip from '$shadcn/tooltip/index.js';
-  import { cn } from '$shadcn/utils.js';
+  import { cn } from '$utils/utils.js';
   import type { WithElementRef } from 'bits-ui';
   import type { HTMLAttributes } from 'svelte/elements';
   import { SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from './constants.js';

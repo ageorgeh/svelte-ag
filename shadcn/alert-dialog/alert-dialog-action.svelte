@@ -1,7 +1,7 @@
 <script lang="ts">
   import { AlertDialog as AlertDialogPrimitive } from 'bits-ui';
   import { buttonVariants } from '$shadcn/button/index.js';
-  import { cn } from '$shadcn/utils.js';
+  import { cn } from '$utils/utils.js';
 
   let { ref = $bindable(null), class: className, ...restProps }: AlertDialogPrimitive.ActionProps = $props();
 </script>

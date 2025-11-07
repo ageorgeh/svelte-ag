@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as FormPrimitive from 'formsnap';
-  import { cn } from '$shadcn/utils.js';
+  import { cn } from '$utils/utils.js';
   import type { WithoutChild } from 'svelte-toolbelt';
 
   let {

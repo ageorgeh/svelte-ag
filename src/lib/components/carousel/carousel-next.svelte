@@ -2,7 +2,7 @@
   import ArrowRight from '@lucide/svelte/icons/arrow-right';
   import type { WithoutChildren } from 'bits-ui';
   import { getEmblaContext } from './context.js';
-  import { cn } from '$shadcn/utils.js';
+  import { cn } from '$utils/utils.js';
   import { Button, type Props } from '$shadcn/button/index.js';
   import { tv, type VariantProps } from 'tailwind-variants';
 

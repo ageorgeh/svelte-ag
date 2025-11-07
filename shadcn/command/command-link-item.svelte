@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Command as CommandPrimitive } from 'bits-ui';
-  import { cn } from '$shadcn/utils.js';
+  import { cn } from '$utils/utils.js';
 
   let { ref = $bindable(null), class: className, ...restProps }: CommandPrimitive.LinkItemProps = $props();
 </script>

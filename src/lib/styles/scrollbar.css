@@ -1,0 +1,11 @@
+.myScrollbar {
+  @apply scrollbar scrollbar-track-sidebar scrollbar-track-rounded-full
+  scrollbar-thumb-sidebar-accent scrollbar-thumb-rounded-full scrollbar-hover:scrollbar-thumb-sidebar-primary/30
+  scrollbar-active:scrollbar-thumb-sidebar-primary/60;
+}
+
+.myScrollbar-thin {
+  @apply scrollbar-thin scrollbar-track-sidebar scrollbar-track-rounded-full
+  scrollbar-thumb-sidebar-accent scrollbar-thumb-rounded-full scrollbar-hover:scrollbar-thumb-sidebar-primary/30
+  scrollbar-active:scrollbar-thumb-sidebar-primary/60;
+}
