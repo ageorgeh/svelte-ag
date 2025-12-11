@@ -22,13 +22,13 @@ interface Options {
   safePackages: string[];
 }
 
+/** All unique component directories */
+const componentFiles = new Set<string>();
+
 export default function componentSourceCollector(opts: Options = { run: true, safePackages: [] }): Plugin {
   if (opts.run === false) return { name: 'disabled' };
 
   const outFile = opts.outputFile ?? 'component-sources.css';
-
-  /** All unique component directories */
-  const componentFiles = new Set<string>();
 
   let config: ResolvedConfig;
 

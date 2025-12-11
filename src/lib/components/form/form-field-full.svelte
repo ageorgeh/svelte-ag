@@ -1,5 +1,13 @@
+<script module lang="ts">
+  export type FormFullFieldProps<T extends Record<string, unknown>, U extends FormPath<T>> = FormFieldProps<T, U> & {
+    label: string;
+    description?: string;
+    inputProps: HTMLInputAttributes;
+  } & WithoutChildren<WithElementRef<HTMLAttributes<HTMLDivElement>>>;
+</script>
+
 <script lang="ts" generics="T extends Record<string, unknown>, U extends FormPath<T>">
-  import Field from './form-field.svelte';
+  import Field, { type FormFieldProps } from './form-field.svelte';
   import Label from './form-label.svelte';
   import Description from './form-description.svelte';
   import FieldErrors from './form-field-errors.svelte';
@@ -10,21 +18,20 @@
   import { cn } from '$utils/index.js';
   import type { HTMLAttributes, HTMLInputAttributes } from 'svelte/elements';
   import { mergeProps } from 'svelte-toolbelt';
+  import { getFormContext } from './form.svelte';
 
   let {
     ref = $bindable(null),
     class: className,
-    form,
+    form = getFormContext<T, U>(),
     name,
     label,
     description = '',
     inputProps,
     ...restProps
-  }: Form.FieldProps<T, U> & { label: string; description?: string; inputProps: HTMLInputAttributes } & WithoutChildren<
-      WithElementRef<HTMLAttributes<HTMLDivElement>>
-    > = $props();
+  }: FormFullFieldProps<T, U> = $props();
 
-  const { form: formData } = form;
+  const formData = $derived(form.form);
 </script>
 
 <Field {form} {name} class={cn(className)} {...restProps}>

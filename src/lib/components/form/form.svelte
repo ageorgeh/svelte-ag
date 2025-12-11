@@ -1,14 +1,16 @@
 <script module lang="ts">
   const formContextSymbolKey = 'super-form-context';
-  export type FormContext = SuperForm<any>;
+  export type FormContext<T extends Record<string, unknown>, U> = SuperForm<T, U>;
 
-  export function setFormContext(form: FormContext) {
+  export function setFormContext<T extends Record<string, unknown>, U>(form: FormContext<T, U>) {
     setContext(Symbol.for(formContextSymbolKey), form);
   }
 
-  export function getFormContext(): FormContext {
+  export function getFormContext<T extends Record<string, unknown>, U>(): FormContext<T, U> {
     return getContext(Symbol.for(formContextSymbolKey));
   }
+
+  export type FormRootProps = WithElementRef<HTMLFormAttributes> & { form: SuperForm<any> };
 </script>
 
 <script lang="ts">
@@ -18,13 +20,7 @@
   import type { HTMLFormAttributes } from 'svelte/elements';
   import type { SuperForm } from 'sveltekit-superforms';
 
-  let {
-    class: className,
-    ref = $bindable(null),
-    children,
-    form,
-    ...restProps
-  }: WithElementRef<HTMLFormAttributes> & { form: SuperForm<any> } = $props();
+  let { class: className, ref = $bindable(null), children, form, ...restProps }: FormRootProps = $props();
 
   const { enhance } = form;
 

@@ -5,6 +5,7 @@
     item: Search.ListProps['item'];
     value: Search.RootProps['value'];
     search?: Search.RootProps['search'];
+    trigger?: HTMLElement | null;
   } & Omit<PopoverTriggerProps, 'value'>;
 </script>
 
@@ -20,6 +21,7 @@
     value = $bindable(),
     perPage = $bindable(2),
     ref = $bindable(null),
+    trigger = $bindable(null),
     item,
     search,
     class: className,
@@ -27,9 +29,6 @@
   }: SearchPopoverProps = $props();
 
   let searchPagnation = $state<Search.Pagnation | null>(null);
-
-  // svelte-ignore non_reactive_update
-  let trigger: HTMLButtonElement | null = null;
 
   export function focus() {
     if (trigger) {

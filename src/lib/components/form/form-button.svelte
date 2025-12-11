@@ -1,9 +1,13 @@
-<script lang="ts">
+<script module lang="ts">
   import * as Button from '$shadcn/button/index.js';
+  export type FormButtonProps = Button.Props;
+</script>
+
+<script lang="ts">
   import { cn, flyAndScale } from '$utils/utils.js';
   import { getFormContext } from './form.svelte';
 
-  let { ref = $bindable(null), children, class: className, ...restProps }: Button.Props = $props();
+  let { ref = $bindable(null), children, class: className, ...restProps }: FormButtonProps = $props();
 
   const form = getFormContext();
   const { submitting, delayed } = form;

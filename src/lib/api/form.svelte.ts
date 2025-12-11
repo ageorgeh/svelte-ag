@@ -1,7 +1,14 @@
 import { superForm, defaults, setError, setMessage, type SuperForm, type SuperValidated } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
-import type { ApiRequestFunction, HTTPMethod, ApiEndpoints, ApiInput, ApiSuccessBody, ApiErrorBody } from 'ts-ag';
-import type * as v from 'valibot';
+import type {
+  ApiRequestFunction,
+  HTTPMethod,
+  ApiEndpoints,
+  ApiInput,
+  ApiSuccessBody,
+  ApiErrorBody,
+  ApiSchema
+} from 'ts-ag';
 
 type ValidInput<E extends ApiEndpoints, P extends E['path'], M extends E['method']> = NonNullable<ApiInput<E, P, M>>;
 
@@ -22,13 +29,14 @@ export type ApiRequestForm<API extends ApiEndpoints> = <
     ) => void | Promise<void>;
   };
   defaultValue?: Partial<ApiInput<API, Path, Method>>;
+  formProps?: Parameters<typeof superForm<ValidInput<API, Path, Method>>>[1];
 }) => SuperForm<ValidInput<API, Path, Method>>;
 
 export function createFormFunction<API extends ApiEndpoints>(
-  schemas: Record<API['path'], Record<HTTPMethod, v.GenericSchema>>,
+  schemas: Partial<Record<API['path'], Partial<Record<HTTPMethod, ApiSchema>>>>,
   request: ApiRequestFunction<API>
 ): ApiRequestForm<API> {
-  return ({ path, method, actions, defaultValue }) => {
+  return ({ path, method, actions, defaultValue, formProps }) => {
     const schema = schemas[path]?.[method];
     if (schema === undefined) throw new Error('Invalid schema for form');
 
@@ -50,6 +58,7 @@ export function createFormFunction<API extends ApiEndpoints>(
         if (res.ok === false) {
           const body = await res.json();
 
+          // TODO set some kind of overall form error if there is no field
           if (!body.field) {
             setError(form, '', body.message);
           } else {
@@ -65,7 +74,8 @@ export function createFormFunction<API extends ApiEndpoints>(
             await actions.onSuccess(form, body);
           }
         }
-      }
+      },
+      ...formProps
     });
   };
 }
