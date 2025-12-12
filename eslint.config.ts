@@ -20,6 +20,9 @@ export default ts.config(
   ...svelte.configs.recommended,
   {
     languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname
+      },
       globals: {
         ...globals.browser,
         ...globals.node

@@ -18,8 +18,10 @@ import ElementField from './form-element-field.svelte';
 export * from './form-element-field.svelte';
 import Button from './form-button.svelte';
 export * from './form-button.svelte';
-import Control from './form-control.svelte';
-export * from './form-control.svelte';
+import Message from './form-message.svelte';
+export * from './form-message.svelte';
+
+import { Control } from 'formsnap';
 
 export {
   Root,
@@ -28,6 +30,7 @@ export {
   Control,
   Label,
   Button,
+  Message,
   FieldErrors,
   Description,
   Fieldset,
@@ -40,6 +43,7 @@ export {
   Control as FormControl,
   Description as FormDescription,
   Label as FormLabel,
+  Message as FormMessage,
   FieldErrors as FormFieldErrors,
   Fieldset as FormFieldset,
   Legend as FormLegend,

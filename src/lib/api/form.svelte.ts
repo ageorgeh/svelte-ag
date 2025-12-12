@@ -60,7 +60,8 @@ export function createFormFunction<API extends ApiEndpoints>(
 
           // TODO set some kind of overall form error if there is no field
           if (!body.field) {
-            setError(form, '', body.message);
+            setMessage(form, body.message);
+            // setError(form, '', body.message);
           } else {
             setError(form, body.field!.name, body.field.value, { status: res.status });
           }

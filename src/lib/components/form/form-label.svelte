@@ -1,7 +1,8 @@
 <script lang="ts">
   import * as FormPrimitive from 'formsnap';
   import { Label } from '$shadcn/label/index.js';
-  import { cn, type WithoutChild } from '$shadcn/utils.js';
+  import { cn } from 'svelte-ag';
+  import type { WithoutChild } from 'svelte-toolbelt';
 
   let {
     ref = $bindable(null),

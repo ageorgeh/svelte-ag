@@ -13,7 +13,8 @@
   import FieldErrors from './form-field-errors.svelte';
   import { Input } from '$shadcn/input/index.js';
   import * as Form from 'formsnap';
-  import type { FormPath } from 'sveltekit-superforms';
+  import { type FormPath } from 'sveltekit-superforms';
+  import { get, set } from 'radash';
   import { type WithElementRef, type WithoutChildren } from 'svelte-toolbelt';
   import { cn } from '$utils/index.js';
   import type { HTMLAttributes, HTMLInputAttributes } from 'svelte/elements';
@@ -39,7 +40,9 @@
     {#snippet children({ props })}
       {@const inProps = mergeProps({ ...inputProps, ...props }) as typeof props}
       <Label>{label}</Label>
-      <Input {...inProps} bind:value={$formData[name]} />
+
+      <!-- get and set because we need to dynamically index $formData -->
+      <Input {...inProps} bind:value={() => get($formData, name), (v) => ($formData = set($formData, name, v))} />
     {/snippet}
   </Form.Control>
 

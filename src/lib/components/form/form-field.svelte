@@ -1,10 +1,10 @@
 <script module lang="ts">
-  import type { Optional } from 'ts-ag';
-  export type FormFieldProps<T extends Record<string, unknown>, U extends FormPath<T>> = Optional<
+  export type FormFieldProps<T extends Record<string, unknown>, U extends FormPath<T>> = Omit<
     FormPrimitive.FieldProps<T, U>,
     'form'
-  > &
-    WithoutChildren<WithElementRef<HTMLAttributes<HTMLDivElement>>>;
+  > & { form?: FormPrimitive.FieldProps<T, U>['form'] } & WithoutChildren<
+      WithElementRef<HTMLAttributes<HTMLDivElement>>
+    >;
 </script>
 
 <script lang="ts" generics="T extends Record<string, unknown>, U extends FormPath<T>">
