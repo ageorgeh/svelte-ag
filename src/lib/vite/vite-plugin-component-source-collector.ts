@@ -1,6 +1,7 @@
 import type { Plugin, ResolvedConfig } from 'vite';
 import { writeIfDifferent } from 'ts-ag';
 import path from 'path';
+import { readFile } from 'fs/promises';
 
 interface Options {
   /**
@@ -31,10 +32,16 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
   const outFile = opts.outputFile ?? 'component-sources.css';
 
   let config: ResolvedConfig;
+  let firstRound = true;
 
   /** ---- helpers ---------------------------------------------------------- */
   let initialTransformDone = false;
   let initialTransformTimer: NodeJS.Timeout | null = null;
+
+  function addPath(file: string) {
+    const outPath = path.resolve(config.root, outFile);
+    componentFiles.add(path.relative(path.dirname(outPath), file));
+  }
 
   function scheduleInitialWrite() {
     if (initialTransformTimer) clearTimeout(initialTransformTimer);
@@ -46,14 +53,13 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
     }, 1000); // adjust delay as needed
   }
   const writeOutFile = async () => {
-    console.log('writing', componentFiles.size);
+    // console.log('writing', componentFiles.size);
     const outPath = path.resolve(config.root, outFile);
-    const lines = [...componentFiles]
-      .map((d) => `@source '${path.relative(path.dirname(outPath), d)}';`)
-      .sort()
-      .join('\n');
+    const lines = Array.from(componentFiles)
+      .map((d) => `@source '${d}';`)
+      .sort();
 
-    const didWrite = await writeIfDifferent(outPath, lines);
+    const didWrite = await writeIfDifferent(outPath, lines.join('\n'));
     if (didWrite) console.log('Wrote', lines.length);
   };
 
@@ -71,14 +77,23 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
     name: 'vite-plugin-component-source-collector',
     enforce: 'pre',
 
-    configResolved(resolved) {
+    async configResolved(resolved) {
       config = resolved;
-      // componentFiles.clear();
-      console.log('tailwind-sources:configResolved', config.command);
+      const outPath = path.resolve(config.root, outFile);
+
+      if (config.command === 'build' && firstRound) {
+        componentFiles.clear();
+        firstRound = false;
+      } else if (config.command === 'serve') {
+        const fileLines = (await readFile(outPath, 'utf8')).split('\n');
+        fileLines.forEach((l) => addPath(l.replace(/@source\s+'(.*?)';/, '$1')));
+        console.log('config resolved', componentFiles);
+      }
+      console.log('tailwind-sources:configResolved:command', config.command);
     },
 
     buildStart() {
-      console.log('tailwind-sources:buildStart', componentFiles);
+      // console.log('tailwind-sources:buildStart', componentFiles);
       // componentFiles.clear();
     },
 
@@ -91,7 +106,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
         for (const match of matches) {
           const resolved = await this.resolve(match[1], id);
           if (resolved && shouldAdd(resolved.id)) {
-            componentFiles.add(resolved.id);
+            addPath(resolved.id);
           }
         }
       }
@@ -99,8 +114,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
 
       // Adds all other files with the classRegex
       if (classRegex.test(code) && shouldAdd(id)) {
-        componentFiles.add(id);
-
+        addPath(id);
         // if (config.command === 'serve') await writeOutFile();
       }
       if (!initialTransformDone) {

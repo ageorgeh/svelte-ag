@@ -25,7 +25,7 @@ export function onDragEnd({ active, over, dnd }: DragEndProps) {
   const overData = data(over);
   // Add this in as well accepts.includes(activeType)
 
-  console.log('Acitve/over', $state.snapshot(activeData), $state.snapshot(overData));
+  // console.log('Acitve/over', $state.snapshot(activeData), $state.snapshot(overData));
   const usesId = 'id' in activeData.item.current;
 
   if (activeData.type.current === overData.type.current) {
