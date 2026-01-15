@@ -1,12 +1,12 @@
 {
-  "id": "svelte-ag@1.0.6",
+  "id": "svelte-ag@1.0.9",
   "name": "svelte-ag",
-  "version": "1.0.6",
-  "size": 181630,
-  "unpackedSize": 870367,
-  "shasum": "1a62aa2714645ddac550442859c05f62c5db204e",
-  "integrity": "sha512-jHfHeKitMGucv2YLrqQbGRLE/XGtaXsIZ3d6S0G+yAX0578dhA/fmiqrFrKstjbNfPDxMhqQWG7iUpNFUBnHnw==",
-  "filename": "svelte-ag-1.0.6.tgz",
+  "version": "1.0.9",
+  "size": 185592,
+  "unpackedSize": 895302,
+  "shasum": "b82f874d82987fa5714a1d895e74039f711f3148",
+  "integrity": "sha512-y0cPS3YsOo76imWbKkq4lsck8Q8m+aTw9vq5Fsqy9JwyQG0/3pE31eF72L61/RyXBC8zjsu8224fqAORe/c/Fw==",
+  "filename": "svelte-ag-1.0.9.tgz",
   "files": [
     {
       "path": "README.md",
@@ -35,17 +35,17 @@
     },
     {
       "path": "dist/lib/api/form.svelte.d.ts",
-      "size": 1182,
+      "size": 1261,
       "mode": 420
     },
     {
       "path": "dist/lib/api/form.svelte.d.ts.map",
-      "size": 1500,
+      "size": 1615,
       "mode": 420
     },
     {
       "path": "dist/lib/api/form.svelte.js",
-      "size": 1757,
+      "size": 1938,
       "mode": 420
     },
     {
@@ -979,8 +979,38 @@
       "mode": 420
     },
     {
+      "path": "dist/lib/components/breakpoint-badge/BreakpointBadge.svelte",
+      "size": 2158,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/breakpoint-badge/BreakpointBadge.svelte.d.ts",
+      "size": 302,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/breakpoint-badge/BreakpointBadge.svelte.d.ts.map",
+      "size": 346,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/breakpoint-badge/index.d.ts",
+      "size": 148,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/breakpoint-badge/index.d.ts.map",
+      "size": 219,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/breakpoint-badge/index.js",
+      "size": 113,
+      "mode": 420
+    },
+    {
       "path": "dist/lib/components/carousel/carousel-content.svelte",
-      "size": 726,
+      "size": 730,
       "mode": 420
     },
     {
@@ -995,7 +1025,7 @@
     },
     {
       "path": "dist/lib/components/carousel/carousel-dots.svelte",
-      "size": 779,
+      "size": 783,
       "mode": 420
     },
     {
@@ -1010,7 +1040,7 @@
     },
     {
       "path": "dist/lib/components/carousel/carousel-item.svelte",
-      "size": 784,
+      "size": 788,
       "mode": 420
     },
     {
@@ -1025,7 +1055,7 @@
     },
     {
       "path": "dist/lib/components/carousel/carousel-next.svelte",
-      "size": 1388,
+      "size": 1392,
       "mode": 420
     },
     {
@@ -1040,7 +1070,7 @@
     },
     {
       "path": "dist/lib/components/carousel/carousel-previous.svelte",
-      "size": 1389,
+      "size": 1393,
       "mode": 420
     },
     {
@@ -1055,7 +1085,7 @@
     },
     {
       "path": "dist/lib/components/carousel/carousel.svelte",
-      "size": 3077,
+      "size": 3081,
       "mode": 420
     },
     {
@@ -1135,12 +1165,12 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-context.svelte.d.ts",
-      "size": 1517,
+      "size": 1775,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-context.svelte.d.ts.map",
-      "size": 1723,
+      "size": 1988,
       "mode": 420
     },
     {
@@ -1150,12 +1180,12 @@
     },
     {
       "path": "dist/lib/components/dnd/dnd-drag-overlay.svelte.d.ts",
-      "size": 1408,
+      "size": 1638,
       "mode": 420
     },
     {
       "path": "dist/lib/components/dnd/dnd-drag-overlay.svelte.d.ts.map",
-      "size": 1516,
+      "size": 1763,
       "mode": 420
     },
     {
@@ -1305,7 +1335,7 @@
     },
     {
       "path": "dist/lib/components/dnd/sortable.svelte.js",
-      "size": 4236,
+      "size": 4239,
       "mode": 420
     },
     {
@@ -1340,22 +1370,37 @@
     },
     {
       "path": "dist/lib/components/form/form-button.svelte",
-      "size": 701,
+      "size": 884,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-button.svelte.d.ts",
-      "size": 254,
+      "size": 298,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-button.svelte.d.ts.map",
-      "size": 301,
+      "size": 347,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/form/form-control.svelte",
+      "size": 818,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/form/form-control.svelte.d.ts",
+      "size": 663,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/form/form-control.svelte.d.ts.map",
+      "size": 733,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-description.svelte",
-      "size": 454,
+      "size": 458,
       "mode": 420
     },
     {
@@ -1375,57 +1420,57 @@
     },
     {
       "path": "dist/lib/components/form/form-element-field.svelte.d.ts",
-      "size": 1311,
+      "size": 1614,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-element-field.svelte.d.ts.map",
-      "size": 1567,
+      "size": 1888,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field-errors.svelte",
-      "size": 792,
+      "size": 828,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field-errors.svelte.d.ts",
-      "size": 220,
+      "size": 451,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field-errors.svelte.d.ts.map",
-      "size": 275,
+      "size": 480,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field-full.svelte",
-      "size": 1442,
+      "size": 1874,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field-full.svelte.d.ts",
-      "size": 1625,
+      "size": 2063,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field-full.svelte.d.ts.map",
-      "size": 1738,
+      "size": 2375,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field.svelte",
-      "size": 948,
+      "size": 1261,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field.svelte.d.ts",
-      "size": 1497,
+      "size": 1990,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-field.svelte.d.ts.map",
-      "size": 1676,
+      "size": 2370,
       "mode": 420
     },
     {
@@ -1435,22 +1480,22 @@
     },
     {
       "path": "dist/lib/components/form/form-fieldset.svelte.d.ts",
-      "size": 1356,
+      "size": 1698,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-fieldset.svelte.d.ts.map",
-      "size": 1585,
+      "size": 2014,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-label.svelte",
-      "size": 588,
+      "size": 617,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form-label.svelte.d.ts",
-      "size": 267,
+      "size": 268,
       "mode": 420
     },
     {
@@ -1474,48 +1519,63 @@
       "mode": 420
     },
     {
+      "path": "dist/lib/components/form/form-message.svelte",
+      "size": 856,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/form/form-message.svelte.d.ts",
+      "size": 399,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/form/form-message.svelte.d.ts.map",
+      "size": 375,
+      "mode": 420
+    },
+    {
       "path": "dist/lib/components/form/form.svelte",
-      "size": 980,
+      "size": 1131,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form.svelte.d.ts",
-      "size": 591,
+      "size": 719,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/form.svelte.d.ts.map",
-      "size": 620,
+      "size": 848,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/index.d.ts",
-      "size": 1022,
+      "size": 1440,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/index.d.ts.map",
-      "size": 892,
+      "size": 1179,
       "mode": 420
     },
     {
       "path": "dist/lib/components/form/index.js",
-      "size": 943,
+      "size": 1409,
       "mode": 420
     },
     {
       "path": "dist/lib/components/gallery/gallery.svelte",
-      "size": 1700,
+      "size": 1934,
       "mode": 420
     },
     {
       "path": "dist/lib/components/gallery/gallery.svelte.d.ts",
-      "size": 1514,
+      "size": 1867,
       "mode": 420
     },
     {
       "path": "dist/lib/components/gallery/gallery.svelte.d.ts.map",
-      "size": 1307,
+      "size": 1770,
       "mode": 420
     },
     {
@@ -1615,17 +1675,17 @@
     },
     {
       "path": "dist/lib/components/search/combinations/searchPopover.svelte",
-      "size": 2008,
+      "size": 1994,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/combinations/searchPopover.svelte.d.ts",
-      "size": 908,
+      "size": 954,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/combinations/searchPopover.svelte.d.ts.map",
-      "size": 729,
+      "size": 770,
       "mode": 420
     },
     {
@@ -1660,7 +1720,7 @@
     },
     {
       "path": "dist/lib/components/search/components/search-list.svelte",
-      "size": 1322,
+      "size": 1331,
       "mode": 420
     },
     {
@@ -1690,12 +1750,12 @@
     },
     {
       "path": "dist/lib/components/search/components/search.svelte",
-      "size": 1103,
+      "size": 1118,
       "mode": 420
     },
     {
       "path": "dist/lib/components/search/components/search.svelte.d.ts",
-      "size": 261,
+      "size": 264,
       "mode": 420
     },
     {
@@ -1735,7 +1795,7 @@
     },
     {
       "path": "dist/lib/components/search/search.svelte.d.ts",
-      "size": 3392,
+      "size": 3395,
       "mode": 420
     },
     {
@@ -1815,7 +1875,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-content.svelte",
-      "size": 560,
+      "size": 564,
       "mode": 420
     },
     {
@@ -1830,7 +1890,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-footer.svelte",
-      "size": 467,
+      "size": 471,
       "mode": 420
     },
     {
@@ -1845,7 +1905,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-action.svelte",
-      "size": 1163,
+      "size": 1167,
       "mode": 420
     },
     {
@@ -1860,7 +1920,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-content.svelte",
-      "size": 468,
+      "size": 472,
       "mode": 420
     },
     {
@@ -1875,7 +1935,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group-label.svelte",
-      "size": 1082,
+      "size": 1086,
       "mode": 420
     },
     {
@@ -1890,7 +1950,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-group.svelte",
-      "size": 493,
+      "size": 497,
       "mode": 420
     },
     {
@@ -1905,7 +1965,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-header.svelte",
-      "size": 467,
+      "size": 471,
       "mode": 420
     },
     {
@@ -1920,7 +1980,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-input.svelte",
-      "size": 508,
+      "size": 512,
       "mode": 420
     },
     {
@@ -1935,7 +1995,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-inset.svelte",
-      "size": 804,
+      "size": 808,
       "mode": 420
     },
     {
@@ -1950,7 +2010,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-action.svelte",
-      "size": 1763,
+      "size": 1767,
       "mode": 420
     },
     {
@@ -1965,7 +2025,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-badge.svelte",
-      "size": 951,
+      "size": 955,
       "mode": 420
     },
     {
@@ -1980,7 +2040,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-button.svelte",
-      "size": 5095,
+      "size": 5099,
       "mode": 420
     },
     {
@@ -1995,7 +2055,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-item.svelte",
-      "size": 486,
+      "size": 490,
       "mode": 420
     },
     {
@@ -2010,7 +2070,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-skeleton.svelte",
-      "size": 960,
+      "size": 964,
       "mode": 420
     },
     {
@@ -2025,7 +2085,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-sub-button.svelte",
-      "size": 1642,
+      "size": 1646,
       "mode": 420
     },
     {
@@ -2055,7 +2115,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu-sub.svelte",
-      "size": 608,
+      "size": 612,
       "mode": 420
     },
     {
@@ -2070,7 +2130,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-menu.svelte",
-      "size": 497,
+      "size": 501,
       "mode": 420
     },
     {
@@ -2085,7 +2145,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-provider.svelte",
-      "size": 1619,
+      "size": 1623,
       "mode": 420
     },
     {
@@ -2100,7 +2160,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-rail.svelte",
-      "size": 1577,
+      "size": 1581,
       "mode": 420
     },
     {
@@ -2115,7 +2175,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-separator.svelte",
-      "size": 406,
+      "size": 410,
       "mode": 420
     },
     {
@@ -2130,7 +2190,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar-trigger.svelte",
-      "size": 821,
+      "size": 822,
       "mode": 420
     },
     {
@@ -2145,7 +2205,7 @@
     },
     {
       "path": "dist/lib/components/sidebar/sidebar.svelte",
-      "size": 4991,
+      "size": 4995,
       "mode": 420
     },
     {
@@ -2354,6 +2414,11 @@
       "mode": 420
     },
     {
+      "path": "dist/lib/styles/scrollbar.css",
+      "size": 525,
+      "mode": 420
+    },
+    {
       "path": "dist/lib/styles/underline.css",
       "size": 324,
       "mode": 420
@@ -2475,7 +2540,7 @@
     },
     {
       "path": "dist/lib/vite/vite-plugin-component-source-collector.js",
-      "size": 3765,
+      "size": 4423,
       "mode": 420
     },
     {
@@ -2520,7 +2585,7 @@
     },
     {
       "path": "src/lib/api/form.svelte.ts",
-      "size": 2582,
+      "size": 2815,
       "mode": 420
     },
     {
@@ -2834,33 +2899,43 @@
       "mode": 420
     },
     {
+      "path": "src/lib/components/breakpoint-badge/BreakpointBadge.svelte",
+      "size": 2158,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/breakpoint-badge/index.ts",
+      "size": 113,
+      "mode": 420
+    },
+    {
       "path": "src/lib/components/carousel/carousel-content.svelte",
-      "size": 726,
+      "size": 725,
       "mode": 420
     },
     {
       "path": "src/lib/components/carousel/carousel-dots.svelte",
-      "size": 779,
+      "size": 778,
       "mode": 420
     },
     {
       "path": "src/lib/components/carousel/carousel-item.svelte",
-      "size": 784,
+      "size": 783,
       "mode": 420
     },
     {
       "path": "src/lib/components/carousel/carousel-next.svelte",
-      "size": 1388,
+      "size": 1387,
       "mode": 420
     },
     {
       "path": "src/lib/components/carousel/carousel-previous.svelte",
-      "size": 1389,
+      "size": 1388,
       "mode": 420
     },
     {
       "path": "src/lib/components/carousel/carousel.svelte",
-      "size": 3077,
+      "size": 3076,
       "mode": 420
     },
     {
@@ -2940,7 +3015,7 @@
     },
     {
       "path": "src/lib/components/dnd/sortable.svelte.ts",
-      "size": 3978,
+      "size": 3981,
       "mode": 420
     },
     {
@@ -2955,12 +3030,17 @@
     },
     {
       "path": "src/lib/components/form/form-button.svelte",
-      "size": 696,
+      "size": 879,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/form/form-control.svelte",
+      "size": 818,
       "mode": 420
     },
     {
       "path": "src/lib/components/form/form-description.svelte",
-      "size": 454,
+      "size": 453,
       "mode": 420
     },
     {
@@ -2970,17 +3050,17 @@
     },
     {
       "path": "src/lib/components/form/form-field-errors.svelte",
-      "size": 792,
+      "size": 828,
       "mode": 420
     },
     {
       "path": "src/lib/components/form/form-field-full.svelte",
-      "size": 1437,
+      "size": 1869,
       "mode": 420
     },
     {
       "path": "src/lib/components/form/form-field.svelte",
-      "size": 943,
+      "size": 1256,
       "mode": 420
     },
     {
@@ -2990,7 +3070,7 @@
     },
     {
       "path": "src/lib/components/form/form-label.svelte",
-      "size": 588,
+      "size": 617,
       "mode": 420
     },
     {
@@ -2999,18 +3079,23 @@
       "mode": 420
     },
     {
+      "path": "src/lib/components/form/form-message.svelte",
+      "size": 851,
+      "mode": 420
+    },
+    {
       "path": "src/lib/components/form/form.svelte",
-      "size": 980,
+      "size": 1131,
       "mode": 420
     },
     {
       "path": "src/lib/components/form/index.ts",
-      "size": 990,
+      "size": 1460,
       "mode": 420
     },
     {
       "path": "src/lib/components/gallery/gallery.svelte",
-      "size": 1695,
+      "size": 1929,
       "mode": 420
     },
     {
@@ -3050,7 +3135,7 @@
     },
     {
       "path": "src/lib/components/search/combinations/searchPopover.svelte",
-      "size": 2000,
+      "size": 1986,
       "mode": 420
     },
     {
@@ -3065,7 +3150,7 @@
     },
     {
       "path": "src/lib/components/search/components/search-list.svelte",
-      "size": 1314,
+      "size": 1323,
       "mode": 420
     },
     {
@@ -3075,7 +3160,7 @@
     },
     {
       "path": "src/lib/components/search/components/search.svelte",
-      "size": 1095,
+      "size": 1110,
       "mode": 420
     },
     {
@@ -3090,7 +3175,7 @@
     },
     {
       "path": "src/lib/components/search/search.svelte.ts",
-      "size": 7668,
+      "size": 7671,
       "mode": 420
     },
     {
@@ -3120,77 +3205,77 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-content.svelte",
-      "size": 560,
+      "size": 559,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-footer.svelte",
-      "size": 467,
+      "size": 466,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-group-action.svelte",
-      "size": 1163,
+      "size": 1162,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-group-content.svelte",
-      "size": 468,
-      "mode": 420
-    },
-    {
-      "path": "src/lib/components/sidebar/sidebar-group-label.svelte",
-      "size": 1082,
-      "mode": 420
-    },
-    {
-      "path": "src/lib/components/sidebar/sidebar-group.svelte",
-      "size": 493,
-      "mode": 420
-    },
-    {
-      "path": "src/lib/components/sidebar/sidebar-header.svelte",
       "size": 467,
       "mode": 420
     },
     {
+      "path": "src/lib/components/sidebar/sidebar-group-label.svelte",
+      "size": 1081,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/sidebar/sidebar-group.svelte",
+      "size": 492,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/sidebar/sidebar-header.svelte",
+      "size": 466,
+      "mode": 420
+    },
+    {
       "path": "src/lib/components/sidebar/sidebar-input.svelte",
-      "size": 508,
+      "size": 507,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-inset.svelte",
-      "size": 804,
+      "size": 803,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-action.svelte",
-      "size": 1763,
+      "size": 1762,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-badge.svelte",
-      "size": 951,
+      "size": 950,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-button.svelte",
-      "size": 5095,
+      "size": 5094,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-item.svelte",
-      "size": 486,
+      "size": 485,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-skeleton.svelte",
-      "size": 960,
+      "size": 959,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-sub-button.svelte",
-      "size": 1642,
+      "size": 1641,
       "mode": 420
     },
     {
@@ -3200,37 +3285,37 @@
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu-sub.svelte",
-      "size": 608,
+      "size": 607,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-menu.svelte",
-      "size": 497,
+      "size": 496,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-provider.svelte",
-      "size": 1619,
+      "size": 1618,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-rail.svelte",
-      "size": 1577,
+      "size": 1576,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-separator.svelte",
-      "size": 406,
+      "size": 405,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar-trigger.svelte",
-      "size": 821,
+      "size": 817,
       "mode": 420
     },
     {
       "path": "src/lib/components/sidebar/sidebar.svelte",
-      "size": 4991,
+      "size": 4990,
       "mode": 420
     },
     {
@@ -3299,6 +3384,11 @@
       "mode": 420
     },
     {
+      "path": "src/lib/styles/scrollbar.css",
+      "size": 525,
+      "mode": 420
+    },
+    {
       "path": "src/lib/styles/underline.css",
       "size": 324,
       "mode": 420
@@ -3340,7 +3430,7 @@
     },
     {
       "path": "src/lib/vite/vite-plugin-component-source-collector.ts",
-      "size": 3899,
+      "size": 4492,
       "mode": 420
     },
     {
@@ -3349,6 +3439,6 @@
       "mode": 420
     }
   ],
-  "entryCount": 668,
+  "entryCount": 686,
   "bundled": []
 }

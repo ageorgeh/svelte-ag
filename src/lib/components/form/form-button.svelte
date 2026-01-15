@@ -1,3 +1,11 @@
+<!-- 
+Submission button that shows a loading symbol on submission
+
+Icons:
+    icon-loading
+
+-->
+
 <script module lang="ts">
   import * as Button from '$shadcn/button/index.js';
   export type FormButtonProps = Button.Props;

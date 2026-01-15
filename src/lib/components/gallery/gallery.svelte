@@ -15,7 +15,7 @@
     ...restProps
   }: WithElementRef<HTMLDivAttributes> & {
     images: { large: Item[]; medium: Item[]; small: Item[] };
-    maxCols: number;
+    maxCols?: number;
     child: Snippet<[{ props: { style: string }; item: ItemWithSize; index: number }]>;
   } = $props();
 
