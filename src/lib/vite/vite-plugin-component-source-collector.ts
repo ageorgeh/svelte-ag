@@ -75,7 +75,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
 
   return {
     name: 'vite-plugin-component-source-collector',
-    enforce: 'pre',
+    enforce: 'post',
 
     async configResolved(resolved) {
       config = resolved;
