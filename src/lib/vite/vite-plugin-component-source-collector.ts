@@ -104,6 +104,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
         const matches = code.matchAll(importRegex);
 
         for (const match of matches) {
+          console.log('MATching', match);
           const resolved = await this.resolve(match[1], id);
           if (resolved && shouldAdd(resolved.id)) {
             addPath(resolved.id);
