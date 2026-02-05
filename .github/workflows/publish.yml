@@ -38,12 +38,10 @@ jobs:
 
       - name: testing
         run: |
-          npm config get //registry.npmjs.org/:_authToken | sed 's/./*/g' | head -c 40; echo
-          # show relevant config sources
-          ls -la ~
-          test -f ~/.npmrc && (echo "=== ~/.npmrc ==="; sed -E 's/(_authToken=).+/\1***redacted***/' ~/.npmrc)
-          npm config list -l | grep -E "registry|_authToken|provenance|token" -i
-          npm whoami || true
+          npm config get globalconfig
+          npm config get userconfig
+          sed -E 's/(_authToken=).+/\1***redacted***/' $(npm config get globalconfig) 
+          sed -E 's/(_authToken=).+/\1***redacted***/' $(npm config get userconfig)
       # - name: semantic-release
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
