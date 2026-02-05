@@ -5,3 +5,4 @@ type $$ComponentProps = PopoverPrimitive.ContentProps & {
 declare const PopoverContent: import('svelte').Component<$$ComponentProps, {}, 'ref'>;
 type PopoverContent = ReturnType<typeof PopoverContent>;
 export default PopoverContent;
+//# sourceMappingURL=popover-content.svelte.d.ts.map

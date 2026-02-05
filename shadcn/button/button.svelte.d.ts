@@ -71,3 +71,4 @@ export type ButtonProps = WithElementRef<HTMLButtonAttributes> &
 declare const Button: import('svelte').Component<ButtonProps, {}, 'ref'>;
 type Button = ReturnType<typeof Button>;
 export default Button;
+//# sourceMappingURL=button.svelte.d.ts.map

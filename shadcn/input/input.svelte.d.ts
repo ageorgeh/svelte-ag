@@ -17,3 +17,4 @@ type Props = WithElementRef<
 declare const Input: import('svelte').Component<Props, {}, 'value' | 'ref' | 'files'>;
 type Input = ReturnType<typeof Input>;
 export default Input;
+//# sourceMappingURL=input.svelte.d.ts.map

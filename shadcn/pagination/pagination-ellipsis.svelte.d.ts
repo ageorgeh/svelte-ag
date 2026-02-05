@@ -7,3 +7,4 @@ declare const PaginationEllipsis: import('svelte').Component<
 >;
 type PaginationEllipsis = ReturnType<typeof PaginationEllipsis>;
 export default PaginationEllipsis;
+//# sourceMappingURL=pagination-ellipsis.svelte.d.ts.map

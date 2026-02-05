@@ -7,3 +7,4 @@ type $$ComponentProps = PaginationPrimitive.PageProps &
 declare const PaginationLink: import('svelte').Component<$$ComponentProps, {}, 'ref'>;
 type PaginationLink = ReturnType<typeof PaginationLink>;
 export default PaginationLink;
+//# sourceMappingURL=pagination-link.svelte.d.ts.map
