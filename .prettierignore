@@ -5,6 +5,7 @@ pnpm-lock.yaml
 # Node.js modules
 node_modules/
 
+.gitignore
 
 # Build output directories
 dist/
@@ -12,6 +13,7 @@ build/
 .out/
 */.out/
 .svelte-kit/
+.husky/
 
 
 # Logs
