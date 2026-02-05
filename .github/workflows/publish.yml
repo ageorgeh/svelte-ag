@@ -45,6 +45,7 @@ jobs:
 
 
           npm config list -l
+          env | grep -E "NODE_AUTH_TOKEN|NPM_TOKEN|NPM_CONFIG_|NPMRC" -i || true
       # - name: semantic-release
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
