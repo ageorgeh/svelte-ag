@@ -38,14 +38,7 @@ jobs:
 
       - name: testing
         run: |
-          npm config get globalconfig
-          npm config get userconfig
-          sed -E 's/(_authToken=).+/\1***redacted***/' $(npm config get globalconfig) || true
-          sed -E 's/(_authToken=).+/\1***redacted***/' $(npm config get userconfig) || true
-
-
-          npm config list -l
-          env | grep -E "NODE_AUTH_TOKEN|NPM_TOKEN|NPM_CONFIG_|NPMRC" -i || true
+          npm config get provenance
       # - name: semantic-release
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
