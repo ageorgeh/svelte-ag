@@ -33,6 +33,8 @@ const config = {
 
         config.compilerOptions.isolatedModules = false;
         config.compilerOptions.strict = true;
+        config.compilerOptions.declarationMap = true;
+        config.compilerOptions.declaration = true;
         config.compilerOptions.strictNullChecks = true;
         config.compilerOptions.preserveSymlinks = true;
 
