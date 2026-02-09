@@ -36,11 +36,8 @@ jobs:
       - name: build
         run: |
           pnpm build
-          node -v
-          pnpm -v
-          cat ./dist/lib/components/sidebar/context.svelte.js
 
-      # - name: semantic-release
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: npx semantic-release
+      - name: semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
