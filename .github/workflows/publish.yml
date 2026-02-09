@@ -36,6 +36,7 @@ jobs:
       - name: build
         run: |
           pnpm build
+          node -v
           cat ./dist/lib/components/sidebar/context.svelte.js
 
       # - name: semantic-release
