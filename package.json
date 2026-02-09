@@ -30,6 +30,7 @@
     "./dist"
   ],
   "scripts": {
+    "prebuild": "svelte-kit sync",
     "build": "svelte-package -i src",
     "deps:bump": "pnpm dlx npm-check-updates -u --target minor -ws",
     "deps:refresh": "pnpm deps:bump && pnpm install",
