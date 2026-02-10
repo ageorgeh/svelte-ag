@@ -1,25 +1,21 @@
 <script lang="ts" module>
-  import type { DataInputType } from './utils.svelte';
   import { getContext, setContext, type Snippet } from 'svelte';
 
   export type SortableItemChildProps = {
     isDragging: boolean;
-    isSorting: boolean;
-    isOver: boolean;
     isOverlay: boolean;
   };
 
-  export type SortableItemProps = DataInputType & {
-    child: Snippet<[SortableItemChildProps]>;
-  };
+  export type DndSortableItemProps = UseSortableInput &
+    HTMLDivAttributes & {
+      child: Snippet<[SortableItemChildProps]>;
+    };
 
   const itemSymbolKey = 'sortable-item';
 
   export type ItemContext = {
-    attributes: ReadableBox<DraggableAttributes>;
-    listeners: ReadableBox<any>;
-    activatorNode: WritableBox<HTMLElement | null>;
-    isDragging: ReadableBox<boolean>;
+    isDragging: ReturnType<typeof useSortable>['isDragging'];
+    handleRef: Attachment<Element>;
   };
 
   export function setItemContext(item: ItemContext) {
@@ -32,63 +28,21 @@
 </script>
 
 <script lang="ts">
-  import { CSS, styleObjectToString } from '@dnd-kit-svelte/utilities';
-  import { useSortable } from '@dnd-kit-svelte/sortable';
-  import type { DraggableAttributes } from '@dnd-kit-svelte/core';
-  import type { ReadableBox, WritableBox } from 'svelte-toolbelt';
-  import { box } from 'svelte-toolbelt';
+  import { useSortable, type UseSortableInput } from '@dnd-kit-svelte/svelte/sortable';
   import type { HTMLDivAttributes } from '$utils/bits.js';
   import { cn } from '$utils/utils.js';
-  let {
-    item = $bindable(),
-    parent = $bindable(),
-    type = $bindable(),
-    child,
-    class: className,
-    style: styleInput
-  }: SortableItemProps & HTMLDivAttributes = $props();
+  import type { Attachment } from 'svelte/attachments';
 
-  const { attributes, listeners, node, activatorNode, transform, transition, isDragging, isSorting, isOver } =
-    useSortable({
-      id: () => ('id' in item ? item.id : item.idx),
-      data: () => ({
-        type: box.with(
-          () => type,
-          (v) => (type = v)
-        ),
-        item: box.with(
-          () => item,
-          (v) => (item = v)
-        ),
-        parent: box.with(
-          () => parent,
-          (v) => (parent = v)
-        )
-      })
-    });
+  let { class: className, child, ...rest }: DndSortableItemProps = $props();
 
-  // These are used by the drag handle
-  setItemContext({
-    attributes,
-    listeners,
-    activatorNode,
-    isDragging
-  });
+  const { ref, handleRef, isDragging } = useSortable({ ...rest, feedback: 'move' });
 
-  const style = $derived(
-    styleObjectToString({
-      transform: CSS.Transform.toString(transform.current),
-      transition: isSorting.current ? transition.current : undefined,
-      zIndex: isDragging.current ? 1 : undefined
-    })
-  );
+  setItemContext({ handleRef, isDragging });
 </script>
 
-<div class={cn('relative', className)} bind:this={node.current} style={`${style}; ${styleInput ?? ''}`}>
+<div class={cn('relative', className)} {@attach ref}>
   {@render child({
     isDragging: isDragging.current,
-    isSorting: isSorting.current,
-    isOver: isOver.current,
     isOverlay: false
   })}
 </div>

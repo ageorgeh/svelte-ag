@@ -1,9 +1,7 @@
 import { getContext, setContext } from 'svelte';
 
 export type DndState<T> = {
-  activeItem: T | null;
-  activeType: string | null;
-  activeParent: { id: string; children: T[] } | null;
+  items: T[];
 };
 
 const SYMBOL_KEY = 'dnd-context';
@@ -14,12 +12,7 @@ const SYMBOL_KEY = 'dnd-context';
  * @param props The constructor props for the `DndState` class.
  * @returns  The `DndState` instance.
  */
-export function setDnd<T>(): DndState<T> {
-  const dnd = {
-    activeItem: null,
-    activeType: null,
-    activeParent: null
-  };
+export function setDnd<T>(dnd: DndState<T>): DndState<T> {
   return setContext(Symbol.for(SYMBOL_KEY), dnd);
 }
 

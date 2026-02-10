@@ -12,7 +12,7 @@
     ...restProps
   }: WithElementRef<HTMLAttributes<HTMLDivElement>> & { symbol?: symbol } = $props();
 
-  const emblaCtx = getEmblaContext('<Carousel.Item/>', symbol);
+  const emblaCtx = $derived(getEmblaContext('<Carousel.Item/>', symbol));
 </script>
 
 <div

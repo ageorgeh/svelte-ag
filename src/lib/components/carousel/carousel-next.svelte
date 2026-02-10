@@ -17,19 +17,21 @@
     ...restProps
   }: WithoutChildren<Props> & { symbol?: symbol; position: VariantProps<typeof variants>['variant'] } = $props();
 
-  const emblaCtx = getEmblaContext('<Carousel.Next/>', symbol);
-  const variants = tv({
-    base: 'size-8 touch-manipulation rounded-full',
-    variants: {
-      variant: {
-        default:
-          emblaCtx.orientation === 'horizontal'
-            ? 'top-1/2 -right-12 -translate-y-1/2'
-            : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
-        flex: ``
+  const emblaCtx = $derived(getEmblaContext('<Carousel.Next/>', symbol));
+  const variants = $derived(
+    tv({
+      base: 'size-8 touch-manipulation rounded-full',
+      variants: {
+        variant: {
+          default:
+            emblaCtx.orientation === 'horizontal'
+              ? 'top-1/2 -right-12 -translate-y-1/2'
+              : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
+          flex: ``
+        }
       }
-    }
-  });
+    })
+  );
 </script>
 
 <Button
@@ -39,7 +41,7 @@
   disabled={!emblaCtx.canScrollNext}
   onclick={(e) => {
     emblaCtx.scrollNext();
-    onclick?.(e);
+    onclick?.(e as any);
   }}
   onkeydown={emblaCtx.handleKeyDown}
   bind:ref

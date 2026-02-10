@@ -3,6 +3,11 @@
     isDragging: boolean;
     isOverlay: boolean;
   };
+
+  export type DndItemProps = HTMLDivAttributes &
+    UseDraggableInput & {
+      child: Snippet<[ItemChildProps]>;
+    };
 </script>
 
 <script lang="ts">
@@ -14,71 +19,26 @@
    *
    * It can either facilitate a drag handle with the item context
    * or it can be draggable itself
+   * TODO make this able to be draggable without the handle
    */
   import { cn, type HTMLDivAttributes } from '$utils';
-  import { useDraggable } from '@dnd-kit-svelte/core';
-  import { CSS, styleObjectToString } from '@dnd-kit-svelte/utilities';
+  import { useDraggable, type UseDraggableInput } from '@dnd-kit-svelte/svelte';
   import { setItemContext } from './dnd-sortable-item.svelte';
   import type { Snippet } from 'svelte';
-  import { box } from 'svelte-toolbelt';
 
-  let {
-    child,
-    class: className,
-    style: styleInput,
-    dragHandle = true,
-    id,
-    item,
+  let { child, class: className, style: styleName, ...rest }: DndItemProps = $props();
+
+  const { isDragging, ref, handleRef } = useDraggable({
     ...rest
-  }: Exclude<HTMLDivAttributes, 'children'> & {
-    dragHandle?: boolean;
-    child: Snippet<[{ isDragging: boolean; isOverlay: boolean }]>;
-    item: any;
-  } = $props();
-
-  const { transform, listeners, attributes, node, isDragging, setActivatorNodeRef } = useDraggable({
-    id: id ?? 'dnd-item',
-    data: () => ({
-      item: box.with(
-        () => item,
-        (v) => (item = v)
-      )
-    })
   });
-
-  const style = $derived(
-    styleObjectToString({
-      transform: transform.current ? CSS.Translate.toString(transform.current) : undefined
-    })
-  );
 
   // These are used by the drag handle
   setItemContext({
-    attributes,
-    listeners,
-    activatorNode: box.with(() => null as unknown as HTMLElement, setActivatorNodeRef),
-    isDragging
+    isDragging,
+    handleRef
   });
 </script>
 
-{#if dragHandle}
-  <div
-    class={cn('relative', className)}
-    style={`${!isDragging && style}; ${styleInput ?? ''}`}
-    bind:this={node.current}
-    {...rest}
-  >
-    {@render child?.({ isDragging: isDragging.current, isOverlay: false })}
-  </div>
-{:else}
-  <div
-    class={cn('relative', className)}
-    style={`${!isDragging && style}; ${styleInput ?? ''}`}
-    bind:this={node.current}
-    {...listeners.current}
-    {...attributes.current}
-    {...rest}
-  >
-    {@render child?.({ isDragging: isDragging.current, isOverlay: false })}
-  </div>
-{/if}
+<div class={cn('relative', className)} style={styleName} {@attach ref}>
+  {@render child?.({ isDragging: isDragging.current, isOverlay: false })}
+</div>

@@ -63,7 +63,7 @@ export function createFormFunction<API extends ApiEndpoints>(
             setMessage(form, body.message);
             // setError(form, '', body.message);
           } else {
-            setError(form, body.field!.name, body.field.value, { status: res.status });
+            setError(form, body.field!.name as any, body.field.value, { status: res.status });
           }
           if (actions && actions.onFail) {
             await actions.onFail(form, body as ApiErrorBody<API, typeof path, typeof method>);

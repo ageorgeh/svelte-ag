@@ -2,6 +2,7 @@
   import { type CarouselAPI, type CarouselProps, type EmblaContext, setEmblaContext } from './context.js';
   import { cn } from '$utils/utils.js';
   import emblaCarouselSvelte from 'embla-carousel-svelte';
+  import { watch } from 'runed';
 
   let {
     opts = {},
@@ -17,7 +18,8 @@
     ...restProps
   }: CarouselProps = $props();
 
-  let carouselState = $state<EmblaContext>({
+  // WATCH this make sure the derived works
+  let carouselState = $derived<EmblaContext>({
     api: undefined,
     scrollPrev,
     scrollNext,
@@ -33,7 +35,13 @@
     scrollTo
   });
 
-  setEmblaContext(carouselState, symbol);
+  watch(
+    () => symbol,
+    () => {
+      // TODO maybe unset the old symbol
+      setEmblaContext(carouselState, symbol);
+    }
+  );
 
   function scrollPrev() {
     carouselState.api?.scrollPrev();

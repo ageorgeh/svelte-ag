@@ -6,38 +6,30 @@
     variants: {
       animation: {
         flyAndScale: `
-          data-[state="visible"]:animate-in data-[state="visible"]:fade-in-0
-          data-[state="visible"]:zoom-in-95
+          data-[state="visible"]:animate-in data-[state="visible"]:fade-in-0 data-[state="visible"]:zoom-in-95
           data-[state="visible"]:slide-in-from-bottom-[10%]
-          data-[state="hidden"]:animate-out data-[state="hidden"]:fade-out-0
-          data-[state="hidden"]:zoom-out-95
-          data-[state="hidden"]:slide-out-to-bottom-[10%]
+          data-[state="hidden"]:fade-out-0 data-[state="hidden"]:zoom-out-95
+          data-[state="hidden"]:slide-out-to-bottom-[10%] data-[state="hidden"]:animate-out
         `,
         slide: `
-          data-[state="visible"]:animate-in
-          data-[state="visible"]:slide-in-from-right
-          data-[state="hidden"]:animate-out
-          data-[state="hidden"]:slide-out-to-right
+          data-[state="visible"]:animate-in data-[state="visible"]:slide-in-from-right
+          data-[state="hidden"]:slide-out-to-right data-[state="hidden"]:animate-out
         `,
         fade: `
           data-[state="visible"]:animate-in data-[state="visible"]:fade-in
-          data-[state="hidden"]:animate-out data-[state="hidden"]:fade-out
+          data-[state="hidden"]:fade-out data-[state="hidden"]:animate-out
         `,
         zoom: `
           data-[state="visible"]:animate-in data-[state="visible"]:zoom-in-95
-          data-[state="hidden"]:animate-out data-[state="hidden"]:zoom-out-95
+          data-[state="hidden"]:zoom-out-95 data-[state="hidden"]:animate-out
         `,
         slideUp: `
-          data-[state="visible"]:animate-in
-          data-[state="visible"]:slide-in-from-bottom
-          data-[state="hidden"]:animate-out
-          data-[state="hidden"]:slide-out-to-bottom
+          data-[state="visible"]:animate-in data-[state="visible"]:slide-in-from-bottom
+          data-[state="hidden"]:slide-out-to-bottom data-[state="hidden"]:animate-out
         `,
         slideDown: `
-          data-[state="visible"]:animate-in
-          data-[state="visible"]:slide-in-from-top
-          data-[state="hidden"]:animate-out
-          data-[state="hidden"]:slide-out-to-top
+          data-[state="visible"]:animate-in data-[state="visible"]:slide-in-from-top
+          data-[state="hidden"]:slide-out-to-top data-[state="hidden"]:animate-out
         `,
         growHeight: `overflow-hidden`
       },
@@ -82,12 +74,13 @@
     children
   }: Props = $props();
 
+  // svelte-ignore state_referenced_locally
   let animationComplete = $state<boolean>(disableInitialAnimation);
   let isInitialRender = $state(true);
   //svelte-ignore non_reactive_update
   let growHeightElement: HTMLDivElement | undefined;
 
-  function handleAnimationEnd(e: AnimationEvent) {
+  function handleAnimationEnd() {
     animationComplete = true;
     onAnimationComplete?.(visible);
   }

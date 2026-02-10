@@ -15,14 +15,5 @@ export default defineConfig({
   },
   build: {
     sourcemap: true
-  },
-  css: {
-    // https://stackoverflow.com/questions/75056422/how-to-use-vitepreprocess-with-global-scss-mixins-in-sveltekit
-    preprocessorOptions: {
-      scss: {
-        additionalData: '',
-        api: 'modern'
-      }
-    }
   }
 });

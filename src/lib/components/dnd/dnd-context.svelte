@@ -1,35 +1,46 @@
+<!-- https://next.dndkit.com/react/components/drag-drop-provider -->
+
 <script lang="ts" module>
-  import type { Snippet } from 'svelte';
-  import type { DragEndProps, DragStartProps, DragMoveProps, DragOverProps } from './types.js';
+  import type { ComponentProps } from 'svelte';
 
-  export type ContextProps = {
-    children: Snippet<[]>;
-    onDragEnd?: (event: DragEndProps) => void;
-    onDragOver?: (event: DragOverProps) => void;
-    onDragStart?: (event: DragStartProps) => void;
-    onDragMove?: (event: DragMoveProps) => void;
-  };
+  export type DndContextProps<T extends { id: string }> = ComponentProps<DragDropProvider> & { items: T[] };
 </script>
 
-<script lang="ts" generics="T extends {id: string}">
-  import { DndContext, useSensors, KeyboardSensor, MouseSensor, TouchSensor, useSensor } from '@dnd-kit-svelte/core';
-  import { setDnd, useDnd } from './context.svelte';
+<script lang="ts" generics="T extends {id: string; children?: T[]}">
+  import { DragDropProvider } from '@dnd-kit-svelte/svelte';
+  import { setDnd } from './context.svelte';
+  import { RestrictToWindowEdges } from '@dnd-kit-svelte/svelte/modifiers';
+  import { findItem, sensors } from './utils.svelte.js';
 
-  setDnd<T>();
+  let { children, items = $bindable(), ...rest }: DndContextProps<T> = $props();
 
-  const dnd = useDnd<T>();
-
-  const sensors = useSensors(useSensor(TouchSensor), useSensor(KeyboardSensor), useSensor(MouseSensor));
-
-  let { onDragEnd, onDragOver, onDragStart, onDragMove, children }: ContextProps = $props();
+  setDnd<T>({ items });
 </script>
 
-<DndContext
+<DragDropProvider
   {sensors}
-  onDragStart={(e) => onDragStart?.({ ...e, dnd })}
-  onDragEnd={(e) => onDragEnd?.({ ...e, dnd })}
-  onDragOver={(e) => onDragOver?.({ ...e, dnd })}
-  onDragMove={(e) => onDragMove?.({ ...e, dnd })}
+  modifiers={[RestrictToWindowEdges]}
+  {...rest}
+  onDragOver={(e) => {
+    const targetId = e.operation.target?.id;
+    const sourceId = e.operation.source?.id;
+
+    if (targetId && sourceId) {
+      const sourceDetails = findItem(sourceId, items);
+      const targetList = findItem(targetId, items)?.item.children ?? (targetId !== undefined ? items : undefined);
+
+      if (sourceDetails && targetList) {
+        const item = sourceDetails.list.splice(sourceDetails.index, 1)[0];
+
+        if (e.operation.source && 'index' in e.operation.source && typeof e.operation.source.index === 'number') {
+          // present in sorted lists
+          targetList.splice(e.operation.source.index, 0, item);
+        } else {
+          targetList.push(item);
+        }
+      }
+    }
+  }}
 >
-  {@render children()}
-</DndContext>
+  {@render children?.()}
+</DragDropProvider>

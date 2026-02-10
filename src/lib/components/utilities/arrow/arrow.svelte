@@ -1,7 +1,7 @@
 <script lang="ts">
   import { mergeProps } from 'svelte-toolbelt';
   import type { ArrowProps } from './types.js';
-  import { useId } from '$bits/internal/use-id.js';
+  import { useId } from 'bits-ui';
 
   let { id = useId(), children, child, width = 10, height = 5, ...restProps }: ArrowProps = $props();
 

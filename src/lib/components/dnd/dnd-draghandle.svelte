@@ -16,11 +16,7 @@
     isOverlay = overlay.isOverlay;
   } catch {}
 
-  const { isDragging, activatorNode, attributes, listeners } = $derived(
-    !isOverlay
-      ? getItemContext()
-      : { isDragging: { current: false }, activatorNode: undefined, attributes: undefined, listeners: undefined }
-  );
+  const item = $derived(isOverlay ? getItemContext() : undefined);
 
   let handleClass = $derived(
     cn(
@@ -28,20 +24,14 @@
         icon-draghandle text-muted-foreground flex size-4 transition-colors duration-150
         hover:text-foreground
       `,
-      isDragging?.current || isOverlay ? `cursor-grabbing` : `cursor-grab`,
+      item?.isDragging?.current || isOverlay ? `cursor-grabbing` : `cursor-grab`,
       className
     )
   );
 </script>
 
-{#if isOverlay}
+{#if isOverlay || !item}
   <div data-drag-handle class={cn(handleClass, className)}></div>
 {:else}
-  <div
-    class={cn(handleClass, className)}
-    bind:this={activatorNode!.current}
-    {...attributes!.current}
-    {...listeners!.current}
-    data-drag-handle
-  ></div>
+  <div data-drag-handle class={cn(handleClass, className)} {@attach item!.handleRef}></div>
 {/if}

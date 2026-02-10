@@ -35,6 +35,7 @@
     "deps:bump": "pnpm dlx npm-check-updates -u --target minor -ws",
     "deps:refresh": "pnpm deps:bump && pnpm install",
     "deps:update": "pnpm -r update",
+    "dev": "vite dev",
     "prepare": "husky",
     "publish:local": "pnpm publish --registry http://localhost:4873 --tag dev --access public --no-git-checks --json > ./publishLocal.json",
     "publish:remote": "pnpm publish --registry https://registry.npmjs.org/ --access public --no-git-checks --json > ./publish.json",
@@ -45,9 +46,8 @@
     "watch": "svelte-package -i src -w"
   },
   "dependencies": {
-    "@dnd-kit-svelte/core": "0.0.11",
-    "@dnd-kit-svelte/sortable": "0.0.11",
-    "@dnd-kit-svelte/utilities": "0.0.11",
+    "@dnd-kit-svelte/svelte": "^0.1.6",
+    "@dnd-kit/helpers": "^0.2.4",
     "@floating-ui/dom": "1.7.4",
     "@rollup/pluginutils": "5.3.0",
     "bits-ui": "2.15.4",
@@ -60,11 +60,14 @@
     "radash": "12.1.1",
     "runed": "0.37.1",
     "svader": "0.5.5",
-    "svelte-toolbelt": "0.10.6",
+    "svelte-check": "^4.3.6",
+    "svelte-check-rs": "^0.9.1",
+    "svelte-fast-check": "^0.4.5",
+    "svelte-toolbelt": "^0.10.6",
     "sveltekit-superforms": "2.29.1",
     "tailwind-merge": "3.4.0",
-    "tailwind-variants": "2.1.0",
-    "ts-ag": "1.0.5",
+    "tailwind-variants": "^3.2.2",
+    "ts-ag": "^1.0.7",
     "valibot": "1.2.0"
   },
   "devDependencies": {
@@ -101,7 +104,7 @@
     "typescript-eslint": "^8.53.1",
     "typescript-svelte-plugin": "0.3.50",
     "vite": "^7.3.1",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
     "@lucide/svelte": "^0.508.0",

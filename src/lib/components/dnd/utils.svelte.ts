@@ -1,7 +1,11 @@
-import type { Active, Over } from '@dnd-kit-svelte/core';
 import type { WritableBox } from 'svelte-toolbelt';
+import { KeyboardSensor, PointerSensor } from '@dnd-kit-svelte/svelte';
+import { RestrictToWindowEdges } from '@dnd-kit-svelte/svelte/modifiers';
 
-// --------------------- Helpers ---------------------
+export const sensors = [KeyboardSensor, PointerSensor];
+export const modifiers = [RestrictToWindowEdges];
+
+// ---- Helpers ---- //
 export function getTypeAndAccepts(active: Active, over: Over) {
   const activeType = active.data?.type as string;
   const overType = over?.data?.type as string | undefined;
@@ -43,4 +47,25 @@ export function data(input: { data?: any }): DataType {
     item: data.item,
     parent: data.parent
   };
+}
+
+/**
+ * Finds an item recursively through the dnd.items list and each item's children
+ */
+export function findItem<T extends { id: string; children?: T[] }>(
+  id: string | number,
+  items: T[]
+): { item: T; list: T[]; index: number } | undefined {
+  for (let index = 0; index < items.length; index++) {
+    const item = items[index];
+
+    if (item.id === id) {
+      return { item, list: items, index };
+    }
+
+    if (item.children?.length) {
+      const found = findItem(id, item.children);
+      if (found) return found;
+    }
+  }
 }

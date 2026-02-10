@@ -1,80 +1,72 @@
-import type { WritableBoxedValues, ReadableBoxedValues } from 'svelte-toolbelt';
+export type { WithRefProps } from 'svelte-toolbelt';
 
-export type WithRefProps<T = {}> = T &
-  ReadableBoxedValues<{
-    id: string;
-  }> &
-  WritableBoxedValues<{
-    ref: HTMLElement | null;
-  }>;
-
-export function getDataOpenClosed(condition) {
+export function getDataOpenClosed(condition: boolean) {
   return condition ? 'open' : 'closed';
 }
-export function getDataChecked(condition) {
+export function getDataChecked(condition: boolean) {
   return condition ? 'checked' : 'unchecked';
 }
-export function getAriaDisabled(condition) {
+export function getAriaDisabled(condition: boolean) {
   return condition ? 'true' : 'false';
 }
-export function getAriaReadonly(condition) {
+export function getAriaReadonly(condition: boolean) {
   return condition ? 'true' : 'false';
 }
-export function getAriaExpanded(condition) {
+export function getAriaExpanded(condition: boolean) {
   return condition ? 'true' : 'false';
 }
-export function getDataDisabled(condition) {
+export function getDataDisabled(condition: boolean) {
   return condition ? '' : undefined;
 }
-export function getAriaRequired(condition) {
+export function getAriaRequired(condition: boolean) {
   return condition ? 'true' : 'false';
 }
-export function getAriaSelected(condition) {
+export function getAriaSelected(condition: boolean) {
   return condition ? 'true' : 'false';
 }
-export function getAriaChecked(checked, indeterminate) {
+export function getAriaChecked(checked: boolean, indeterminate: boolean) {
   if (indeterminate) {
     return 'mixed';
   }
   return checked ? 'true' : 'false';
 }
-export function getAriaOrientation(orientation) {
+export function getAriaOrientation(orientation: boolean) {
   return orientation;
 }
-export function getAriaHidden(condition) {
+export function getAriaHidden(condition: boolean) {
   return condition ? 'true' : undefined;
 }
-export function getAriaInvalid(condition) {
+export function getAriaInvalid(condition: boolean) {
   return condition ? 'true' : undefined;
 }
-export function getDataOrientation(orientation) {
+export function getDataOrientation(orientation: boolean) {
   return orientation;
 }
-export function getDataInvalid(condition) {
+export function getDataInvalid(condition: boolean) {
   return condition ? '' : undefined;
 }
-export function getDataRequired(condition) {
+export function getDataRequired(condition: boolean) {
   return condition ? '' : undefined;
 }
-export function getDataReadonly(condition) {
+export function getDataReadonly(condition: boolean) {
   return condition ? '' : undefined;
 }
-export function getDataSelected(condition) {
+export function getDataSelected(condition: boolean) {
   return condition ? '' : undefined;
 }
-export function getDataUnavailable(condition) {
+export function getDataUnavailable(condition: boolean) {
   return condition ? '' : undefined;
 }
-export function getHidden(condition) {
+export function getHidden(condition: boolean) {
   return condition ? true : undefined;
 }
-export function getDisabled(condition) {
+export function getDisabled(condition: boolean) {
   return condition ? true : undefined;
 }
-export function getAriaPressed(condition) {
+export function getAriaPressed(condition: boolean) {
   return condition ? 'true' : 'false';
 }
-export function getRequired(condition) {
+export function getRequired(condition: boolean) {
   return condition ? true : undefined;
 }
 

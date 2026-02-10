@@ -2,16 +2,15 @@
   import type { WithoutChildren } from 'bits-ui';
   import { getEmblaContext } from './context.js';
   import { cn } from '$utils/utils.js';
-  import { Button, type Props } from '$shadcn/button/index.js';
+  import { type Props } from '$shadcn/button/index.js';
 
   let {
     ref = $bindable(null),
     class: className,
-    symbol = undefined,
-    ...restProps
+    symbol = undefined
   }: WithoutChildren<Props> & { symbol?: symbol } = $props();
 
-  const emblaCtx = getEmblaContext('<Carousel.Dots/>', symbol);
+  const emblaCtx = $derived(getEmblaContext('<Carousel.Dots/>', symbol));
 </script>
 
 <div class={cn('flex justify-center gap-1.5', className)}>
