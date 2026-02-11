@@ -3,11 +3,9 @@
   import type { SearchPagnationProps } from '../types';
   import { useId } from 'bits-ui';
   import { useSearchPagnation } from '../search.svelte';
-  import { cn } from '$utils';
   import * as Pagination from '$shadcn/pagination/index.js';
 
   let {
-    children,
     child,
     id = useId(),
     ref = $bindable(null),
@@ -52,7 +50,7 @@
               <Pagination.Ellipsis />
             </Pagination.Item>
           {:else}
-            <Pagination.Item isVisible={currentPage === page.value}>
+            <Pagination.Item hidden={currentPage !== page.value}>
               <Pagination.Link {page} isActive={currentPage === page.value}>
                 {page.value}
               </Pagination.Link>

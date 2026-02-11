@@ -21,7 +21,7 @@
 
   type ItemWithSize = Item & { size: Size };
 
-  let numCols = $state(maxCols);
+  let numCols = $derived(maxCols);
 
   onMount(() => {
     containerSize((size) => {

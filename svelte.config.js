@@ -13,6 +13,8 @@ const config = {
     },
     typescript: {
       config: (config) => {
+        config.include.push('../shadcn/**/*.ts');
+
         config.compilerOptions.paths = {
           ...config.compilerOptions.paths,
           // Don't want these getting resolved but need it for tooling

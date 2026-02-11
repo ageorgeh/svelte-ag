@@ -7,14 +7,17 @@
   };
 
   let { links = true, class: className = '', children }: Props = $props();
+</script>
 
-  function blockClick(e) {
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+  class={cn(className)}
+  onclick={(e) => {
     if (!links) return;
     e.preventDefault();
     e.stopPropagation();
-  }
-</script>
-
-<div class={cn(className)} onclick={blockClick}>
+  }}
+>
   {@render children?.()}
 </div>

@@ -1,8 +1,16 @@
 <script lang="ts">
   import { cn } from '$utils';
+  import DndDraghandle from '../DndHandle.svelte';
   import SimpleSortable from '../recipies/SimpleSortable.svelte';
 
   let items = $state([
+    { id: 'task-1', content: 'Learn Svelte' },
+    { id: 'task-2', content: 'Build a Kanban board' },
+    { id: 'task-3', content: 'Review code' },
+    { id: 'task-4', content: 'Setup project' }
+  ]);
+
+  let items2 = $state([
     { id: 'task-1', content: 'Learn Svelte' },
     { id: 'task-2', content: 'Build a Kanban board' },
     { id: 'task-3', content: 'Review code' },
@@ -24,6 +32,25 @@
       <p>
         {p.item.content}
       </p>
+    </div>
+  {/snippet}
+</SimpleSortable>
+
+<!-- With handle -->
+<SimpleSortable class="bg-sidebar flex h-100 flex-col gap-4 rounded-2xl p-6" bind:items={items2}>
+  {#snippet item(p)}
+    <div
+      class={cn(
+        'bg-secondary text-secondary-foreground rounded-md border-2 p-2',
+        p.isOverlay && 'shadow-2xl',
+        p.isDragging && 'bg-amber-700 opacity-20'
+      )}
+    >
+      <h4>{p.item.id}</h4>
+      <p>
+        {p.item.content}
+      </p>
+      <DndDraghandle />
     </div>
   {/snippet}
 </SimpleSortable>

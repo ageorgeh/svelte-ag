@@ -1,12 +1,12 @@
 <script module lang="ts">
-  export type ItemChildProps = {
+  export type DndItemChildProps = {
     isDragging: boolean;
     isOverlay: boolean;
   };
 
   export type DndItemProps = HTMLDivAttributes &
     UseDraggableInput & {
-      child: Snippet<[ItemChildProps]>;
+      child: Snippet<[DndItemChildProps]>;
     };
 </script>
 
@@ -19,11 +19,10 @@
    *
    * It can either facilitate a drag handle with the item context
    * or it can be draggable itself
-   * TODO make this able to be draggable without the handle
    */
   import { cn, type HTMLDivAttributes } from '$utils';
   import { useDraggable, type UseDraggableInput } from '@dnd-kit-svelte/svelte';
-  import { setItemContext } from './dnd-sortable-item.svelte';
+  import { setItemContext } from './DndSortableItem.svelte';
   import type { Snippet } from 'svelte';
 
   let { child, class: className, style: styleName, ...rest }: DndItemProps = $props();

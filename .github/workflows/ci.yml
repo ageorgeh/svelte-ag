@@ -20,6 +20,7 @@ jobs:
       - name: build
         run: |
           pnpm build
+
       # Disabled for now - lots of stuff in svelte files that ill deal with later
       # - name: eslint
       #   run: |

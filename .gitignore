@@ -7,6 +7,8 @@ jspm_packages/
 /build/
 /dist/
 /.svelte-kit/
+/.fast-check/
+
 .DS_Store
 
 # Environment variables

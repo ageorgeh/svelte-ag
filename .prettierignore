@@ -47,6 +47,7 @@ Thumbs.db
 # Other
 coverage/
 */coverage/
+/shadcn
 .idea/
 *.bak
 *.swp

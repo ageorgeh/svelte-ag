@@ -30,7 +30,7 @@
     "./dist"
   ],
   "scripts": {
-    "prebuild": "svelte-kit sync",
+    "prebuild": "svelte-kit sync && svelte-check",
     "build": "svelte-package -i src",
     "deps:bump": "pnpm dlx npm-check-updates -u --target minor -ws",
     "deps:refresh": "pnpm deps:bump && pnpm install",
@@ -76,7 +76,8 @@
     "@iconify/json": "^2.2.431",
     "@iconify/tailwind4": "^1.2.1",
     "@iconify/types": "^2.0.0",
-    "@lucide/svelte": "^0.562.0",
+    "@internationalized/date": "^3.11.0",
+    "@lucide/svelte": "^0.561.0",
     "@sveltejs/kit": "2.50.0",
     "@sveltejs/package": "^2.5.7",
     "@sveltejs/vite-plugin-svelte": "6.2.4",

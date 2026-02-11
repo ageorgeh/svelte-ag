@@ -22,8 +22,10 @@
 
   let { class: className, ref = $bindable(null), children, form, ...restProps }: FormRootProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const { enhance } = form;
 
+  // svelte-ignore state_referenced_locally
   setFormContext(form);
 </script>
 
