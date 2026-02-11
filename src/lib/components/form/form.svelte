@@ -14,9 +14,9 @@
 </script>
 
 <script lang="ts">
+  import { cn } from '$utils/utils.js';
   import type { WithElementRef } from 'bits-ui';
   import { getContext, setContext } from 'svelte';
-  import { cn } from 'svelte-ag';
   import type { HTMLFormAttributes } from 'svelte/elements';
   import type { SuperForm } from 'sveltekit-superforms';
 
