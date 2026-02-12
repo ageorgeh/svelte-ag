@@ -29,6 +29,7 @@ export default defineConfig({
       name: 'Chromium',
       use: {
         ...devices['Desktop Chrome'],
+        channel: 'chrome',
         launchOptions: {
           args: ['--high-dpi-support=1', '--force-device-scale-factor=1']
         }
