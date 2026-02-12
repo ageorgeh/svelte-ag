@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { WebGlShader } from 'svader';
+  import { WebGlShader } from '$components/shader/index.js';
   import type { Vec2, Vec4 } from '$utils/glsl.js';
   import fragment from './gradient.frag?raw';
   import { cn } from '$utils';

@@ -25,17 +25,20 @@ jobs:
       # - name: eslint
       #   run: |
       #     # npx eslint .
-  # test:
-  #   runs-on: workstation
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: ageorgeh/pnpm-action-setup@fix/skip-install-if-existing
-  #       with:
-  #         cache: true
-  #         run_install: true
-  #     - name: tsc
-  #       run: |
-  #         npx tsgo -b tsconfig.json
-  #     - name: vitest
-  #       run: |
-  #         npx vitest --run
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ageorgeh/pnpm-action-setup@fix/skip-install-if-existing
+        with:
+          cache: true
+          run_install: true
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps && npx playwright install chrome
+      - name: build
+        run: |
+          pnpm build
+      - name: test
+        run: |
+          pnpm test:e2e

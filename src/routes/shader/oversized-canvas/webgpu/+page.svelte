@@ -1,5 +1,5 @@
 <script>
-  import { WebGpuShader } from 'svader';
+  import { WebGpuShader } from '$components/shader/index.js';
   import shaderCode from './shader.wgsl?raw';
 </script>
 

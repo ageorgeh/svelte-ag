@@ -1,5 +1,5 @@
 <script>
-  import { WebGlShader } from 'svader';
+  import { WebGlShader } from '$components/shader/index.js';
   import shaderCode from './shader.frag?raw';
 
   const color = /** @type {const} */ ([0.8, 0.3, 0.0]);

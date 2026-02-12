@@ -1,8 +1,7 @@
 <script lang="ts">
   import '../app.css';
-  import Sortable from '$components/dnd/examples/SimpleSortable.svelte';
+
+  let { children } = $props();
 </script>
 
-<div class="dark bg-background text-foreground flex h-screen items-center justify-center">
-  <Sortable />
-</div>
+{@render children()}
