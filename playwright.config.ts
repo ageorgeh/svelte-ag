@@ -52,6 +52,12 @@ export default defineConfig({
             }
           }
         }
+        // {
+        //   name: 'Firefox <No WebGPU>',
+        //   use: {
+        //     ...devices['Desktop Firefox']
+        //   }
+        // }
       ],
   webServer: {
     command: 'pnpm dev',

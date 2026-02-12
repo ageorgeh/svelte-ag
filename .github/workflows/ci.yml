@@ -37,14 +37,21 @@ jobs:
           cache: true
           run_install: true
           version: 10.28.0
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps && npx playwright install chrome
+
       - name: build
-        run: |
-          pnpm build
+        run: pnpm build
+
       - name: test
-        run: |
-          pnpm test:e2e
+        run: pnpm test:e2e
+
       - uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
