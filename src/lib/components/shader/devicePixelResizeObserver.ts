@@ -3,7 +3,7 @@ import type { ActionReturn } from 'svelte/action';
 export type DevicePixelResizeEvent = CustomEvent<{ width: number; height: number }>;
 
 type Attributes = {
-  'on:devicepixelresize'?: (e: DevicePixelResizeEvent) => void;
+  ondevicepixelresize?: (e: DevicePixelResizeEvent) => void;
 };
 
 /**

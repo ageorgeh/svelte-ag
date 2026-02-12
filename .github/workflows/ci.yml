@@ -45,3 +45,9 @@ jobs:
       - name: test
         run: |
           pnpm test:e2e
+      - uses: actions/upload-artifact@v6
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 1

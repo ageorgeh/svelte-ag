@@ -4,7 +4,7 @@ import type { ActionReturn } from 'svelte/action';
 export type IntersectionEvent = CustomEvent<IntersectionObserverEntry>;
 
 type Attributes = {
-  'on:intersectionchanged'?: (e: IntersectionEvent) => void;
+  onintersectionchanged?: (e: IntersectionEvent) => void;
 };
 
 /**

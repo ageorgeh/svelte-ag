@@ -5,8 +5,6 @@
   let show = $state(true);
 </script>
 
-<svelte:options runes />
-
 <label for="show">Show</label>
 <input id="show" type="checkbox" bind:checked={show} />
 {#if show}
