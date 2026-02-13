@@ -1,47 +1,66 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
+  import type { Snippet } from 'svelte';
 
   import { pixelScale, clamp } from './utils.js';
   import { intersectionObserver } from './intersectionObserver.js';
   import { devicePixelResizeObserver, type DevicePixelResizeEvent } from './devicePixelResizeObserver.js';
 
-  export let width: string | undefined;
-  export let height: string | undefined;
+  type Props = {
+    width?: string;
+    height?: string;
+    canRender: boolean;
+    maxSize: number;
+    render: () => void | Promise<void>;
+    rerenderEveryFrame: boolean;
+    forceAnimation: boolean;
+    offsetFromBottom?: boolean;
+    updateCanvasSize?: (canvasWidth: number, canvasHeight: number) => void | Promise<void>;
+    updateContainerSize: (containerWidth: number, containerHeight: number) => void | Promise<void>;
+    updateOffset: (offsetX: number, offsetY: number) => void | Promise<void>;
+    updateScale: (scale: number) => void | Promise<void>;
+    updateTime: (time: number) => void | Promise<void>;
+    canvasElement: HTMLCanvasElement | null;
+    requestRender: () => void;
+    children?: Snippet;
+  };
 
-  export let canRender: boolean;
-  export let maxSize: number;
-  export let render: () => void | Promise<void>;
-
-  export let rerenderEveryFrame: boolean;
-  export let forceAnimation: boolean;
+  let {
+    width,
+    height,
+    canRender,
+    maxSize,
+    render,
+    rerenderEveryFrame,
+    forceAnimation,
+    offsetFromBottom = false,
+    updateCanvasSize = () => {},
+    updateContainerSize,
+    updateOffset,
+    updateScale,
+    updateTime,
+    canvasElement = $bindable(),
+    requestRender = $bindable(),
+    children
+  }: Props = $props();
 
   function prefersReducedMotion() {
     if (typeof window === 'undefined') return false;
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
-  if (!forceAnimation && prefersReducedMotion()) rerenderEveryFrame = false;
+  const shouldRerenderEveryFrame = $derived(forceAnimation || !prefersReducedMotion() ? rerenderEveryFrame : false);
 
   let mountTime = 0;
   onMount(() => {
     mountTime = performance.now() / 1000;
   });
 
-  export let offsetFromBottom = false;
-
-  export let updateCanvasSize: (canvasWidth: number, canvasHeight: number) => void | Promise<void> = () => {};
-  export let updateContainerSize: (containerWidth: number, containerHeight: number) => void | Promise<void>;
-  export let updateOffset: (offsetX: number, offsetY: number) => void | Promise<void>;
-  export let updateScale: (scale: number) => void | Promise<void>;
-  export let updateTime: (time: number) => void | Promise<void>;
-
-  let containerElement: HTMLElement;
-  export let canvasElement: HTMLCanvasElement;
+  let containerElement = $state<HTMLElement | null>(null);
 
   let requestHandle: number | null = null;
   const renderCallbacks: Array<() => void> = [];
 
-  export let requestRender: () => void;
   requestRender = () => {
     if (!canRender) return;
     if (requestHandle !== null) return;
@@ -50,13 +69,13 @@
       renderCallbacks.forEach((callback) => callback());
       renderCallbacks.length = 0;
 
-      if (rerenderEveryFrame) updateTime(performance.now() / 1000 - mountTime);
+      if (shouldRerenderEveryFrame) updateTime(performance.now() / 1000 - mountTime);
 
       render();
 
       requestHandle = null;
 
-      if (rerenderEveryFrame) requestRender();
+      if (shouldRerenderEveryFrame) requestRender();
     });
   };
 
@@ -68,13 +87,16 @@
   }
 
   function updateCanvasSizeInner(event: DevicePixelResizeEvent) {
+    if (!canvasElement) return;
+    const nextCanvasElement = canvasElement;
+
     // Resizing must happen right before the next render pass.
     renderCallbacks.push(() => {
       const canvasWidth = event.detail.width;
       const canvasHeight = event.detail.height;
 
-      canvasElement.width = canvasWidth;
-      canvasElement.height = canvasHeight;
+      nextCanvasElement.width = canvasWidth;
+      nextCanvasElement.height = canvasHeight;
 
       updateCanvasSize(canvasWidth, canvasHeight);
     });
@@ -89,13 +111,20 @@
     updateContainerSize(canvasWidth, canvasHeight);
   }
 
-  let offsetX = 0;
-  let offsetY = 0;
+  let offsetX = $state(0);
+  let offsetY = $state(0);
 
-  $: if (offsetX !== undefined && offsetY !== undefined) updateOffset(offsetX, offsetY);
-  $: updateScale($pixelScale);
+  $effect(() => {
+    updateOffset(offsetX, offsetY);
+  });
+
+  $effect(() => {
+    updateScale($pixelScale);
+  });
 
   function updateCanvasCutout() {
+    if (!containerElement || !canvasElement) return;
+
     const containerRect = containerElement.getBoundingClientRect();
 
     const windowSizeX = window.innerWidth;
@@ -122,28 +151,28 @@
   <div
     bind:this={containerElement}
     use:devicePixelResizeObserver
-    on:devicepixelresize={updateContainerSizeInner}
+    ondevicepixelresize={updateContainerSizeInner}
     use:intersectionObserver
-    on:intersectionchanged={updateCanvasCutout}
+    onintersectionchanged={updateCanvasCutout}
     style:--width={width}
     style:--height={height}
   >
     <canvas
       bind:this={canvasElement}
       use:devicePixelResizeObserver
-      on:devicepixelresize={updateCanvasSizeInner}
+      ondevicepixelresize={updateCanvasSizeInner}
       use:intersectionObserver={{ rootMargin: '100px' }}
-      on:intersectionchanged={updateCanvasCutout}
+      onintersectionchanged={updateCanvasCutout}
       class:offset-from-bottom={offsetFromBottom}
       style:--max-size="{maxSize / $pixelScale}px"
       style:--offset-x="{offsetX / $pixelScale}px"
       style:--offset-y="{offsetY / $pixelScale}px"
     >
-      <slot></slot>
+      {@render children?.()}
     </canvas>
   </div>
 {:else}
-  <slot></slot>
+  {@render children?.()}
 {/if}
 
 <style>

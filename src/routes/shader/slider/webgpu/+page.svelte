@@ -5,8 +5,6 @@
   let val = $state(0.75);
 </script>
 
-<svelte:options runes />
-
 <main>
   <h1>SLIDE ME</h1>
 

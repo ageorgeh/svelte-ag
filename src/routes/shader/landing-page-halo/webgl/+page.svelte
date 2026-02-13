@@ -3,8 +3,6 @@
   import shaderCode from './shader.frag?raw';
 </script>
 
-<svelte:options runes />
-
 <!-- Import 'Teko' font from Google Fonts -->
 <svelte:head>
   <link rel="preconnect" href="https://fonts.googleapis.com" />

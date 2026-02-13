@@ -69,28 +69,39 @@
 
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
+  import type { Snippet } from 'svelte';
 
   import BaseShader from './BaseShader.svelte';
   import { zip } from './utils.js';
   import type { WebGpuParameter as Parameter, WebGpuBuiltinParameter as BuiltinParameter } from './types.js';
   import { isBuiltinValue } from './types.js';
 
-  export let width: string | undefined = undefined;
-  export let height: string | undefined = undefined;
+  type Props = {
+    width?: string;
+    height?: string;
+    code: string | Promise<string>;
+    parameters?: readonly Parameter[];
+    forceAnimation?: boolean;
+    children?: Snippet;
+  };
 
-  export let code: string | Promise<string>;
+  let {
+    width = undefined,
+    height = undefined,
+    code,
+    parameters = [],
+    forceAnimation = false,
+    children
+  }: Props = $props();
 
-  export let parameters: readonly Parameter[] = [];
-  const rerenderEveryFrame = parameters.some((parameter) => parameter.value === 'time');
-
-  export let forceAnimation = false;
+  const rerenderEveryFrame = $derived(parameters.some((parameter) => parameter.value === 'time'));
 
   const maxTextureSize = 4096;
 
-  let requestRender: () => void;
-  let canvasElement: HTMLCanvasElement;
+  let requestRender = $state<() => void>(() => {});
+  let canvasElement = $state<HTMLCanvasElement | null>(null);
 
-  let canRender = canRenderGlobal;
+  let canRender = $state(canRenderGlobal);
 
   type Config = {
     device: any;
@@ -311,7 +322,9 @@
     requestRender();
   }
 
-  $: updateParameters(parameters);
+  $effect(() => {
+    updateParameters(parameters);
+  });
 
   function createParameterBuffer(device: any, parameter: Parameter, byteLength: number) {
     const gpuBufferUsage = (globalThis as { GPUBufferUsage?: Record<string, number> }).GPUBufferUsage;
@@ -359,5 +372,5 @@
   bind:canvasElement
   bind:requestRender
 >
-  <slot></slot>
+  {@render children?.()}
 </BaseShader>

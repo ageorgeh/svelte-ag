@@ -43,55 +43,55 @@ apis.forEach((api) => {
       await assertScreenshot(page, info, pageName, api);
     });
 
-    // test('Remounting canvas', async ({ page }, info) => {
-    //   const pageName = 'remount';
+    test('Remounting canvas', async ({ page }, info) => {
+      const pageName = 'remount';
 
-    //   await page.goto(`/shader/${pageName}/${api}`);
-    //   const show = page.getByLabel('Show');
-    //   await show.uncheck();
-    //   await assertScreenshot(page, info, pageName, api, 1);
-    //   for (let i = 0; i < 10; i++) {
-    //     await show.check();
-    //     await show.uncheck();
-    //   }
-    //   await show.check();
-    //   await assertScreenshot(page, info, pageName, api, 2);
-    // });
+      await page.goto(`/shader/${pageName}/${api}`);
+      const show = page.getByLabel('Show');
+      await show.uncheck();
+      await assertScreenshot(page, info, pageName, api, 1);
+      for (let i = 0; i < 10; i++) {
+        await show.check();
+        await show.uncheck();
+      }
+      await show.check();
+      await assertScreenshot(page, info, pageName, api, 2);
+    });
 
-    // test('Oversized canvas', async ({ page }, info) => {
-    //   const pageName = 'oversized-canvas';
+    test('Oversized canvas', async ({ page }, info) => {
+      const pageName = 'oversized-canvas';
 
-    //   await page.goto(`/shader/${pageName}/${api}`);
-    //   await assertScreenshot(page, info, pageName, api, 1);
-    //   // Scroll to bottom-right corner
-    //   await page.evaluate(() => window.scrollBy(document.body.scrollWidth, document.body.scrollHeight));
-    //   await assertScreenshot(page, info, pageName, api, 2);
-    // });
+      await page.goto(`/shader/${pageName}/${api}`);
+      await assertScreenshot(page, info, pageName, api, 1);
+      // Scroll to bottom-right corner
+      await page.evaluate(() => window.scrollBy(document.body.scrollWidth, document.body.scrollHeight));
+      await assertScreenshot(page, info, pageName, api, 2);
+    });
 
-    // test('Landing page with bubbles', async ({ page }, info) => {
-    //   const pageName = 'landing-page-bubbles';
+    test('Landing page with bubbles', async ({ page }, info) => {
+      const pageName = 'landing-page-bubbles';
 
-    //   await page.goto(`/shader/${pageName}/${api}`);
-    //   await assertScreenshot(page, info, pageName, api);
-    // });
+      await page.goto(`/shader/${pageName}/${api}`);
+      await assertScreenshot(page, info, pageName, api);
+    });
 
-    // test('Landing page with a halo', async ({ page }, info) => {
-    //   const pageName = 'landing-page-halo';
+    test('Landing page with a halo', async ({ page }, info) => {
+      const pageName = 'landing-page-halo';
 
-    //   await page.goto(`/shader/${pageName}/${api}`);
-    //   await assertScreenshot(page, info, pageName, api);
-    // });
+      await page.goto(`/shader/${pageName}/${api}`);
+      await assertScreenshot(page, info, pageName, api);
+    });
 
-    // test('Slider component', async ({ page }, info) => {
-    //   const pageName = 'slider';
+    test('Slider component', async ({ page }, info) => {
+      const pageName = 'slider';
 
-    //   await page.goto(`/shader/${pageName}/${api}`);
-    //   const slider = page.getByRole('slider');
-    //   await assertScreenshot(page, info, pageName, api, 1);
-    //   await slider.fill('1');
-    //   await assertScreenshot(page, info, pageName, api, 2);
-    //   await slider.fill('0');
-    //   await assertScreenshot(page, info, pageName, api, 3);
-    // });
+      await page.goto(`/shader/${pageName}/${api}`);
+      const slider = page.getByRole('slider');
+      await assertScreenshot(page, info, pageName, api, 1);
+      await slider.fill('1');
+      await assertScreenshot(page, info, pageName, api, 2);
+      await slider.fill('0');
+      await assertScreenshot(page, info, pageName, api, 3);
+    });
   });
 });

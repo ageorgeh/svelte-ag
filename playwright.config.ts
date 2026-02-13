@@ -18,27 +18,47 @@ export default defineConfig({
   expect: {
     timeout: 30_000
   },
-  projects: [
-    {
-      name: 'Firefox <No WebGPU>',
-      use: {
-        ...devices['Desktop Firefox']
-      }
-    },
-    {
-      name: 'Chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        launchOptions: {
-          args: ['--high-dpi-support=1', '--force-device-scale-factor=1']
+  projects: process.env.CI
+    ? [
+        {
+          name: 'Firefox <No WebGPU>',
+          use: {
+            ...devices['Desktop Firefox']
+          }
+        },
+        {
+          name: 'Chromium',
+          use: {
+            ...devices['Desktop Chrome'],
+            channel: 'chrome',
+            launchOptions: {
+              args: ['--high-dpi-support=1', '--force-device-scale-factor=1']
+            }
+          }
+        },
+        {
+          name: 'WebKit <No WebGPU>',
+          use: { ...devices['Desktop Safari'] }
         }
-      }
-    },
-    {
-      name: 'WebKit <No WebGPU>',
-      use: { ...devices['Desktop Safari'] }
-    }
-  ],
+      ]
+    : [
+        {
+          name: 'Chromium',
+          use: {
+            headless: false,
+            ...devices['Desktop Chrome'],
+            launchOptions: {
+              args: ['--high-dpi-support=1', '--force-device-scale-factor=1']
+            }
+          }
+        }
+        // {
+        //   name: 'Firefox <No WebGPU>',
+        //   use: {
+        //     ...devices['Desktop Firefox']
+        //   }
+        // }
+      ],
   webServer: {
     command: 'pnpm dev',
     port: 5180,

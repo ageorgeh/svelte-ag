@@ -3,8 +3,6 @@
   import shaderCode from './shader.frag?raw';
 </script>
 
-<svelte:options runes />
-
 <WebGlShader
   width="500px"
   height="500px"

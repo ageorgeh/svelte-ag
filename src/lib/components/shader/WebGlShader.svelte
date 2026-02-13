@@ -4,27 +4,38 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { Snippet } from 'svelte';
 
   import BaseShader from './BaseShader.svelte';
   import type { BuiltinParameter, WebGlParameter as Parameter } from './types.js';
   import { isBuiltinValue } from './types.js';
 
-  export let width: string | undefined = undefined;
-  export let height: string | undefined = undefined;
+  type Props = {
+    width?: string;
+    height?: string;
+    code: string | Promise<string>;
+    parameters?: readonly Parameter[];
+    forceAnimation?: boolean;
+    children?: Snippet;
+  };
 
-  export let code: string | Promise<string>;
+  let {
+    width = undefined,
+    height = undefined,
+    code,
+    parameters = [],
+    forceAnimation = false,
+    children
+  }: Props = $props();
 
-  export let parameters: readonly Parameter[] = [];
-  const rerenderEveryFrame = parameters.some((parameter) => parameter.value === 'time');
-
-  export let forceAnimation = false;
+  const rerenderEveryFrame = $derived(parameters.some((parameter) => parameter.value === 'time'));
 
   const maxTextureSize = 4096;
 
-  let requestRender: () => void;
-  let canvasElement: HTMLCanvasElement;
+  let requestRender = $state<() => void>(() => {});
+  let canvasElement = $state<HTMLCanvasElement | null>(null);
 
-  let canRender = typeof WebGL2RenderingContext !== 'undefined';
+  let canRender = $state(typeof WebGL2RenderingContext !== 'undefined');
 
   type Config = {
     gl: WebGL2RenderingContext;
@@ -222,7 +233,9 @@
     requestRender();
   }
 
-  $: updateParameters(parameters);
+  $effect(() => {
+    updateParameters(parameters);
+  });
 </script>
 
 <BaseShader
@@ -242,5 +255,5 @@
   bind:canvasElement
   bind:requestRender
 >
-  <slot></slot>
+  {@render children?.()}
 </BaseShader>
