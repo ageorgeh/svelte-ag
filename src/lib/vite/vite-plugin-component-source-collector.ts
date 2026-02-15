@@ -1,5 +1,5 @@
 import type { Plugin, ResolvedConfig } from 'vite';
-import { writeIfDifferent } from 'ts-ag';
+import { exists, writeIfDifferent } from 'ts-ag';
 import path from 'path';
 import { readFile } from 'fs/promises';
 
@@ -85,9 +85,11 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
         componentFiles.clear();
         firstRound = false;
       } else if (config.command === 'serve') {
-        const fileLines = (await readFile(outPath, 'utf8')).split('\n');
-        fileLines.forEach((l) => addPath(l.replace(/@source\s+'(.*?)';/, '$1')));
-        console.log('config resolved', componentFiles);
+        if (await exists(outPath)) {
+          const fileLines = (await readFile(outPath, 'utf8')).split('\n');
+          fileLines.forEach((l) => addPath(l.replace(/@source\s+'(.*?)';/, '$1')));
+          console.log('config resolved', componentFiles);
+        }
       }
       console.log('tailwind-sources:configResolved:command', config.command);
     },
