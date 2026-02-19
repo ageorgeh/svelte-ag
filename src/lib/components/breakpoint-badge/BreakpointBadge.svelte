@@ -77,7 +77,13 @@
   <div class="w-fit">
     {#each breakpoints as bp (bp.name)}
       <div
-        class="{bp.rounded} {bp.bgClass} {bp.hideClass} border {bp.borderClass} px-2 text-xs font-bold {bp.textClass}"
+        class="{bp.rounded}
+          {bp.bgClass}
+          {bp.hideClass}
+          border
+          {bp.borderClass}
+          px-2 text-xs font-bold
+          {bp.textClass}"
       >
         {bp.name}
       </div>

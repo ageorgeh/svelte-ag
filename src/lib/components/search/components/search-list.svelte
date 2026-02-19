@@ -28,8 +28,8 @@
         variant="ghost"
         class={cn(
           `
-            hover:bg-muted
             flex h-full min-h-fit w-full min-w-fit flex-1 cursor-pointer rounded-md p-2
+            hover:bg-muted
           `,
           listState.selected(listItem) && 'bg-muted',
           listState.visible(listItem) ? '' : 'hidden!',

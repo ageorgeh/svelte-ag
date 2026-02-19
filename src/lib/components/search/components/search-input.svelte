@@ -33,15 +33,15 @@
   {@render child({ props: mergedProps })}
 {:else}
   <div class="flex w-full items-center border-b px-2" data-command-input-wrapper="">
-    <span class="icon-[lucide--search] mr-2 size-4 shrink-0 opacity-50"></span>
+    <span class="mr-2 icon-[lucide--search] size-4 shrink-0 opacity-50"></span>
     <input
       {...mergedProps}
       type="text"
       placeholder="Search..."
       class={cn(
         `
-          placeholder:text-muted-foreground
           flex h-11 w-full rounded-md bg-transparent py-3 text-base outline-none
+          placeholder:text-muted-foreground
           disabled:cursor-not-allowed disabled:opacity-50
           md:text-sm
         `,

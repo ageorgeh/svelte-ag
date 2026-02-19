@@ -9,24 +9,26 @@ on:
 
 jobs:
   lint:
-    runs-on: workstation
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - uses: ageorgeh/pnpm-action-setup@fix/skip-install-if-existing
         with:
           cache: true
           run_install: true
-      - name: prettier
-        run: |
-          npx prettier . --check
-      - name: build
-        run: |
-          pnpm build
+          version: 10.28.0
 
-      # Disabled for now - lots of stuff in svelte files that ill deal with later
-      # - name: eslint
-      #   run: |
-      #     # npx eslint .
+      - name: format
+        run: pnpm fmt:check
+      - name: lint
+        run: pnpm lint
+
+      - name: build
+        run: pnpm build
+
   test:
     runs-on: macos-latest
     timeout-minutes: 60

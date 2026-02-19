@@ -64,7 +64,7 @@
   }
 
   // Prevent recompiling identical fragment shaders across mounts.
-  const cachedPipelines = new Map<string, any>();
+  const cachedPipelines = new SvelteMap<string, any>();
 </script>
 
 <script lang="ts">
@@ -75,6 +75,7 @@
   import { zip } from './utils.js';
   import type { WebGpuParameter as Parameter, WebGpuBuiltinParameter as BuiltinParameter } from './types.js';
   import { isBuiltinValue } from './types.js';
+  import { SvelteMap } from 'svelte/reactivity';
 
   type Props = {
     width?: string;

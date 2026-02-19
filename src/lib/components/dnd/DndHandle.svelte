@@ -14,7 +14,7 @@
   let handleClass = $derived(
     cn(
       `
-        icon-draghandle text-muted-foreground flex size-4 transition-colors duration-150
+        icon-draghandle flex size-4 text-muted-foreground transition-colors duration-150
         hover:text-foreground
       `,
       item?.isDragging?.current ? `cursor-grabbing` : `cursor-grab`,

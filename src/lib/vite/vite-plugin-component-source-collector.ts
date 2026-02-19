@@ -1,7 +1,7 @@
 import type { Plugin, ResolvedConfig } from 'vite';
 import { exists, writeIfDifferent } from 'ts-ag';
-import path from 'path';
 import { readFile } from 'fs/promises';
+import { resolve, relative, dirname } from 'path';
 
 interface Options {
   /**
@@ -14,9 +14,6 @@ interface Options {
    * Filter for source files (default: `/\.svelte$/`)
    */
   include?: RegExp | RegExp[];
-
-  run: boolean;
-
   /**
    * node_modules packages that can be added to the component list
    */
@@ -26,21 +23,19 @@ interface Options {
 /** All unique component directories */
 const componentFiles = new Set<string>();
 
-export default function componentSourceCollector(opts: Options = { run: true, safePackages: [] }): Plugin {
-  if (opts.run === false) return { name: 'disabled' };
-
+export default function componentSourceCollector(opts: Options = { safePackages: [] }): Plugin {
   const outFile = opts.outputFile ?? 'component-sources.css';
 
   let config: ResolvedConfig;
   let firstRound = true;
 
-  /** ---- helpers ---------------------------------------------------------- */
+  // ---- helpers ---- //
   let initialTransformDone = false;
   let initialTransformTimer: NodeJS.Timeout | null = null;
 
   function addPath(file: string) {
-    const outPath = path.resolve(config.root, outFile);
-    componentFiles.add(path.relative(path.dirname(outPath), file));
+    const outPath = resolve(config.root, outFile);
+    componentFiles.add(relative(dirname(outPath), file));
   }
 
   function scheduleInitialWrite() {
@@ -54,7 +49,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
   }
   const writeOutFile = async () => {
     // console.log('writing', componentFiles.size);
-    const outPath = path.resolve(config.root, outFile);
+    const outPath = resolve(config.root, outFile);
     const lines = Array.from(componentFiles)
       .map((d) => `@source '${d}';`)
       .sort();
@@ -71,7 +66,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
     return !/\.pnpm|.vite/.test(fileName) || opts.safePackages.some((p) => fileName.includes(`node_modules/${p}`));
   }
 
-  /** ---- plugin ----------------------------------------------------------- */
+  // ---- plugin ---- //
 
   return {
     name: 'vite-plugin-component-source-collector',
@@ -79,7 +74,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
 
     async configResolved(resolved) {
       config = resolved;
-      const outPath = path.resolve(config.root, outFile);
+      const outPath = resolve(config.root, outFile);
 
       if (config.command === 'build' && firstRound) {
         componentFiles.clear();
@@ -88,7 +83,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
         if (await exists(outPath)) {
           const fileLines = (await readFile(outPath, 'utf8')).split('\n');
           fileLines.forEach((l) => addPath(l.replace(/@source\s+'(.*?)';/, '$1')));
-          console.log('config resolved', componentFiles);
+          // console.log('config resolved', componentFiles);
         }
       }
       console.log('tailwind-sources:configResolved:command', config.command);
@@ -106,7 +101,7 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
         const matches = code.matchAll(importRegex);
 
         for (const match of matches) {
-          console.log('MATching', match);
+          // console.log('MATching', match);
           const resolved = await this.resolve(match[1], id);
           if (resolved && shouldAdd(resolved.id)) {
             addPath(resolved.id);
@@ -125,9 +120,9 @@ export default function componentSourceCollector(opts: Options = { run: true, sa
       }
     },
 
-    async handleHotUpdate(ctx) {
-      const output = await ctx.read();
-      const id = ctx.file;
+    async handleHotUpdate(_ctx) {
+      // const output = await ctx.read();
+      // const id = ctx.file;
 
       // console.log('Hot update sources', id, output, classRegex.test(output));
 

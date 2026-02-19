@@ -10,8 +10,8 @@
   bind:ref
   class={cn(
     `
-      data-fs-error:text-destructive
       text-sm leading-none font-medium
+      data-fs-error:text-destructive
     `,
     className
   )}

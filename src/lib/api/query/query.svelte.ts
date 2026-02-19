@@ -142,7 +142,7 @@ export class Requestor<
   #unBatchOutput: BatchDetails<API, Path, Method>['unBatchOutput'];
 
   #limiter: Bottleneck;
-  #cache: Cache;
+  // #cache: Cache;
 
   // -------- State --------
   #batchQueue: Record<
@@ -159,7 +159,7 @@ export class Requestor<
     path: Path,
     method: Method,
     request: ApiRequestFunction<API>,
-    cache: Cache,
+    _cache: Cache,
     batchDetails?: BatchDetails<API, Path, Method>
   ) {
     this.#path = path;
@@ -169,12 +169,12 @@ export class Requestor<
       maxConcurrent: 5,
       minTime: 100
     });
-    this.#cache = cache;
+    // this.#cache = cache;
 
     // TODO
     this.#canBatch = batchDetails ? batchDetails.canBatch : () => false;
     this.#batchInput = batchDetails ? batchDetails.batchInput : (inputs) => inputs;
-    this.#unBatchOutput = batchDetails ? batchDetails.unBatchOutput : (inputs, output) => [output];
+    this.#unBatchOutput = batchDetails ? batchDetails.unBatchOutput : (_inputs, output) => [output];
   }
 
   // Makes the actual call to the api

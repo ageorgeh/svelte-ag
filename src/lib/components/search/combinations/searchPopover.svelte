@@ -56,7 +56,7 @@
         {:else}
           Select an item...
         {/if}
-        <span class="icon-[lucide--chevrons-up-down] ml-2 size-4 shrink-0 opacity-50"> </span>
+        <span class="ml-2 icon-[lucide--chevrons-up-down] size-4 shrink-0 opacity-50"> </span>
       </Button>
     {/snippet}
   </Popover.Trigger>

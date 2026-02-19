@@ -1,62 +1,47 @@
-// eslint.config.js
-import js from '@eslint/js';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
-import ts from 'typescript-eslint';
-import imports from 'eslint-plugin-import';
-
-import svelteConfig from './svelte.config.js';
+// import { importX } from 'eslint-plugin-import-x';
 import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import tseslint from 'typescript-eslint';
+import svelteConfig from './svelte.config.js';
 
 const isWindows = process.platform === 'win32';
 
-// npx eslint "C:\code\cmsWrapper\cms\private\client\src\routes\+layout.svelte"
-// npx eslint "/mnt/c/code/cmsWrapper/cms/private/client/src/routes/+layout.svelte"
-// npx eslint "C:\code\cmsWrapper\cms\private\scripts\eslint\api-no-direct-return.ts"
-
-export default ts.config(
-  js.configs.recommended,
-  ...ts.configs.recommended,
+export default defineConfig([
+  globalIgnores([
+    '**/node_modules/',
+    '.git/',
+    '**/dist/',
+    '**/build/',
+    '**/.svelte-kit/',
+    '**/.obsidian/',
+    './shadcn/'
+  ]),
+  ...tseslint.configs.recommended,
   ...svelte.configs.recommended,
+  // https://github.com/un-ts/eslint-plugin-import-x/issues/439
+  // {
+  //   plugins: { 'import-x': importX }
+  //   // extends: ['import-x/flat/recommended']
+  //   // rules: { 'import-x/no-dynamic-require': 'warn' }
+  // },
+  { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   {
-    languageOptions: {
-      parserOptions: {
-        tsconfigRootDir: import.meta.dirname
-      },
-      globals: {
-        ...globals.browser,
-        ...globals.node
-      }
-    },
-    ignores: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/backup/**', '**/cdk.out/**']
-  },
-  {
+    // Specific svelte options
     files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
-    // See more details at: https://typescript-eslint.io/packages/parser/
     languageOptions: {
       parserOptions: {
-        // projectService: true,
-        // project: './tsconfig.json',
-        extraFileExtensions: ['.svelte'], // Add support for additional file extensions, such as .svelte
-        parser: ts.parser,
-        // Specify a parser for each language, if needed:
-        // parser: {
-        //   ts: ts.parser,
-        //   js: espree,    // Use espree for .js files (add: import espree from 'espree')
-        //   typescript: ts.parser
-        // },
-        // We recommend importing and specifying svelte.config.js.
-        // By doing so, some rules in eslint-plugin-svelte will automatically read the configuration and adjust their behavior accordingly.
-        // While certain Svelte settings may be statically loaded from svelte.config.js even if you don’t specify it,
-        // explicitly specifying it ensures better compatibility and functionality.
+        projectService: true,
+        extraFileExtensions: ['.svelte', '.svelte.ts'],
+        parser: tseslint.parser,
+        svelteFeatures: { experimentalGenerics: true },
         svelteConfig
       }
     },
-    plugins: {
-      'better-tailwindcss': eslintPluginBetterTailwindcss
-    },
+    plugins: { 'better-tailwindcss': eslintPluginBetterTailwindcss },
     rules: {
-      // enable all recommended rules to warn
+      'svelte/no-navigation-without-resolve': ['off'],
       ...eslintPluginBetterTailwindcss.configs['stylistic-warn'].rules,
       'better-tailwindcss/enforce-consistent-line-wrapping': [
         'warn',
@@ -64,50 +49,27 @@ export default ts.config(
       ]
       // 'better-tailwindcss/sort-classes': ['warn', { entryPoint: 'base/frontend/admin/src/app.css' }]
     },
-    settings: {
-      'better-tailwindcss': 'src/app.css'
-    }
+    settings: { 'better-tailwindcss': { entryPoint: 'src/app.css' } }
   },
   {
-    files: ['**/*.css'],
-    plugins: {
-      'better-tailwindcss': eslintPluginBetterTailwindcss
-    },
     rules: {
-      // enable all recommended rules to warn
-      ...eslintPluginBetterTailwindcss.configs['stylistic-warn'].rules,
-      'better-tailwindcss/enforce-consistent-line-wrapping': [
-        'warn',
-        { group: 'newLine', lineBreakStyle: isWindows ? 'windows' : 'unix', printWidth: 120 }
-      ]
-      // 'better-tailwindcss/sort-classes': ['warn', { entryPoint: 'base/frontend/admin/src/app.css' }]
-    }
-  },
-  {
-    files: ['**/*.ts'],
-    // See more details at: https://typescript-eslint.io/packages/parser/
-    plugins: {
-      import: imports
-    },
-    rules: {
-      'import/extensions': [
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': [
         'error',
-        'ignorePackages',
         {
-          ts: 'never',
-          tsx: 'never',
-          js: 'always',
-          jsx: 'never'
+          args: 'all',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true
         }
       ]
-    }
-  },
-  {
-    rules: {
-      // Override or add rule settings here, such as:
-      // 'svelte/rule-name': 'error',
-      '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/no-explicit-any': 'off'
+      // 'import-x/order': ['error'],
+      // 'import-x/no-duplicates': ['off'],
+      // 'import-x/no-unresolved': ['off']
     }
   }
-);
+]);

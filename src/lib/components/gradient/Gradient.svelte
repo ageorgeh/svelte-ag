@@ -21,7 +21,7 @@
   } = $props();
 
   function toRgba(color: Vec4): string {
-    const [r, g, b, a] = color.map((c) => Math.round(c * 255));
+    const [r, g, b, _a] = color.map((c) => Math.round(c * 255));
     return `rgba(${r}, ${g}, ${b}, ${color[3].toFixed(3)})`;
   }
 
@@ -40,7 +40,7 @@
   });
 </script>
 
-<div class={cn('h-full w-full', className)}>
+<div class={cn('size-full', className)}>
   <WebGlShader
     width="100%"
     height="100%"

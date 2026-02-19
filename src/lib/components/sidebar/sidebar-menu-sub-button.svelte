@@ -21,15 +21,15 @@
   const mergedProps = $derived({
     class: cn(
       `
-        text-sidebar-foreground ring-sidebar-ring flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden
-        rounded-md px-2 outline-none
+        flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground
+        ring-sidebar-ring outline-none
         hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
-        active:bg-sidebar-accent active:text-sidebar-accent-foreground
-        [&>svg]:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0
         focus-visible:ring-2
+        active:bg-sidebar-accent active:text-sidebar-accent-foreground
         disabled:pointer-events-none disabled:opacity-50
         aria-disabled:pointer-events-none aria-disabled:opacity-50
         [&>span:last-child]:truncate
+        [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground
       `,
       'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
       size === 'sm' && 'text-xs',

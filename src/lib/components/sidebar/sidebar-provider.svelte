@@ -45,7 +45,7 @@
     class={cn(
       `
         group/sidebar-wrapper flex w-full flex-auto
-        has-[[data-variant=inset]]:bg-sidebar
+        has-data-[variant=inset]:bg-sidebar
       `,
       className
     )}

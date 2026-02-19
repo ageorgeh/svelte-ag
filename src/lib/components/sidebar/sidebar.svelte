@@ -28,9 +28,9 @@
     data-variant={variant}
     class={cn(
       `
-        bg-sidebar text-sidebar-foreground flex h-full w-[var(--sidebar-width)] flex-col
-        data-[variant=floating]:border-sidebar-border data-[variant=floating]:rounded-lg data-[variant=floating]:border
-        data-[variant=floating]:shadow
+        flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground
+        data-[variant=floating]:rounded-lg data-[variant=floating]:border data-[variant=floating]:border-sidebar-border
+        data-[variant=floating]:shadow-sm
       `,
       className
     )}
@@ -45,7 +45,7 @@
       data-sidebar="sidebar"
       data-mobile="true"
       class="
-        bg-sidebar text-sidebar-foreground w-[var(--sidebar-width)] p-0
+        w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground
         [&>button]:hidden
       "
       style="--sidebar-width: {SIDEBAR_WIDTH_MOBILE};"
@@ -61,11 +61,11 @@
     bind:this={ref}
     class={cn(
       `
-        text-sidebar-foreground peer bg-sidebar relative hidden w-[var(--sidebar-width)] flex-auto flex-grow-0 flex-col
-        overflow-hidden transition-[width] duration-200 ease-linear
-        data-[variant=floating]:border-sidebar-border data-[variant=floating]:rounded-lg data-[variant=floating]:border
-        data-[variant=floating]:shadow
+        peer relative hidden w-(--sidebar-width) flex-auto grow-0 flex-col overflow-hidden bg-sidebar
+        text-sidebar-foreground transition-[width] duration-200 ease-linear
         data-[collapsible=offcanvas]:w-0
+        data-[variant=floating]:rounded-lg data-[variant=floating]:border data-[variant=floating]:border-sidebar-border
+        data-[variant=floating]:shadow-sm
         md:flex
       `,
       // 'data-[side=right]:rotate-180',
@@ -75,7 +75,7 @@
           data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon))]
         `
         : `
-          data-[collapsible=icon]:w-[var(--sidebar-width-icon)]
+          data-[collapsible=icon]:w-(--sidebar-width-icon)
           data-[side=left]:border-r
           data-[side=right]:border-l
         `,

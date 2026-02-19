@@ -19,23 +19,27 @@ concurrency:
 
 jobs:
   publish:
-    runs-on: workstation
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: ageorgeh/pnpm-action-setup@fix/skip-install-if-existing
         with:
           cache: true
           run_install: true
+          version: 10.28.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
 
+      - name: format
+        run: pnpm fmt:check
       - name: lint
-        run: npx prettier . --check
+        run: pnpm lint
 
       - name: build
-        run: |
-          pnpm build
+        run: pnpm build
 
       - name: semantic-release
         env:

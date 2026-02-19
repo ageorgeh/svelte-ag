@@ -19,11 +19,11 @@
 </script>
 
 <button onclick={() => console.log($state.snapshot(items))}>hello</button>
-<SimpleSortable class="bg-sidebar flex h-100 flex-col gap-4 rounded-2xl p-6" bind:items>
+<SimpleSortable class="flex h-100 flex-col gap-4 rounded-2xl bg-sidebar p-6" bind:items>
   {#snippet item(p)}
     <div
       class={cn(
-        'bg-secondary text-secondary-foreground rounded-md border-2 p-2',
+        'rounded-md border-2 bg-secondary p-2 text-secondary-foreground',
         p.isOverlay && 'shadow-2xl',
         p.isDragging && 'bg-amber-700 opacity-20'
       )}
@@ -37,11 +37,11 @@
 </SimpleSortable>
 
 <!-- With handle -->
-<SimpleSortable class="bg-sidebar flex h-100 flex-col gap-4 rounded-2xl p-6" bind:items={items2}>
+<SimpleSortable class="flex h-100 flex-col gap-4 rounded-2xl bg-sidebar p-6" bind:items={items2}>
   {#snippet item(p)}
     <div
       class={cn(
-        'bg-secondary text-secondary-foreground rounded-md border-2 p-2',
+        'rounded-md border-2 bg-secondary p-2 text-secondary-foreground',
         p.isOverlay && 'shadow-2xl',
         p.isDragging && 'bg-amber-700 opacity-20'
       )}

@@ -6,30 +6,30 @@
     variants: {
       animation: {
         flyAndScale: `
+          data-[state="hidden"]:animate-out data-[state="hidden"]:fade-out-0 data-[state="hidden"]:zoom-out-95
+          data-[state="hidden"]:slide-out-to-bottom-[10%]
           data-[state="visible"]:animate-in data-[state="visible"]:fade-in-0 data-[state="visible"]:zoom-in-95
           data-[state="visible"]:slide-in-from-bottom-[10%]
-          data-[state="hidden"]:fade-out-0 data-[state="hidden"]:zoom-out-95
-          data-[state="hidden"]:slide-out-to-bottom-[10%] data-[state="hidden"]:animate-out
         `,
         slide: `
+          data-[state="hidden"]:animate-out data-[state="hidden"]:slide-out-to-right
           data-[state="visible"]:animate-in data-[state="visible"]:slide-in-from-right
-          data-[state="hidden"]:slide-out-to-right data-[state="hidden"]:animate-out
         `,
         fade: `
+          data-[state="hidden"]:animate-out data-[state="hidden"]:fade-out
           data-[state="visible"]:animate-in data-[state="visible"]:fade-in
-          data-[state="hidden"]:fade-out data-[state="hidden"]:animate-out
         `,
         zoom: `
+          data-[state="hidden"]:animate-out data-[state="hidden"]:zoom-out-95
           data-[state="visible"]:animate-in data-[state="visible"]:zoom-in-95
-          data-[state="hidden"]:zoom-out-95 data-[state="hidden"]:animate-out
         `,
         slideUp: `
+          data-[state="hidden"]:animate-out data-[state="hidden"]:slide-out-to-bottom
           data-[state="visible"]:animate-in data-[state="visible"]:slide-in-from-bottom
-          data-[state="hidden"]:slide-out-to-bottom data-[state="hidden"]:animate-out
         `,
         slideDown: `
+          data-[state="hidden"]:animate-out data-[state="hidden"]:slide-out-to-top
           data-[state="visible"]:animate-in data-[state="visible"]:slide-in-from-top
-          data-[state="hidden"]:slide-out-to-top data-[state="hidden"]:animate-out
         `,
         growHeight: `overflow-hidden`
       },
