@@ -27,6 +27,7 @@
 
   let { child, class: className, style: styleName, ...rest }: DndItemProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const { isDragging, ref, handleRef } = useDraggable({
     ...rest
   });

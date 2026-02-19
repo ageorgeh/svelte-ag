@@ -35,6 +35,7 @@
 
   let { class: className, child, ...rest }: DndSortableItemProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const { ref, handleRef, isDragging } = useSortable({ ...rest, feedback: 'move' });
 
   setItemContext({ handleRef, isDragging });

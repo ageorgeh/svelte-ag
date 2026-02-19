@@ -30,7 +30,7 @@
     "./dist"
   ],
   "scripts": {
-    "prebuild": "svelte-kit sync && svelte-check",
+    "prebuild": "svelte-kit sync && svelte-check --fail-on-warnings",
     "build": "svelte-package -i src",
     "dev": "vite dev",
     "fmt": "prettier . --write",

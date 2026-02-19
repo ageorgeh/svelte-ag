@@ -10,6 +10,7 @@
 
   let { children, class: className, ...rest }: DroppableProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const { ref, isDropTarget } = useDroppable(rest);
 </script>
 
