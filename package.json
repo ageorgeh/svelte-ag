@@ -72,7 +72,7 @@
     "@iconify/tailwind4": "^1.2.1",
     "@iconify/types": "^2.0.0",
     "@internationalized/date": "^3.11.0",
-    "@lucide/svelte": "^0.574.0",
+    "@lucide/svelte": "^0.575.0",
     "@playwright/test": "1.57.0",
     "@sveltejs/kit": "^2.52.2",
     "@sveltejs/package": "^2.5.7",
