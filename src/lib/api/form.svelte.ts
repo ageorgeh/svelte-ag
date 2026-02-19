@@ -9,8 +9,14 @@ import type {
   ApiErrorBody,
   ApiSchema
 } from 'ts-ag';
+import { pruneToShape } from 'ts-ag';
+import { watch } from 'runed';
+import { dequal } from 'dequal';
+import { get } from 'svelte/store';
 
-type ValidInput<E extends ApiEndpoints, P extends E['path'], M extends E['method']> = NonNullable<ApiInput<E, P, M>>;
+export type ValidInput<E extends ApiEndpoints, P extends E['path'], M extends E['method']> = NonNullable<
+  ApiInput<E, P, M>
+>;
 
 export type ApiRequestForm<API extends ApiEndpoints> = <
   Path extends API['path'],
@@ -29,6 +35,11 @@ export type ApiRequestForm<API extends ApiEndpoints> = <
     ) => void | Promise<void>;
   };
   defaultValue?: Partial<ApiInput<API, Path, Method>>;
+  bind?: {
+    get: (formData: ApiInput<API, Path, Method>) => ValidInput<API, Path, Method>;
+    set: (formData: ApiInput<API, Path, Method>) => void;
+  };
+
   formProps?: Parameters<typeof superForm<ValidInput<API, Path, Method>>>[1];
 }) => SuperForm<ValidInput<API, Path, Method>>;
 
@@ -36,7 +47,7 @@ export function createFormFunction<API extends ApiEndpoints>(
   schemas: Partial<Record<API['path'], Partial<Record<HTTPMethod, ApiSchema>>>>,
   request: ApiRequestFunction<API>
 ): ApiRequestForm<API> {
-  return ({ path, method, actions, defaultValue, formProps }) => {
+  return ({ path, method, actions, defaultValue, formProps, bind }) => {
     const schema = schemas[path]?.[method];
     if (schema === undefined) throw new Error('Invalid schema for form');
 
@@ -44,13 +55,32 @@ export function createFormFunction<API extends ApiEndpoints>(
     //   schema = schema();
     // }
 
-    return superForm<ValidInput<API, typeof path, typeof method>>(defaults(defaultValue, valibot(schema)), {
+    const form = superForm<ValidInput<API, typeof path, typeof method>>(defaults(defaultValue, valibot(schema)), {
       SPA: true,
       resetForm: true,
       applyAction: false, // Prevents the form redirecting to the same page on submit
       delayMs: 300,
       validators: valibot(schema),
+      async onSubmit({ submitter, jsonData, formData }) {
+        if (
+          submitter &&
+          'name' in submitter &&
+          typeof submitter.name === 'string' &&
+          'value' in submitter &&
+          typeof submitter.value === 'string'
+        ) {
+          if (formProps?.dataType === 'json') {
+            form.form.update((f) => {
+              f[submitter.name] = submitter.value;
+              console.log('updated', f);
+              return f;
+            });
+          }
+          console.log('DATA', formData);
+        }
+      },
       async onUpdate({ form }) {
+        console.log('FORM', form.data);
         if (!form.valid) return;
 
         const res = await request(path, method, form.data);
@@ -78,5 +108,32 @@ export function createFormFunction<API extends ApiEndpoints>(
       },
       ...formProps
     });
+
+    if (bind !== undefined) {
+      const bindGet = () => {
+        const formData = get(form.form);
+        return pruneToShape(bind.get(formData), formData);
+      };
+
+      form.form.subscribe((v) => {
+        console.log('Updating binded value', bindGet(), 'to', v);
+        if (!dequal(bindGet(), v)) {
+          bind.set(v);
+          console.log('done update', bindGet());
+        }
+      });
+
+      watch(
+        () => bindGet(),
+        (newValue) => {
+          console.log('The state changed, updating the form from', get(form.form), 'to', newValue);
+          if (!dequal(get(form.form), newValue)) {
+            form.form.set(newValue);
+          }
+        }
+      );
+    }
+
+    return form;
   };
 }
