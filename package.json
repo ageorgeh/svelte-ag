@@ -48,8 +48,7 @@
     "@dnd-kit-svelte/svelte": "^0.1.6",
     "@dnd-kit/helpers": "^0.2.4",
     "@floating-ui/dom": "^1.7.5",
-    "@rollup/pluginutils": "^5.3.0",
-    "@sveltejs/kit": "^2.52.2",
+    "@sveltejs/kit": "^2.53.0",
     "bits-ui": "^2.16.1",
     "bottleneck": "^2.19.5",
     "clsx": "^2.1.1",
@@ -64,7 +63,7 @@
     "sveltekit-superforms": "2.29.1",
     "tailwind-merge": "^3.5.0",
     "tailwind-variants": "^3.2.2",
-    "ts-ag": "^1.0.10",
+    "ts-ag": "^1.0.11",
     "valibot": "^1.2.0"
   },
   "devDependencies": {
@@ -82,9 +81,8 @@
     "@tailwindcss/vite": "^4.2.0",
     "@types/node": "^24.10.13",
     "@typescript/native-preview": "7.0.0-dev.20260219.1",
-    "eslint": "^10.0.0",
+    "eslint": "^10.0.1",
     "eslint-plugin-better-tailwindcss": "^4.3.0",
-    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-svelte": "^3.15.0",
     "globals": "^17.3.0",
     "husky": "^9.1.7",
@@ -92,7 +90,6 @@
     "prettier": "^3.8.1",
     "prettier-plugin-packagejson": "^3.0.0",
     "prettier-plugin-svelte": "^3.5.0",
-    "rollup": "^4.57.1",
     "semantic-release": "^25.0.3",
     "svelte-check": "^4.4.1",
     "tailwindcss": "4.2.0",
@@ -100,7 +97,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.0",
     "typescript-svelte-plugin": "^0.3.50",
-    "vite": "^7.3.1",
+    "vite": "^8.0.0-beta.15",
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
@@ -113,6 +110,8 @@
       "esbuild",
       "@tailwindcss/oxide"
     ],
-    "overrides": {}
+    "overrides": {
+      "vite": "8.0.0-beta.15"
+    }
   }
 }

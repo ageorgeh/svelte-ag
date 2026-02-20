@@ -1,6 +1,5 @@
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
-// import { importX } from 'eslint-plugin-import-x';
 import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import tseslint from 'typescript-eslint';
@@ -20,12 +19,6 @@ export default defineConfig([
   ]),
   ...tseslint.configs.recommended,
   ...svelte.configs.recommended,
-  // https://github.com/un-ts/eslint-plugin-import-x/issues/439
-  // {
-  //   plugins: { 'import-x': importX }
-  //   // extends: ['import-x/flat/recommended']
-  //   // rules: { 'import-x/no-dynamic-require': 'warn' }
-  // },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   {
     // Specific svelte options
@@ -68,9 +61,6 @@ export default defineConfig([
           ignoreRestSiblings: true
         }
       ]
-      // 'import-x/order': ['error'],
-      // 'import-x/no-duplicates': ['off'],
-      // 'import-x/no-unresolved': ['off']
     }
   }
 ]);
