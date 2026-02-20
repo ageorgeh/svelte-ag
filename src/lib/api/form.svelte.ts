@@ -12,7 +12,7 @@ import type {
 import { watch } from 'runed';
 import { dequal } from 'dequal';
 import { get } from 'svelte/store';
-import { safeParseAsync } from 'valibot';
+import { safeParse, safeParseAsync } from 'valibot';
 
 export type ValidInput<E extends ApiEndpoints, P extends E['path'], M extends E['method']> = NonNullable<
   ApiInput<E, P, M>
@@ -121,7 +121,13 @@ export function createFormFunction<API extends ApiEndpoints>(
     //   schema = schema();
     // }
 
-    const form = superForm<ValidInput<API, typeof path, typeof method>>(defaults(defaultValue, valibot(schema)), {
+    const defaultFormData = defaults(defaultValue, valibot(schema));
+    const boundFormData =
+      bind && schema.async === false
+        ? (safeParse(schema, bind.get(defaultFormData)).output as ValidInput<API, typeof path, typeof method>)
+        : defaultFormData;
+
+    const form = superForm<ValidInput<API, typeof path, typeof method>>(boundFormData, {
       SPA: true,
       resetForm: true,
       applyAction: false, // Prevents the form redirecting to the same page on submit

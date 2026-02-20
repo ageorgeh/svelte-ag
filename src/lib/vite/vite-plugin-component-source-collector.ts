@@ -78,7 +78,7 @@ export default function componentSourceCollector(opts: Options = { safePackages:
 
   return {
     name: 'vite-plugin-component-source-collector',
-    enforce: 'post',
+    enforce: 'pre', // i want to see comments
 
     async configResolved(resolved) {
       config = resolved;
@@ -110,9 +110,13 @@ export default function componentSourceCollector(opts: Options = { safePackages:
 
         for (const match of matches) {
           // console.log('MATching', match);
-          const resolved = await this.resolve(match[1], id);
-          if (resolved) {
-            addPath(resolved.id);
+          try {
+            const resolved = await this.resolve(match[1], id);
+            if (resolved) {
+              addPath(resolved.id);
+            }
+          } catch {
+            // Cant resolve: dont add
           }
         }
       }
