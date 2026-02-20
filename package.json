@@ -113,6 +113,9 @@
     "onlyBuiltDependencies": [
       "esbuild",
       "@tailwindcss/oxide"
-    ]
+    ],
+    "overrides": {
+      "ts-ag": "link:../ts-ag"
+    }
   }
 }

@@ -2,7 +2,7 @@
   export type FormFullFieldProps<T extends Record<string, unknown>, U extends FormPath<T>> = FormFieldProps<T, U> & {
     label: string;
     description?: string;
-    inputProps: HTMLInputAttributes;
+    inputProps?: HTMLInputAttributes;
   } & WithoutChildren<WithElementRef<HTMLAttributes<HTMLDivElement>>>;
 </script>
 
