@@ -43,6 +43,7 @@ export default defineConfig([
     rules: {
       'svelte/no-navigation-without-resolve': ['off'],
       ...eslintPluginBetterTailwindcss.configs['stylistic-warn'].rules,
+      'better-tailwindcss/enforce-canonical-classes': ['off'],
       'better-tailwindcss/enforce-consistent-line-wrapping': [
         'warn',
         { group: 'newLine', lineBreakStyle: isWindows ? 'windows' : 'unix', printWidth: 120 }

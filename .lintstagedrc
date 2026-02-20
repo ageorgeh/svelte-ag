@@ -1,1 +1,1 @@
-{ "*": "npx prettier --write --no-error-on-unmatched-pattern" }
+{ "*": ["npx prettier --write --no-error-on-unmatched-pattern", "npx eslint"] }
