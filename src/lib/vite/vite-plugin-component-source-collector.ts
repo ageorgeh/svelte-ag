@@ -1,7 +1,7 @@
 import type { Plugin, ResolvedConfig } from 'vite';
 import { exists, writeIfDifferent } from 'ts-ag';
 import { readFile } from 'fs/promises';
-import { resolve, relative, dirname } from 'path';
+import { resolve, join, relative, dirname } from 'path';
 
 interface Options {
   /**
@@ -29,6 +29,9 @@ export default function componentSourceCollector(opts: Options = { safePackages:
   const classRegex = /class(?:=|:)/;
   const importRegex = /@import\s+['"]([^'"]+)['"]/g;
 
+  let outputFilePath: string | undefined = undefined;
+  let root: string | undefined = undefined;
+
   // state
   let config: ResolvedConfig;
   let firstRound = true;
@@ -41,15 +44,19 @@ export default function componentSourceCollector(opts: Options = { safePackages:
 
   function addPath(file: string) {
     if (
+      outputFilePath &&
       file !== '' && // No nothing
       !/\.svelte-kit/.test(file) && // No svelte-kit files
       // No dep files unless marked as safe
       (!/\.pnpm|.vite/.test(file) || opts.safePackages.some((p) => file.includes(`node_modules/${p}`)))
     ) {
-      const outPath = resolve(config.root, outFileName);
       const cleanedFileName = file.replace(/\?v=.*$/, '');
+      const relativeFilePath = relative(dirname(outputFilePath), cleanedFileName);
 
-      componentFiles.add(relative(dirname(outPath), cleanedFileName));
+      if (relativeFilePath !== outputFilePath) {
+        // Dont add itself
+        componentFiles.add(relativeFilePath);
+      }
     }
   }
 
@@ -64,14 +71,14 @@ export default function componentSourceCollector(opts: Options = { safePackages:
   }
 
   const writeOutFile = async () => {
-    const outPath = resolve(config.root, outFileName);
-
     const lines = Array.from(componentFiles)
       .map((d) => `@source '${d}';`)
       .sort();
 
-    const didWrite = await writeIfDifferent(outPath, lines.join('\n'));
-    if (didWrite) console.log('Wrote', lines.length);
+    if (outputFilePath) {
+      const didWrite = await writeIfDifferent(outputFilePath, lines.join('\n'));
+      if (didWrite) console.log('Wrote', lines.length);
+    }
   };
 
   // ---- plugin ---- //
@@ -80,21 +87,48 @@ export default function componentSourceCollector(opts: Options = { safePackages:
     name: 'vite-plugin-component-source-collector',
     enforce: 'pre', // i want to see comments
 
+    /**
+     * Setup. Add exisitng files to internal state if dev
+     */
     async configResolved(resolved) {
       config = resolved;
-      const outPath = resolve(config.root, outFileName);
+      root = config.root;
+      outputFilePath = resolve(root, outFileName);
 
       if (config.command === 'build' && firstRound) {
         componentFiles.clear();
         firstRound = false;
       } else if (config.command === 'serve') {
-        if (await exists(outPath)) {
-          const fileLines = (await readFile(outPath, 'utf8')).split('\n');
+        if (await exists(outputFilePath)) {
+          const fileLines = (await readFile(outputFilePath, 'utf8')).split('\n');
           fileLines.forEach((l) => addPath(l.replace(/@source\s+'(.*?)';/, '$1')));
           // console.log('config resolved', componentFiles);
         }
       }
       console.log('tailwind-sources:configResolved:command', config.command);
+    },
+
+    /**
+     * Reset list on lock file changed
+     */
+    configureServer(server) {
+      const lockFiles = [
+        'pnpm-lock.yaml',
+        'package-lock.json',
+        'yarn.lock',
+        'bun.lockb',
+        'bun.lock',
+        'npm-shrinkwrap.json',
+        // pnpm install-state changes:
+        'node_modules/.modules.yaml'
+      ].map((p) => join(root!, p));
+      server.watcher.add(lockFiles);
+      const onChange = async (file: string) => {
+        if (!lockFiles.includes(file)) return;
+        componentFiles.clear();
+      };
+      server.watcher.on('change', onChange);
+      server.watcher.on('add', onChange);
     },
 
     buildStart() {

@@ -40,10 +40,12 @@ export type ApiRequestForm<API extends ApiEndpoints> = <
 
   /**
    * Optional lifecycle hooks for consumers.
+   * - `beforeRequest`: called before sending the api call
    * - `onSuccess`: called after a successful response body is parsed.
    * - `onFail`: called after an error response body is parsed and mapped to form errors/messages.
    */
   actions?: {
+    beforeRequest?: (form: SuperValidated<ValidInput<API, Path, Method>>) => void | Promise<void>;
     onSuccess?: (
       form: SuperValidated<ValidInput<API, Path, Method>>,
       response: ApiSuccessBody<API, Path, Method>
@@ -151,8 +153,11 @@ export function createFormFunction<API extends ApiEndpoints>(
         }
       },
       async onUpdate({ form }) {
+        if (actions && actions.beforeRequest) actions.beforeRequest(form);
+
         if (!form.valid) return;
 
+        // console.log('onUpdate: sending data', form.data);
         const res = await request(path, method, form.data);
 
         if (res.ok === false) {
