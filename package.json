@@ -68,7 +68,7 @@
   "devDependencies": {
     "@actions/languageserver": "^0.3.44",
     "@eslint/js": "^10.0.1",
-    "@iconify/json": "^2.2.441",
+    "@iconify/json": "^2.2.442",
     "@iconify/tailwind4": "^1.2.1",
     "@iconify/types": "^2.0.0",
     "@internationalized/date": "^3.11.0",
