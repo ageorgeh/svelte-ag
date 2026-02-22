@@ -1,11 +1,20 @@
 <!-- https://next.dndkit.com/react/components/drag-drop-provider -->
 
 <script lang="ts" module>
-  import type { ComponentProps } from 'svelte';
-  import { getContext, setContext } from 'svelte';
+  import { DragDropProvider, type DragDropEvents } from '@dnd-kit-svelte/svelte';
+  import { getContext, setContext, type Snippet } from 'svelte';
   import type { WritableBox } from 'svelte-toolbelt';
 
-  export type DndContextProps<T extends { id: string }> = ComponentProps<DragDropProvider> & { items: T[] };
+  export type DndContextProps<T extends { id: string }> = {
+    children?: Snippet;
+    onBeforeDragStart?: DragDropEvents<T>['beforedragstart'];
+    onCollision?: DragDropEvents<T>['collision'];
+    onDragStart?: DragDropEvents<T>['dragstart'];
+    onDragMove?: DragDropEvents<T>['dragmove'];
+    onDragOver?: DragDropEvents<T>['dragover'];
+    onDragEnd?: DragDropEvents<T>['dragend'];
+    items: T[];
+  };
 
   export type DndState<T> = {
     items: WritableBox<T[]>;
@@ -34,7 +43,6 @@
 </script>
 
 <script lang="ts" generics="T extends {id: string; children?: T[]}">
-  import { DragDropProvider } from '@dnd-kit-svelte/svelte';
   import { RestrictToWindowEdges } from '@dnd-kit-svelte/svelte/modifiers';
   import { findItem, sensors } from './utils.svelte.js';
   import { box } from 'svelte-toolbelt';

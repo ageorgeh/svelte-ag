@@ -153,7 +153,7 @@ export function createFormFunction<API extends ApiEndpoints>(
         }
       },
       async onUpdate({ form }) {
-        if (actions && actions.beforeRequest) actions.beforeRequest(form);
+        if (actions && actions.beforeRequest) await actions.beforeRequest(form);
 
         if (!form.valid) return;
 
