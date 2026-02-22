@@ -11,7 +11,11 @@ Icons:
   import type { FormPath } from 'sveltekit-superforms';
   import type { Props as ButtonProps } from '$shadcn/button/index.js';
 
-  export type FormButtonProps<T extends Record<string, unknown>, U extends FormPath<T>> = Omit<ButtonProps, 'form'> & {
+  // eslint-disable-next-line
+  export type FormButtonProps<T extends Record<string, unknown> = {}, U extends FormPath<T> = any> = Omit<
+    ButtonProps,
+    'form'
+  > & {
     form?: FormFieldProps<T, U>['form'];
     name?: U;
   };
