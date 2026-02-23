@@ -63,8 +63,8 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(tailwind-merge@3.5.0)(tailwindcss@4.2.0)
       ts-ag:
-        specifier: ^1.0.12
-        version: 1.0.12(@types/aws-lambda@8.10.160)(typescript@5.9.3)
+        specifier: ^1.0.13
+        version: 1.0.13(@types/aws-lambda@8.10.160)(typescript@5.9.3)
       valibot:
         specifier: ^1.2.0
         version: 1.2.0(typescript@5.9.3)
@@ -894,56 +894,48 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@oxlint/binding-linux-arm64-musl@1.49.0':
     resolution: {integrity: sha512-xeqkMOARgGBlEg9BQuPDf6ZW711X6BT5qjDyeM5XNowCJeTSdmMhpePJjTEiVbbr3t21sIlK8RE6X5bc04nWyQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@oxlint/binding-linux-ppc64-gnu@1.49.0':
     resolution: {integrity: sha512-uvcqRO6PnlJGbL7TeePhTK5+7/JXbxGbN+C6FVmfICDeeRomgQqrfVjf0lUrVpUU8ii8TSkIbNdft3M+oNlOsQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ppc64]
     os: [linux]
-    libc: [glibc]
 
   '@oxlint/binding-linux-riscv64-gnu@1.49.0':
     resolution: {integrity: sha512-Dw1HkdXAwHNH+ZDserHP2RzXQmhHtpsYYI0hf8fuGAVCIVwvS6w1+InLxpPMY25P8ASRNiFN3hADtoh6lI+4lg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [riscv64]
     os: [linux]
-    libc: [glibc]
 
   '@oxlint/binding-linux-riscv64-musl@1.49.0':
     resolution: {integrity: sha512-EPlMYaA05tJ9km/0dI9K57iuMq3Tw+nHst7TNIegAJZrBPtsOtYaMFZEaWj02HA8FI5QvSnRHMt+CI+RIhXJBQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [riscv64]
     os: [linux]
-    libc: [musl]
 
   '@oxlint/binding-linux-s390x-gnu@1.49.0':
     resolution: {integrity: sha512-yZiQL9qEwse34aMbnMb5VqiAWfDY+fLFuoJbHOuzB1OaJZbN1MRF9Nk+W89PIpGr5DNPDipwjZb8+Q7wOywoUQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [s390x]
     os: [linux]
-    libc: [glibc]
 
   '@oxlint/binding-linux-x64-gnu@1.49.0':
     resolution: {integrity: sha512-CcCDwMMXSchNkhdgvhVn3DLZ4EnBXAD8o8+gRzahg+IdSt/72y19xBgShJgadIRF0TsRcV/MhDUMwL5N/W54aQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@oxlint/binding-linux-x64-musl@1.49.0':
     resolution: {integrity: sha512-u3HfKV8BV6t6UCCbN0RRiyqcymhrnpunVmLFI8sEa5S/EBu+p/0bJ3D7LZ2KT6PsBbrB71SWq4DeFrskOVgIZg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@oxlint/binding-openharmony-arm64@1.49.0':
     resolution: {integrity: sha512-dRDpH9fw+oeUMpM4br0taYCFpW6jQtOuEIec89rOgDA1YhqwmeRcx0XYeCv7U48p57qJ1XZHeMGM9LdItIjfzA==}
@@ -1034,28 +1026,24 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@rolldown/binding-linux-arm64-musl@1.0.0-rc.5':
     resolution: {integrity: sha512-WFljyDkxtXRlWxMjxeegf7xMYXxUr8u7JdXlOEWKYgDqEgxUnSEsVDxBiNWQ1D5kQKwf8Wo4sVKEYPRhCdsjwA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@rolldown/binding-linux-x64-gnu@1.0.0-rc.5':
     resolution: {integrity: sha512-CUlplTujmbDWp2gamvrqVKi2Or8lmngXT1WxsizJfts7JrvfGhZObciaY/+CbdbS9qNnskvwMZNEhTPrn7b+WA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@rolldown/binding-linux-x64-musl@1.0.0-rc.5':
     resolution: {integrity: sha512-wdf7g9NbVZCeAo2iGhsjJb7I8ZFfs6X8bumfrWg82VK+8P6AlLXwk48a1ASiJQDTS7Svq2xVzZg3sGO2aXpHRA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@rolldown/binding-openharmony-arm64@1.0.0-rc.5':
     resolution: {integrity: sha512-0CWY7ubu12nhzz+tkpHjoG3IRSTlWYe0wrfJRf4qqjqQSGtAYgoL9kwzdvlhaFdZ5ffVeyYw9qLsChcjUMEloQ==}
@@ -1087,7 +1075,6 @@ packages:
     resolution: {integrity: sha512-ABca4ceT4N+Tv/GtotnWAeXZUZuM/9AQyCyKYyKnpk4yoA7QIAuBt6Hkgpw8kActYlew2mvckXkvx0FfoInnLg==}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
@@ -1440,28 +1427,24 @@ packages:
     engines: {node: '>= 20'}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   '@tailwindcss/oxide-linux-arm64-musl@4.2.0':
     resolution: {integrity: sha512-XKcSStleEVnbH6W/9DHzZv1YhjE4eSS6zOu2eRtYAIh7aV4o3vIBs+t/B15xlqoxt6ef/0uiqJVB6hkHjWD/0A==}
     engines: {node: '>= 20'}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   '@tailwindcss/oxide-linux-x64-gnu@4.2.0':
     resolution: {integrity: sha512-/hlXCBqn9K6fi7eAM0RsobHwJYa5V/xzWspVTzxnX+Ft9v6n+30Pz8+RxCn7sQL/vRHHLS30iQPrHQunu6/vJA==}
     engines: {node: '>= 20'}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   '@tailwindcss/oxide-linux-x64-musl@4.2.0':
     resolution: {integrity: sha512-lKUaygq4G7sWkhQbfdRRBkaq4LY39IriqBQ+Gk6l5nKq6Ay2M2ZZb1tlIyRNgZKS8cbErTwuYSor0IIULC0SHw==}
     engines: {node: '>= 20'}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   '@tailwindcss/oxide-wasm32-wasi@4.2.0':
     resolution: {integrity: sha512-xuDjhAsFdUuFP5W9Ze4k/o4AskUtI8bcAGU4puTYprr89QaYFmhYOPfP+d1pH+k9ets6RoE23BXZM1X1jJqoyw==}
@@ -2725,28 +2708,24 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
 
   lightningcss-linux-arm64-musl@1.31.1:
     resolution: {integrity: sha512-mVZ7Pg2zIbe3XlNbZJdjs86YViQFoJSpc41CbVmKBPiGmC4YrfeOyz65ms2qpAobVd7WQsbW4PdsSJEMymyIMg==}
     engines: {node: '>= 12.0.0'}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
 
   lightningcss-linux-x64-gnu@1.31.1:
     resolution: {integrity: sha512-xGlFWRMl+0KvUhgySdIaReQdB4FNudfUTARn7q0hh/V67PVGCs3ADFjw+6++kG1RNd0zdGRlEKa+T13/tQjPMA==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
 
   lightningcss-linux-x64-musl@1.31.1:
     resolution: {integrity: sha512-eowF8PrKHw9LpoZii5tdZwnBcYDxRw2rRCyvAXLi34iyeYfqCQNA9rmUM0ce62NlPhCvof1+9ivRaTY6pSKDaA==}
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
 
   lightningcss-win32-arm64-msvc@1.31.1:
     resolution: {integrity: sha512-aJReEbSEQzx1uBlQizAOBSjcmr9dCdL3XuC/6HLXAxmtErsj2ICo5yYggg1qOODQMtnjNQv2UHb9NpOuFtYe4w==}
@@ -3744,8 +3723,8 @@ packages:
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
 
-  ts-ag@1.0.12:
-    resolution: {integrity: sha512-vgJ17AQ0Vcaj1dhEUOcusTwkJXBvsPZKZ7E2QVc+ldkKBxtw69FwG8kD+DqMNcjK/k+eT6tzr2JlpfhDmeIMag==}
+  ts-ag@1.0.13:
+    resolution: {integrity: sha512-LSmYZ5fO2c3Is6Va9OlR6hWGrKM1hUy46g5KdZNrM/9Ys58J8ww9vrWJ2hQT1+PQ75BpX/Wm+R2jM0bQgIGsFg==}
     hasBin: true
     peerDependencies:
       '@types/aws-lambda': 8.10.160
@@ -8081,7 +8060,7 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-ag@1.0.12(@types/aws-lambda@8.10.160)(typescript@5.9.3):
+  ts-ag@1.0.13(@types/aws-lambda@8.10.160)(typescript@5.9.3):
     dependencies:
       '@aws-sdk/client-cognito-identity-provider': 3.995.0
       '@aws-sdk/client-s3': 3.995.0
