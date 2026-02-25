@@ -10,5 +10,10 @@
   "separateMajorMinor": true,
   "separateMinorPatch": false,
   "lockFileMaintenance": { "enabled": true, "schedule": ["before 4am on monday"] },
-  "packageRules": []
+  "packageRules": [
+    {
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "widen"
+    }
+  ]
 }

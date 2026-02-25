@@ -47,7 +47,6 @@
   "dependencies": {
     "@dnd-kit-svelte/svelte": "^0.1.6",
     "@floating-ui/dom": "^1.7.5",
-    "@sveltejs/kit": "^2.53.2",
     "bits-ui": "^2.16.2",
     "bottleneck": "^2.19.5",
     "clsx": "^2.1.1",
@@ -57,7 +56,6 @@
     "formsnap": "2.0.1",
     "radash": "12.1.1",
     "runed": "0.37.1",
-    "svelte": "^5.53.5",
     "svelte-toolbelt": "^0.10.6",
     "sveltekit-superforms": "2.30.0",
     "tailwind-merge": "^3.5.0",
@@ -74,6 +72,7 @@
     "@internationalized/date": "^3.11.0",
     "@lucide/svelte": "^0.575.0",
     "@playwright/test": "1.57.0",
+    "@sveltejs/kit": "^2.53.2",
     "@sveltejs/package": "^2.5.7",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@tailwindcss/typography": "^0.5.19",
@@ -90,6 +89,7 @@
     "prettier-plugin-packagejson": "^3.0.0",
     "prettier-plugin-svelte": "^3.5.0",
     "semantic-release": "^25.0.3",
+    "svelte": "^5.53.5",
     "svelte-check": "^4.4.3",
     "tailwindcss": "4.2.1",
     "tw-animate-css": "^1.4.0",
@@ -100,6 +100,8 @@
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
+    "@sveltejs/kit": "^2.0.0",
+    "svelte": "^5.0.0",
     "tailwind-variants": "^3.2.2",
     "tailwindcss": "^4.2.1",
     "tw-animate-css": "^1.4.0"
