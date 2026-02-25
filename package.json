@@ -47,7 +47,7 @@
   "dependencies": {
     "@dnd-kit-svelte/svelte": "^0.1.6",
     "@floating-ui/dom": "^1.7.5",
-    "@sveltejs/kit": "^2.53.0",
+    "@sveltejs/kit": "^2.53.1",
     "bits-ui": "^2.16.2",
     "bottleneck": "^2.19.5",
     "clsx": "^2.1.1",
