@@ -64,8 +64,8 @@ importers:
         version: 1.2.0(typescript@5.9.3)
     devDependencies:
       '@actions/languageserver':
-        specifier: ^0.3.45
-        version: 0.3.45
+        specifier: ^0.3.46
+        version: 0.3.46
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.0.2(jiti@2.6.1))
@@ -174,8 +174,8 @@ packages:
   '@actions/exec@3.0.0':
     resolution: {integrity: sha512-6xH/puSoNBXb72VPlZVm7vQ+svQpFyA96qdDBvhB8eNZOE8LtPf9L4oAsfzK/crCL8YZ+19fKYVnM63Sl+Xzlw==}
 
-  '@actions/expressions@0.3.45':
-    resolution: {integrity: sha512-G016q0EM1pwi6Oiwen87Qzc+4vMxjYLUPQyfhzEN+T3TDNuLa9UxHV/KAt9rIy3WQleG0NYfcnWj176JddN7ZA==}
+  '@actions/expressions@0.3.46':
+    resolution: {integrity: sha512-ufvCPRNXQILD63qDlndKs75+RZcfZkZfQVe4L9NGwvFBejGmuD7vwB82Bc2Ik33J/bEhPlsjTQeyfOmzHla71g==}
     engines: {node: '>= 20'}
 
   '@actions/http-client@4.0.0':
@@ -184,17 +184,17 @@ packages:
   '@actions/io@3.0.2':
     resolution: {integrity: sha512-nRBchcMM+QK1pdjO7/idu86rbJI5YHUKCvKs0KxnSYbVe3F51UfGxuZX4Qy/fWlp6l7gWFwIkrOzN+oUK03kfw==}
 
-  '@actions/languageserver@0.3.45':
-    resolution: {integrity: sha512-7zVEaERNlCMbBw4fbVfoX5C0AN7037mnqqOxlzNlfkaBddGCDHWECxOeOaJg8V6iqaYWBuwwRPJwAPkQlCjQ6Q==}
+  '@actions/languageserver@0.3.46':
+    resolution: {integrity: sha512-ncCuCfpw+fgTGkVz1GQa18TiJ1oGrQF+FhP70QNy1fRJ1k4o055VkZAmDbqD9kGpTzx8mcbc2bfD0aW0qJBlpw==}
     engines: {node: '>= 20'}
     hasBin: true
 
-  '@actions/languageservice@0.3.45':
-    resolution: {integrity: sha512-lUTEsXd3bdzoduj/l5kMYZQ5EaIzpS3JqSRjZTG0TIUZDItyV+SyPkq6A2cM5N1UeZKbwn5htgVOVCc8kK0bZw==}
+  '@actions/languageservice@0.3.46':
+    resolution: {integrity: sha512-P5WVqEwkQhf5qA+HG4Mj0Y7ACmkCpHaaNqHefa07uQzHIz0CW2hbcw7x7/EfLw8rhiyw9wSxvhtaWUzUFU4hgQ==}
     engines: {node: '>= 20'}
 
-  '@actions/workflow-parser@0.3.45':
-    resolution: {integrity: sha512-S6WY6QiIXreHl7pP7DTYJR7SzprGMjJbkpQI6SpU5dumoLe3TjHny13WYuxUGN3gHlsr5xDIDMCBHe7XRJ3pEQ==}
+  '@actions/workflow-parser@0.3.46':
+    resolution: {integrity: sha512-YoOMPxy/G98665hVw9S9peHgYQkF5FQ6VFaiwrvPP0CjlPMRv7TX2wUaZJz4LVHV6KaYPzZg/+ysEt2L24darg==}
     engines: {node: '>= 20'}
 
   '@antfu/install-pkg@1.1.0':
@@ -3805,7 +3805,7 @@ snapshots:
     dependencies:
       '@actions/io': 3.0.2
 
-  '@actions/expressions@0.3.45': {}
+  '@actions/expressions@0.3.46': {}
 
   '@actions/http-client@4.0.0':
     dependencies:
@@ -3814,28 +3814,28 @@ snapshots:
 
   '@actions/io@3.0.2': {}
 
-  '@actions/languageserver@0.3.45':
+  '@actions/languageserver@0.3.46':
     dependencies:
-      '@actions/languageservice': 0.3.45
-      '@actions/workflow-parser': 0.3.45
+      '@actions/languageservice': 0.3.46
+      '@actions/workflow-parser': 0.3.46
       '@octokit/rest': 21.1.1
       '@octokit/types': 9.3.2
       vscode-languageserver: 8.1.0
       vscode-languageserver-textdocument: 1.0.12
       yaml: 2.8.2
 
-  '@actions/languageservice@0.3.45':
+  '@actions/languageservice@0.3.46':
     dependencies:
-      '@actions/expressions': 0.3.45
-      '@actions/workflow-parser': 0.3.45
+      '@actions/expressions': 0.3.46
+      '@actions/workflow-parser': 0.3.46
       vscode-languageserver-textdocument: 1.0.12
       vscode-languageserver-types: 3.17.5
       vscode-uri: 3.1.0
       yaml: 2.8.2
 
-  '@actions/workflow-parser@0.3.45':
+  '@actions/workflow-parser@0.3.46':
     dependencies:
-      '@actions/expressions': 0.3.45
+      '@actions/expressions': 0.3.46
       cronstrue: 2.59.0
       yaml: 2.8.2
 
