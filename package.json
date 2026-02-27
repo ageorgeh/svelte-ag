@@ -72,7 +72,7 @@
     "@internationalized/date": "^3.11.0",
     "@lucide/svelte": "^0.575.0",
     "@playwright/test": "1.57.0",
-    "@sveltejs/kit": "^2.53.2",
+    "@sveltejs/kit": "^2.53.3",
     "@sveltejs/package": "^2.5.7",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@tailwindcss/typography": "^0.5.19",
