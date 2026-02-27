@@ -96,7 +96,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
     "typescript-svelte-plugin": "^0.3.50",
-    "vite": "^8.0.0-beta.15",
+    "vite": "^8.0.0-beta.16",
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
@@ -112,7 +112,7 @@
       "@tailwindcss/oxide"
     ],
     "overrides": {
-      "vite": "8.0.0-beta.15"
+      "vite": "8.0.0-beta.16"
     }
   }
 }
