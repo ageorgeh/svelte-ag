@@ -57,8 +57,8 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(tailwind-merge@3.5.0)(tailwindcss@4.2.1)
       ts-ag:
-        specifier: ^1.0.18
-        version: 1.0.18(@types/aws-lambda@8.10.161)(typescript@5.9.3)
+        specifier: ^1.0.19
+        version: 1.0.19(@types/aws-lambda@8.10.161)(typescript@5.9.3)
       valibot:
         specifier: ^1.2.0
         version: 1.2.0(typescript@5.9.3)
@@ -229,12 +229,12 @@ packages:
   '@aws-crypto/util@5.2.0':
     resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
 
-  '@aws-sdk/client-cognito-identity-provider@3.999.0':
-    resolution: {integrity: sha512-nwiimPiBcj9MuZ07R+Jti7ajn7G4un99r5KWh7igJAAMfn/vsBv/UXylZ8c82P9bksbx4x2NTSGEqT3S77wylg==}
+  '@aws-sdk/client-cognito-identity-provider@3.1000.0':
+    resolution: {integrity: sha512-QF4pgV5gE8aIXIbfR/QMeBWGYXmHK0gCfSeCF0GFrkoH6db5v9sN+qVIFe9U5oWw7Rg+SqXKbQLo/H+vEa0Hpw==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/client-s3@3.999.0':
-    resolution: {integrity: sha512-6ML2ls4nnOxm1kKzy2RgM+i8aS/9wgw6V91iqSibBYU/isYs8BvC2xcv8AsaWG5mOQjytjRzsBO5COxfWVPg3A==}
+  '@aws-sdk/client-s3@3.1000.0':
+    resolution: {integrity: sha512-7kPy33qNGq3NfwHC0412T6LDK1bp4+eiPzetX0sVd9cpTSXuQDKpoOFnB0Njj6uZjJDcLS3n2OeyarwwgkQ0Ow==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/core@3.973.15':
@@ -325,8 +325,8 @@ packages:
     resolution: {integrity: sha512-Aa5PusHLXAqLTX1UKDvI3pHQJtIsF7Q+3turCHqfz/1F61/zDMWfbTC8evjhrrYVAtz9Vsv3SJ/waSUeu7B6gw==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/s3-request-presigner@3.999.0':
-    resolution: {integrity: sha512-/4Hl/re9+7WvL2y7+xzT9fQAM3zrM/8pUofQFn5cYlNxnuKF0gE7bcVf7hR4PzEDxCBhjIQg4qHbHCwcDlHGkg==}
+  '@aws-sdk/s3-request-presigner@3.1000.0':
+    resolution: {integrity: sha512-DP6EbwCD0CKzBwBnT1X6STB5i+bY765CxjMbWCATDhCgOB343Q6AHM9c1S/300Uc5waXWtI/Wdeak9Ru56JOvg==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/signature-v4-multi-region@3.996.3':
@@ -3424,8 +3424,8 @@ packages:
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
 
-  ts-ag@1.0.18:
-    resolution: {integrity: sha512-wB5osZqcax6kOB7VyOcwf+H4a6yLDNhj+n7PpQnEkxFDr91Z99b4peSzDOW+Y2qBdI9JV/nxZ0vndU9M2gsSwQ==}
+  ts-ag@1.0.19:
+    resolution: {integrity: sha512-SLfkrjLX1zNN177DzSNins0DXD33HHevo7c++f+0TwWtGGJ/1aTwYpMVNq9Q9e08PkCkmouZXbhs1PL52C/2Sg==}
     hasBin: true
     peerDependencies:
       '@types/aws-lambda': 8.10.161
@@ -3890,7 +3890,7 @@ snapshots:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
 
-  '@aws-sdk/client-cognito-identity-provider@3.999.0':
+  '@aws-sdk/client-cognito-identity-provider@3.1000.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
@@ -3934,7 +3934,7 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-s3@3.999.0':
+  '@aws-sdk/client-s3@3.1000.0':
     dependencies:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
@@ -4264,7 +4264,7 @@ snapshots:
       '@smithy/types': 4.13.0
       tslib: 2.8.1
 
-  '@aws-sdk/s3-request-presigner@3.999.0':
+  '@aws-sdk/s3-request-presigner@3.1000.0':
     dependencies:
       '@aws-sdk/signature-v4-multi-region': 3.996.3
       '@aws-sdk/types': 3.973.4
@@ -7497,11 +7497,11 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-ag@1.0.18(@types/aws-lambda@8.10.161)(typescript@5.9.3):
+  ts-ag@1.0.19(@types/aws-lambda@8.10.161)(typescript@5.9.3):
     dependencies:
-      '@aws-sdk/client-cognito-identity-provider': 3.999.0
-      '@aws-sdk/client-s3': 3.999.0
-      '@aws-sdk/s3-request-presigner': 3.999.0
+      '@aws-sdk/client-cognito-identity-provider': 3.1000.0
+      '@aws-sdk/client-s3': 3.1000.0
+      '@aws-sdk/s3-request-presigner': 3.1000.0
       '@types/aws-lambda': 8.10.161
       '@ungap/structured-clone': 1.3.0
       chalk: 5.6.2
