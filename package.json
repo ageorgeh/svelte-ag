@@ -60,7 +60,7 @@
     "sveltekit-superforms": "2.30.0",
     "tailwind-merge": "^3.5.0",
     "tailwind-variants": "^3.2.2",
-    "ts-ag": "^1.0.18",
+    "ts-ag": "^1.0.19",
     "valibot": "^1.2.0"
   },
   "devDependencies": {
