@@ -28,7 +28,7 @@
         after:absolute after:-inset-2
         after:md:hidden
       `,
-      'group-data-[collapsible=icon]:hidden',
+      'group-data-[collapsible=icon]:group-data-[open=false]:hidden',
       className
     ),
     'data-sidebar': 'group-action',

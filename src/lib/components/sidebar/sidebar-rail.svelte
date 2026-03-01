@@ -42,9 +42,9 @@
       [[data-side=right][data-state=collapsed]_&]:cursor-w-resize
     `,
     `
-      group-data-[collapsible=offcanvas]:translate-x-0
-      group-data-[collapsible=offcanvas]:after:left-full
-      group-data-[collapsible=offcanvas]:hover:bg-sidebar
+      group-data-[collapsible=offcanvas]:group-data-[open=false]:translate-x-0
+      group-data-[collapsible=offcanvas]:group-data-[open=false]:after:left-full
+      group-data-[collapsible=offcanvas]:group-data-[open=false]:hover:bg-sidebar
     `,
     '[[data-side=left][data-collapsible=offcanvas]_&]:-right-2',
     '[[data-side=right][data-collapsible=offcanvas]_&]:-left-2',

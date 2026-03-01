@@ -9,18 +9,25 @@
   let {
     ref = $bindable(null),
     side = 'left',
+    sideMobile,
     variant = 'sidebar',
     collapsible = 'offcanvas',
+    open,
     class: className,
     children,
     ...restProps
   }: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
     side?: 'left' | 'right';
+    sideMobile?: 'left' | 'right' | 'top' | 'bottom';
     variant?: 'sidebar' | 'floating' | 'inset';
     collapsible?: 'offcanvas' | 'icon' | 'none';
+    open?: boolean;
   } = $props();
 
   const sidebar = useSidebar();
+
+  // svelte-ignore state_referenced_locally
+  if (open !== undefined) sidebar.setOpen(open, side);
 </script>
 
 {#if collapsible === 'none'}
@@ -40,16 +47,20 @@
     {@render children?.()}
   </div>
 {:else if sidebar.isMobile}
-  <Sheet.Root bind:open={() => sidebar.openMobile, (v) => sidebar.setOpenMobile(v)} {...restProps}>
+  <Sheet.Root bind:open={() => sidebar.openMobile[side], (v) => sidebar.setOpen(v, side)} {...restProps}>
     <Sheet.Content
       data-sidebar="sidebar"
       data-mobile="true"
-      class="
-        w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground
-        [&>button]:hidden
-      "
+      class={cn(
+        `
+          bg-sidebar p-0 text-sidebar-foreground
+          [&>button]:hidden
+        `,
+        sideMobile === 'top' || sideMobile === 'bottom' ? '' : 'w-(--sidebar-width)',
+        className
+      )}
       style="--sidebar-width: {SIDEBAR_WIDTH_MOBILE};"
-      {side}
+      side={sideMobile ?? side}
     >
       <div class="flex h-full w-full flex-col">
         {@render children?.()}
@@ -63,7 +74,7 @@
       `
         peer relative hidden w-(--sidebar-width) flex-auto grow-0 flex-col overflow-hidden bg-sidebar
         text-sidebar-foreground transition-[width] duration-200 ease-linear
-        data-[collapsible=offcanvas]:w-0
+        data-[collapsible=offcanvas]:data-[open=false]:w-0
         data-[variant=floating]:rounded-lg data-[variant=floating]:border data-[variant=floating]:border-sidebar-border
         data-[variant=floating]:shadow-sm
         md:flex
@@ -72,10 +83,10 @@
       variant === 'floating' || variant === 'inset'
         ? `
           m-2
-          data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon))]
+          data-[collapsible=icon]:data-[open=false]:w-[calc(var(--sidebar-width-icon))]
         `
         : `
-          data-[collapsible=icon]:w-(--sidebar-width-icon)
+          data-[collapsible=icon]:data-[open=false]:w-(--sidebar-width-icon)
           data-[side=left]:border-r
           data-[side=right]:border-l
         `,
@@ -83,8 +94,8 @@
       className
     )}
     data-sidebar="sidebar"
-    data-state={sidebar.state[side]}
-    data-collapsible={sidebar.state[side] === 'collapsed' ? collapsible : ''}
+    data-open={sidebar.open[side]}
+    data-collapsible={collapsible}
     data-variant={variant}
     data-side={side}
     {...restProps}

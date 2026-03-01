@@ -17,7 +17,7 @@
   class={cn(
     `
       flex min-h-0 flex-1 flex-col gap-2 overflow-auto
-      group-data-[collapsible=icon]:overflow-hidden
+      group-data-[collapsible=icon]:group-data-[open=false]:overflow-hidden
     `,
     className
   )}

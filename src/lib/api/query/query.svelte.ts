@@ -4,8 +4,6 @@ import { stringify } from 'devalue';
 import Bottleneck from 'bottleneck';
 import type { Cache } from './cache.svelte';
 
-import * as env from '$env/static/public';
-import { sleep } from 'radash';
 import { cacheKey } from './utils.svelte.js';
 import type { BatchDetails } from './entrypoint.svelte';
 
@@ -179,9 +177,9 @@ export class Requestor<
 
   // Makes the actual call to the api
   private async fetch(input: ApiInput<API, Path, Method>): Promise<ApiResponse<API, Path, Method>> {
-    if ('PUBLIC_ENVIRONMENT' in env && env.PUBLIC_ENVIRONMENT === 'development') {
-      await sleep(1000);
-    }
+    // if ('PUBLIC_ENVIRONMENT' in env && env.PUBLIC_ENVIRONMENT === 'development') {
+    //   await sleep(1000);
+    // }
     return await this.#limiter.schedule(() => this.#request(this.#path, this.#method, input));
   }
 

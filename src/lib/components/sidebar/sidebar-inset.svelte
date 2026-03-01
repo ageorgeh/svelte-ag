@@ -20,7 +20,7 @@
     `
       md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl
       md:peer-data-[variant=inset]:shadow-sm
-      md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2
+      md:peer-data-[open=false]:peer-data-[variant=inset]:ml-2
     `,
     className
   )}

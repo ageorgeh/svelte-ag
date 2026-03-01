@@ -22,7 +22,10 @@
         focus-visible:ring-2
         [&>svg]:size-4 [&>svg]:shrink-0
       `,
-      'group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0',
+      `
+        group-data-[collapsible=icon]:group-data-[open=false]:-mt-8
+        group-data-[collapsible=icon]:group-data-[open=false]:opacity-0
+      `,
       className
     ),
     'data-sidebar': 'group-label',

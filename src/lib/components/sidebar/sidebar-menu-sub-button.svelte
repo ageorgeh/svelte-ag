@@ -34,7 +34,7 @@
       'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
       size === 'sm' && 'text-xs',
       size === 'md' && 'text-sm',
-      'group-data-[collapsible=icon]:hidden',
+      'group-data-[collapsible=icon]:group-data-[open=false]:hidden',
       className
     ),
     'data-sidebar': 'menu-sub-button',

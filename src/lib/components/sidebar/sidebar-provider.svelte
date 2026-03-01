@@ -5,6 +5,8 @@
   import type { HTMLAttributes } from 'svelte/elements';
   import { SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from './constants.js';
   import { setSidebar } from './context.svelte.js';
+  import { browser } from '$app/environment';
+  import { box } from 'svelte-toolbelt';
 
   let {
     ref = $bindable(null),
@@ -12,7 +14,7 @@
       left: true,
       right: true
     }),
-    onOpenChange = () => {},
+    onOpenChange,
     class: className,
     style,
     children,
@@ -26,13 +28,22 @@
   } = $props();
 
   const sidebar = setSidebar({
-    open: () => open,
+    open: box.with(
+      () => open,
+      (v) => (open = v)
+    ),
     setOpen: (value: boolean, side: 'left' | 'right' = 'left') => {
-      open[side] = value;
-      onOpenChange(value, side);
+      if (sidebar.isMobile) {
+        sidebar.openMobile[side] = value;
+      } else {
+        open[side] = value;
+      }
+      onOpenChange?.(value, side);
 
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}-${side}=${open[side]}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      if (browser) {
+        // This sets the cookie to keep the sidebar state.
+        document.cookie = `${SIDEBAR_COOKIE_NAME}-${side}=${open[side]}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      }
     }
   });
 </script>

@@ -1,8 +1,7 @@
 import { IsMobile } from '$shadcn/hooks/is-mobile.svelte.js';
 import { getContext, setContext } from 'svelte';
 import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants.js';
-
-type Getter<T> = () => T;
+import type { WritableBox } from 'svelte-toolbelt';
 
 export type SidebarStateProps = {
   /**
@@ -10,7 +9,7 @@ export type SidebarStateProps = {
    * We use a getter function here to support `bind:open` on the `Sidebar.Provider`
    * component.
    */
-  open: Getter<{ left: boolean; right: boolean }>;
+  open: WritableBox<{ left: boolean; right: boolean }>;
 
   /**
    * A function that sets the open state of the sidebar. To support `bind:open`, we need
@@ -22,21 +21,24 @@ export type SidebarStateProps = {
 
 class SidebarState {
   readonly props: SidebarStateProps;
-  open = $derived.by(() => this.props.open());
-  openMobile = $state(false);
+  // open = $derived.by(() => this.props.open.current);
+  #open: WritableBox<{ left: boolean; right: boolean }>;
+  openMobile = $state({ left: false, right: false });
   setOpen: SidebarStateProps['setOpen'];
   #isMobile: IsMobile;
-  state = $derived.by(() => {
-    return {
-      left: this.open.left ? 'expanded' : 'collapsed',
-      right: this.open.right ? 'expanded' : 'collapsed'
-    };
-  });
 
   constructor(props: SidebarStateProps) {
     this.setOpen = props.setOpen;
     this.#isMobile = new IsMobile();
+    this.#open = props.open;
     this.props = props;
+  }
+
+  get open() {
+    return this.props.open.current;
+  }
+  set open(v) {
+    this.#open.current = v;
   }
 
   // Convenience getter for checking if the sidebar is mobile
@@ -53,12 +55,9 @@ class SidebarState {
     }
   };
 
-  setOpenMobile = (value: boolean) => {
-    this.openMobile = value;
-  };
-
   toggle = (side: 'left' | 'right' = 'left') => {
-    return this.#isMobile.current ? (this.openMobile = !this.openMobile) : this.setOpen(!this.open[side], side);
+    if (this.#isMobile.current) return this.setOpen(!this.openMobile[side], side);
+    else return this.setOpen(!this.open[side], side);
   };
 }
 

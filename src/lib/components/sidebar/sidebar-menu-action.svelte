@@ -34,13 +34,13 @@
       'peer-data-[size=sm]/menu-button:top-1',
       'peer-data-[size=default]/menu-button:top-1.5',
       'peer-data-[size=lg]/menu-button:top-2.5',
-      'group-data-[collapsible=icon]:hidden',
+      'group-data-[collapsible=icon]:group-data-[open=false]:hidden',
       showOnHover &&
         `
           group-focus-within/menu-item:opacity-100
           group-hover/menu-item:opacity-100
           peer-data-[active=true]/menu-button:text-sidebar-accent-foreground
-          data-[state=open]:opacity-100
+          data-[open=true]:opacity-100
           md:opacity-0
         `,
       className
