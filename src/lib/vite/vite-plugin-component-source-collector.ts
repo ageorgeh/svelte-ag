@@ -2,6 +2,7 @@ import type { Plugin, ResolvedConfig } from 'vite';
 import { exists, writeIfDifferent } from 'ts-ag';
 import { readFile } from 'fs/promises';
 import { resolve, join, relative, dirname } from 'path';
+import { open } from 'fs/promises';
 
 interface Options {
   /**
@@ -23,7 +24,7 @@ interface Options {
 /** All unique component directories */
 const componentFiles = new Set<string>();
 
-export default function componentSourceCollector(opts: Options = { safePackages: [] }): Plugin {
+export default async function componentSourceCollector(opts: Options = { safePackages: [] }): Promise<Plugin> {
   // constants
   const outFileName = opts.outputFile ?? 'component-sources.css';
   const classRegex = /class(?:=|:)/;
@@ -38,6 +39,7 @@ export default function componentSourceCollector(opts: Options = { safePackages:
   let initialTransformDone = false;
   let initialTransformTimer: NodeJS.Timeout | null = null;
 
+  // init
   function shouldAdd(code: string) {
     return classRegex.test(code);
   }
@@ -53,7 +55,7 @@ export default function componentSourceCollector(opts: Options = { safePackages:
       const cleanedFileName = file.replace(/\?v=.*$/, '');
       const relativeFilePath = relative(dirname(outputFilePath), cleanedFileName);
 
-      if (relativeFilePath !== outputFilePath) {
+      if (relativeFilePath !== outFileName) {
         // Dont add itself
         componentFiles.add(relativeFilePath);
       }
@@ -68,6 +70,11 @@ export default function componentSourceCollector(opts: Options = { safePackages:
         initialTransformDone = true;
       }
     }, 1000); // adjust delay as needed
+  }
+
+  async function touch(path: string) {
+    const handle = await open(path, 'a');
+    await handle.close();
   }
 
   const writeOutFile = async () => {
@@ -94,6 +101,8 @@ export default function componentSourceCollector(opts: Options = { safePackages:
       config = resolved;
       root = config.root;
       outputFilePath = resolve(root, outFileName);
+
+      await touch(outputFilePath);
 
       if (config.command === 'build' && firstRound) {
         componentFiles.clear();
