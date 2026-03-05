@@ -24,6 +24,11 @@ interface Options {
 /** All unique component directories */
 const componentFiles = new Set<string>();
 
+function ensureDotRelative(filePath: string): string {
+  if (filePath.startsWith('.')) return filePath;
+  return `./${filePath}`;
+}
+
 export default async function componentSourceCollector(opts: Options = { safePackages: [] }): Promise<Plugin> {
   // constants
   const outFileName = opts.outputFile ?? 'component-sources.css';
@@ -57,7 +62,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
 
       if (relativeFilePath !== outFileName) {
         // Dont add itself
-        componentFiles.add(relativeFilePath);
+        componentFiles.add(ensureDotRelative(relativeFilePath));
       }
     }
   }
