@@ -23,6 +23,7 @@ interface Options {
 
 /** All unique component directories */
 const componentFiles = new Set<string>();
+let firstRound = true;
 
 function ensureDotRelative(filePath: string): string {
   if (filePath.startsWith('.')) return filePath;
@@ -40,7 +41,6 @@ export default async function componentSourceCollector(opts: Options = { safePac
 
   // state
   let config: ResolvedConfig;
-  let firstRound = true;
   let initialTransformDone = false;
   let initialTransformTimer: NodeJS.Timeout | null = null;
 
@@ -107,9 +107,12 @@ export default async function componentSourceCollector(opts: Options = { safePac
       root = config.root;
       outputFilePath = resolve(root, outFileName);
 
+      console.log('tailwind-sources:configResolved: Command is', config.command);
+
       await touch(outputFilePath);
 
       if (config.command === 'build' && firstRound) {
+        console.log('tailwind-sources: Clearing files list');
         componentFiles.clear();
         firstRound = false;
       } else if (config.command === 'serve') {
@@ -119,7 +122,6 @@ export default async function componentSourceCollector(opts: Options = { safePac
           // console.log('config resolved', componentFiles);
         }
       }
-      console.log('tailwind-sources:configResolved:command', config.command);
     },
 
     /**
