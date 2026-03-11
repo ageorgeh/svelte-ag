@@ -64,7 +64,7 @@
     "valibot": "^1.2.0"
   },
   "devDependencies": {
-    "@actions/languageserver": "^0.3.46",
+    "@actions/languageserver": "^0.3.47",
     "@eslint/js": "^10.0.1",
     "@iconify/json": "^2.2.448",
     "@iconify/tailwind4": "^1.2.3",
