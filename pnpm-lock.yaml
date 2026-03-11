@@ -57,8 +57,8 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(tailwind-merge@3.5.0)(tailwindcss@4.2.1)
       ts-ag:
-        specifier: ^1.0.29
-        version: 1.0.29(@types/aws-lambda@8.10.161)(typescript@5.9.3)
+        specifier: ^1.0.30
+        version: 1.0.30(@types/aws-lambda@8.10.161)(typescript@5.9.3)
       valibot:
         specifier: ^1.2.0
         version: 1.2.0(typescript@5.9.3)
@@ -3649,8 +3649,8 @@ packages:
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
 
-  ts-ag@1.0.29:
-    resolution: {integrity: sha512-CBH7tu04TlAEYMVT3hMDvkE5w7ZjwoTVnWOXKOc/V+cIR7ZlmhEZdi1jrWZSuy2ddb6bIYN7tmfWHYRevHcv/A==}
+  ts-ag@1.0.30:
+    resolution: {integrity: sha512-uwlsJ1BNzgJRBVQUAp5EfFEXGHD2aih+8Ws5I23+587nZwMoCyJcah8w+WWymW/HquXm6xMqUycFaX41qxoryw==}
     hasBin: true
     peerDependencies:
       '@types/aws-lambda': 8.10.161
@@ -7873,7 +7873,7 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-ag@1.0.29(@types/aws-lambda@8.10.161)(typescript@5.9.3):
+  ts-ag@1.0.30(@types/aws-lambda@8.10.161)(typescript@5.9.3):
     dependencies:
       '@aws-sdk/client-cognito-identity-provider': 3.1003.0
       '@aws-sdk/client-s3': 3.1003.0
