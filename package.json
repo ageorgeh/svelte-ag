@@ -97,7 +97,7 @@
     "typescript-eslint": "^8.57.0",
     "typescript-svelte-plugin": "^0.3.50",
     "vite": "^8.0.0",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
