@@ -57,8 +57,8 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(tailwind-merge@3.5.0)(tailwindcss@4.2.1)
       ts-ag:
-        specifier: ^1.1.0
-        version: 1.1.0(@types/aws-lambda@8.10.161)(typescript@5.9.3)
+        specifier: ^1.1.2
+        version: 1.1.2(@types/aws-lambda@8.10.161)(typescript@5.9.3)
       valibot:
         specifier: ^1.2.0
         version: 1.2.0(typescript@5.9.3)
@@ -2473,8 +2473,8 @@ packages:
   joi@17.13.3:
     resolution: {integrity: sha512-otDA4ldcIx+ZXsKHWmp0YizCweVRZG96J10b0FevjfuncLO1oX59THoAmHkNubYJ+9gWsYsp5k8v4ib6oDv1fA==}
 
-  jose@6.2.0:
-    resolution: {integrity: sha512-xsfE1TcSCbUdo6U07tR0mvhg0flGxU8tPLbF03mirl2ukGQENhUg4ubGYQnhVH0b5stLlPM+WOqDkEl1R1y5sQ==}
+  jose@6.2.1:
+    resolution: {integrity: sha512-jUaKr1yrbfaImV7R2TN/b3IcZzsw38/chqMpo2XJ7i2F8AfM/lA4G1goC3JVEwg0H7UldTmSt3P68nt31W7/mw==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -3656,8 +3656,8 @@ packages:
   trough@2.2.0:
     resolution: {integrity: sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==}
 
-  ts-ag@1.1.0:
-    resolution: {integrity: sha512-b8dJxePpOnpgaE/yxRZO0aUZq5kCxsAu+jbKOBQwTRPkUSjcVFXMZZASa1xIpT9r2AS1LRaUyi7WwEjy/Ewq/A==}
+  ts-ag@1.1.2:
+    resolution: {integrity: sha512-79A+EqAhSEviwlKbaqujbHvAM8OZ3W9Q8/6AXIASr6ql//9YNOAgBcuaDcfFWZteOrBp7bNCWtDgXfe80uY5Ww==}
     hasBin: true
     peerDependencies:
       '@types/aws-lambda': 8.10.161
@@ -6796,7 +6796,7 @@ snapshots:
       '@sideway/pinpoint': 2.0.0
     optional: true
 
-  jose@6.2.0: {}
+  jose@6.2.1: {}
 
   js-tokens@4.0.0: {}
 
@@ -7887,7 +7887,7 @@ snapshots:
 
   trough@2.2.0: {}
 
-  ts-ag@1.1.0(@types/aws-lambda@8.10.161)(typescript@5.9.3):
+  ts-ag@1.1.2(@types/aws-lambda@8.10.161)(typescript@5.9.3):
     dependencies:
       '@aws-sdk/client-cognito-identity-provider': 3.1003.0
       '@aws-sdk/client-s3': 3.1003.0
@@ -7902,7 +7902,7 @@ snapshots:
       devalue: 5.6.4
       get-tsconfig: 4.13.6
       glob: 13.0.6
-      jose: 6.2.0
+      jose: 6.2.1
       neverthrow: 8.2.0
       oxfmt: 0.36.0
       radash: 12.1.1
