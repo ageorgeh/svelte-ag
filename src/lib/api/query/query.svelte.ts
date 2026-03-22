@@ -1,7 +1,7 @@
 import type { ApiEndpoints, ApiInput, ApiRequestFunction, ApiSuccessBody, ApiErrorBody, ApiResponse } from 'ts-ag';
 
 import { stringify } from 'devalue';
-import Bottleneck from 'bottleneck';
+import PQueue from 'p-queue';
 import type { Cache } from './cache.svelte';
 
 import { cacheKey } from './utils.svelte.js';
@@ -139,7 +139,7 @@ export class Requestor<
   #batchInput: BatchDetails<API, Path, Method>['batchInput'];
   #unBatchOutput: BatchDetails<API, Path, Method>['unBatchOutput'];
 
-  #limiter: Bottleneck;
+  #limiter: PQueue;
   // #cache: Cache;
 
   // -------- State --------
@@ -163,9 +163,10 @@ export class Requestor<
     this.#path = path;
     this.#method = method;
     this.#request = request;
-    this.#limiter = new Bottleneck({
-      maxConcurrent: 5,
-      minTime: 100
+    this.#limiter = new PQueue({
+      concurrency: 5,
+      interval: 100,
+      intervalCap: 1
     });
     // this.#cache = cache;
 
@@ -180,7 +181,7 @@ export class Requestor<
     // if ('PUBLIC_ENVIRONMENT' in env && env.PUBLIC_ENVIRONMENT === 'development') {
     //   await sleep(1000);
     // }
-    return await this.#limiter.schedule(() => this.#request(this.#path, this.#method, input));
+    return await this.#limiter.add(() => this.#request(this.#path, this.#method, input));
   }
 
   /**
