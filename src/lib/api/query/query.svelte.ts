@@ -9,6 +9,19 @@ import { RateLimiter } from './rate.svelte';
 
 export type QueryStatus = 'idle' | 'loading' | 'success' | 'error';
 
+function cloneResponse<T>(response: T): T {
+  if (
+    response !== null &&
+    typeof response === 'object' &&
+    'clone' in response &&
+    typeof response.clone === 'function'
+  ) {
+    return response.clone();
+  }
+
+  return response;
+}
+
 export class Query<
   API extends ApiEndpoints,
   Path extends API['path'],
@@ -42,7 +55,8 @@ export class Query<
     method,
     input,
     requestor,
-    cache
+    cache,
+    opts
   }: {
     path: Path;
     method: Method;
@@ -65,13 +79,13 @@ export class Query<
     this.#inputString = stringify(input);
     this.#cacheKey = cacheKey(path, method, input);
 
-    this.#cache.register(this.#cacheKey, { timeout: this.#TIMEOUT });
+    this.#cache.register(this.#cacheKey, opts?.cache ?? { timeout: this.#TIMEOUT });
   }
 
   async request(): Promise<ApiResponse<API, Path, Method>> {
     const cachedValue = this.#cache.get(this.#cacheKey);
     if (cachedValue !== null) {
-      return cachedValue;
+      return cloneResponse(cachedValue);
     }
 
     this.#status = 'loading';
@@ -79,23 +93,33 @@ export class Query<
     if (this.#pendingRequest === null) {
       this.#pendingRequest = this.#requestor.request(this.#input);
     }
-    const res = await this.#pendingRequest;
-    this.#pendingRequest = null;
 
-    this.#cache.set(this.#cacheKey, res);
+    let res: ApiResponse<API, Path, Method>;
+    try {
+      res = await this.#pendingRequest;
+    } catch (err) {
+      this.#status = 'error';
+      throw err;
+    } finally {
+      this.#pendingRequest = null;
+    }
 
-    if (res.ok === false) {
-      const body = await res.json();
+    const responseForState = cloneResponse(res);
+    const responseForCaller = cloneResponse(res);
+    this.#cache.set(this.#cacheKey, cloneResponse(res));
+
+    if (responseForState.ok === false) {
+      const body = await responseForState.json();
       this.#status = 'error';
 
       // @ts-expect-error Generics not working for some reason
       this.#errorData = body;
-      return res;
+      return responseForCaller;
     } else {
-      const body = await res.json();
+      const body = await responseForState.json();
       this.#status = 'success';
       this.#data = body;
-      return res;
+      return responseForCaller;
     }
   }
 
@@ -147,7 +171,7 @@ export class Requestor<
     string,
     {
       resolve: (value: ApiResponse<API, Path, Method>) => void;
-      reject: (err: ApiResponse<API, Path, Method>) => void;
+      reject: (err: unknown) => void;
       input: ApiInput<API, Path, Method>;
     }[]
   > = {};
@@ -187,21 +211,27 @@ export class Requestor<
   private async flushBatchQueue(batchId: string): Promise<void> {
     const queue = this.#batchQueue[batchId].splice(0);
 
-    const batchedInput = this.#batchInput(queue.map((q) => q.input));
+    try {
+      const batchedInput = this.#batchInput(queue.map((q) => q.input));
 
-    const res = await this.fetch(batchedInput);
-    const output = await this.#unBatchOutput(
-      queue.map((q) => q.input),
-      res
-    );
+      const res = await this.fetch(batchedInput);
+      const output = await this.#unBatchOutput(
+        queue.map((q) => q.input),
+        res
+      );
 
-    queue.forEach(({ resolve, reject }, i) => {
-      if (output[i].ok === true) {
-        resolve(output[i]);
-      } else {
-        reject(output[i]);
+      if (output.length !== queue.length) {
+        throw new Error(`Batch output length mismatch for ${batchId}`);
       }
-    });
+
+      queue.forEach(({ resolve }, i) => {
+        resolve(output[i]!);
+      });
+    } catch (err) {
+      queue.forEach(({ reject }) => {
+        reject(err);
+      });
+    }
   }
 
   // Performs a request for a given input. Batches it if possible
@@ -214,8 +244,9 @@ export class Requestor<
         this.#batchQueue[batchId].push({ input, resolve, reject });
         if (!this.#batchTimers[batchId]) {
           this.#batchTimers[batchId] = setTimeout(() => {
-            this.flushBatchQueue(batchId);
-            delete this.#batchTimers[batchId];
+            void this.flushBatchQueue(batchId).finally(() => {
+              delete this.#batchTimers[batchId];
+            });
           }, this.#batchDelay);
         }
       });

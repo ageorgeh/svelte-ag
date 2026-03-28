@@ -13,7 +13,15 @@ export default defineProject({
     dir: import.meta.dirname,
     exclude: [...configDefaults.exclude],
     projects: [
-      { extends: true, test: { name: 'unit', environment: 'node', include: ['**/*.unit.test.ts'], setupFiles: [] } }
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          environment: 'node',
+          include: ['**/*.unit.test.ts'],
+          setupFiles: ['src/test/vitest.setup.ts']
+        }
+      }
     ]
   }
 });
