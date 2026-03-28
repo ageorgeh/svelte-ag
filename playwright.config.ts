@@ -3,9 +3,9 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './src/lib/components/shader/tests',
   snapshotPathTemplate: '{testDir}/.generated-screenshots/{testFilePath}/{arg}{ext}',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  workers: process.env.CI ? 1 : 4,
+  workers: 1,
   reporter: 'html',
   use: {
     baseURL: 'http://localhost:5180',
@@ -42,21 +42,34 @@ export default defineConfig({
         }
       ]
     : [
-        {
-          name: 'Chromium',
-          use: {
-            headless: false,
-            ...devices['Desktop Chrome'],
-            launchOptions: {
-              args: ['--high-dpi-support=1', '--force-device-scale-factor=1']
-            }
-          }
-        }
         // {
         //   name: 'Firefox <No WebGPU>',
         //   use: {
-        //     ...devices['Desktop Firefox']
+        //     ...devices['Desktop Firefox'],
+        //     launchOptions: {
+        //       args: ['--enable-gpu']
+        //     }
         //   }
+        // }
+        // {
+        //   name: 'Chromium',
+        //   use: {
+        //     ...devices['Desktop Chrome'],
+        //     // channel: 'chrome',
+        //     launchOptions: {
+        //       args: [
+        //         '--enable-unsafe-webgpu',
+        //         '--ignore-gpu-blocklist',
+        //         '--enable-features=Vulkan',
+        //         '--no-sandbox',
+        //         '--use-angle=vulkan'
+        //       ]
+        //     }
+        //   }
+        // }
+        // {
+        //   name: 'WebKit <No WebGPU>',
+        //   use: { ...devices['Desktop Safari'] }
         // }
       ],
   webServer: {

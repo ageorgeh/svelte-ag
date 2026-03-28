@@ -41,8 +41,7 @@
     "svelte:sync": "svelte-kit sync",
     "test": "vitest --run",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
-    "test:e2e:update": "playwright test --update-snapshots",
+    "test:e2e-local": "PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:3005/ pnpm test:e2e",
     "watch": "svelte-package -i src -w"
   },
   "dependencies": {
@@ -71,7 +70,7 @@
     "@iconify/types": "^2.0.0",
     "@internationalized/date": "^3.12.0",
     "@lucide/svelte": "^1.7.0",
-    "@playwright/test": "1.57.0",
+    "@playwright/test": "1.58.2",
     "@sveltejs/kit": "^2.55.0",
     "@sveltejs/package": "^2.5.7",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
