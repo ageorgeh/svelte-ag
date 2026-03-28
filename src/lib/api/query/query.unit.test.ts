@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createApiRequest, type ApiEndpoints, type ApiRequestFunction } from 'ts-ag';
+import { createApiRequest, type ApiEndpoints } from 'ts-ag';
 import { Cache } from './cache.svelte.js';
 import { Query, Requestor } from './query.svelte.js';
 import { stringify } from 'devalue';
@@ -21,25 +21,39 @@ type PlainUsersApi = {
 
 type BatchedUsersApi = {
   path: '/users';
-  method: 'GET';
+  method: 'POST';
   requestInput: BatchedUserInput | BatchedRequestInput;
   requestOutput: null;
   response: TestResponse;
 };
 
-type PlainUsersRequestor = Requestor<PlainUsersApi, '/users', 'GET'>;
-type PlainUsersRequest = ApiRequestFunction<PlainUsersApi>;
-type BatchedUsersRequest = ApiRequestFunction<BatchedUsersApi>;
+const API_URL = 'https://api.example.test';
+
+const plainSchemas = {
+  '/users': {
+    GET: v.object({ id: v.number() })
+  }
+};
+
+const batchedSchemas = {
+  '/users': {
+    POST: v.union([v.object({ id: v.number(), group: v.optional(v.string()) }), v.object({ ids: v.array(v.number()) })])
+  }
+};
 
 function getSingleId(input: BatchedUsersApi['requestInput']): number {
   return 'id' in input ? input.id : input.ids[0]!;
 }
 
-function jsonResponse(body: unknown, status = 200): TestResponse {
+function jsonFetchResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { 'content-type': 'application/json' }
-  }) as TestResponse;
+  });
+}
+
+function jsonResponse(body: unknown, status = 200): TestResponse {
+  return jsonFetchResponse(body, status) as TestResponse;
 }
 
 function devalueFetchResponse(body: unknown, status = 200): Response {
@@ -81,6 +95,30 @@ function deferred<T>() {
   return { promise, resolve, reject };
 }
 
+function createPlainRequest() {
+  return createApiRequest<PlainUsersApi>(plainSchemas, API_URL, 'test');
+}
+
+function createBatchedRequest() {
+  return createApiRequest<BatchedUsersApi>(batchedSchemas, API_URL, 'test');
+}
+
+function createPlainRequestor() {
+  return new Requestor<PlainUsersApi, '/users', 'GET'>('/users', 'GET', createPlainRequest(), new Cache());
+}
+
+function createBatchedRequestor(
+  batchDetails?: ConstructorParameters<typeof Requestor<BatchedUsersApi, '/users', 'POST'>>[4]
+) {
+  return new Requestor<BatchedUsersApi, '/users', 'POST'>(
+    '/users',
+    'POST',
+    createBatchedRequest(),
+    new Cache(),
+    batchDetails
+  );
+}
+
 describe('Requestor', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -94,37 +132,33 @@ describe('Requestor', () => {
   });
 
   it('passes through non-batched requests', async () => {
-    const requestMock = vi.fn(async () => jsonResponse({ id: 1 }));
-    const request = requestMock as unknown as PlainUsersRequest;
-    const requestor = new Requestor<PlainUsersApi, '/users', 'GET'>('/users', 'GET', request, new Cache());
+    const fetchMock = vi.fn(async () => jsonFetchResponse({ id: 1 }));
+    vi.stubGlobal('fetch', fetchMock);
+    const requestor = createPlainRequestor();
 
     const response = await requestor.request({ id: 1 });
 
-    expect(requestMock).toHaveBeenCalledTimes(1);
-    expect(requestMock).toHaveBeenCalledWith('/users', 'GET', { id: 1 });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${API_URL}//users?id=1`,
+      expect.objectContaining({
+        method: 'GET',
+        credentials: 'include'
+      })
+    );
     await expect(response.json()).resolves.toEqual({ id: 1 });
   });
 
   it('devalue response', async () => {
     const fetchMock = vi.fn(async () => devalueFetchResponse({ id: 1 }));
     vi.stubGlobal('fetch', fetchMock);
-
-    const request = createApiRequest<PlainUsersApi>(
-      {
-        '/users': {
-          GET: v.object({ id: v.number() })
-        }
-      },
-      'https://api.example.test',
-      'test'
-    );
-    const requestor = new Requestor<PlainUsersApi, '/users', 'GET'>('/users', 'GET', request, new Cache());
+    const requestor = createPlainRequestor();
 
     const response = await requestor.request({ id: 1 });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://api.example.test//users?id=1',
+      `${API_URL}//users?id=1`,
       expect.objectContaining({
         method: 'GET',
         credentials: 'include'
@@ -134,9 +168,9 @@ describe('Requestor', () => {
   });
 
   it('batches requests with the same batch id and preserves response order', async () => {
-    const requestMock = vi.fn(async () => jsonResponse({ ok: true }));
-    const request = requestMock as unknown as BatchedUsersRequest;
-    const requestor = new Requestor<BatchedUsersApi, '/users', 'GET'>('/users', 'GET', request, new Cache(), {
+    const fetchMock = vi.fn(async () => jsonFetchResponse({ ok: true }));
+    vi.stubGlobal('fetch', fetchMock);
+    const requestor = createBatchedRequestor({
       canBatch: (input) => ('group' in input && input.group) || false,
       batchInput: (inputs) => ({ ids: inputs.map(getSingleId) }),
       unBatchOutput: (inputs) => inputs.map((input) => jsonResponse({ id: getSingleId(input) }))
@@ -146,11 +180,18 @@ describe('Requestor', () => {
     const p2 = requestor.request({ id: 2, group: 'team' });
 
     await vi.advanceTimersByTimeAsync(99);
-    expect(requestMock).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
 
     await vi.advanceTimersByTimeAsync(1);
-    expect(requestMock).toHaveBeenCalledTimes(1);
-    expect(requestMock).toHaveBeenCalledWith('/users', 'GET', { ids: [1, 2] });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${API_URL}//users`,
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ ids: [1, 2] }),
+        credentials: 'include'
+      })
+    );
 
     const [response1, response2] = await Promise.all([p1, p2]);
     await expect(response1.json()).resolves.toEqual({ id: 1 });
@@ -159,18 +200,17 @@ describe('Requestor', () => {
 
   it('rate limits separate batches by start time rather than completion time', async () => {
     const starts: number[] = [];
-    const requestMock = vi.fn(async (_path: '/users', _method: 'GET', input: BatchedUsersApi['requestInput']) => {
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
       starts.push(Date.now());
 
-      if ('ids' in input && input.ids[0] === 1) {
+      if (init?.body === JSON.stringify({ ids: [1] })) {
         await new Promise((resolve) => setTimeout(resolve, 200));
       }
 
-      return jsonResponse({ ids: 'ids' in input ? input.ids : [input.id] });
+      return jsonFetchResponse({ ok: true });
     });
-    const request = requestMock as unknown as BatchedUsersRequest;
-
-    const requestor = new Requestor<BatchedUsersApi, '/users', 'GET'>('/users', 'GET', request, new Cache(), {
+    vi.stubGlobal('fetch', fetchMock);
+    const requestor = createBatchedRequestor({
       canBatch: (input) => ('group' in input && input.group) || false,
       batchInput: (inputs) => ({ ids: inputs.map(getSingleId) }),
       unBatchOutput: (_inputs, output) => [output]
@@ -188,14 +228,14 @@ describe('Requestor', () => {
     await vi.runAllTimersAsync();
 
     const [response1, response2] = await Promise.all([p1, p2]);
-    await expect(response1.json()).resolves.toEqual({ ids: [1] });
-    await expect(response2.json()).resolves.toEqual({ ids: [2] });
+    await expect(response1.json()).resolves.toEqual({ ok: true });
+    await expect(response2.json()).resolves.toEqual({ ok: true });
   });
 
   it('returns batched error responses without rejecting them', async () => {
-    const requestMock = vi.fn(async () => jsonResponse({ ok: false }, 207));
-    const request = requestMock as unknown as BatchedUsersRequest;
-    const requestor = new Requestor<BatchedUsersApi, '/users', 'GET'>('/users', 'GET', request, new Cache(), {
+    const fetchMock = vi.fn(async () => jsonFetchResponse({ ok: false }, 207));
+    vi.stubGlobal('fetch', fetchMock);
+    const requestor = createBatchedRequestor({
       canBatch: () => 'team',
       batchInput: (inputs) => ({ ids: inputs.map(getSingleId) }),
       unBatchOutput: () => [jsonResponse({ message: 'bad request' }, 400)]
@@ -212,11 +252,11 @@ describe('Requestor', () => {
   });
 
   it('rejects all queued callers when a batched fetch throws', async () => {
-    const requestMock = vi.fn(async () => {
+    const fetchMock = vi.fn(async () => {
       throw new Error('network down');
     });
-    const request = requestMock as unknown as BatchedUsersRequest;
-    const requestor = new Requestor<BatchedUsersApi, '/users', 'GET'>('/users', 'GET', request, new Cache(), {
+    vi.stubGlobal('fetch', fetchMock);
+    const requestor = createBatchedRequestor({
       canBatch: () => 'team',
       batchInput: (inputs) => ({ ids: inputs.map(getSingleId) }),
       unBatchOutput: (_inputs, output) => [output]
@@ -242,53 +282,48 @@ describe('Query', () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it('deduplicates concurrent requests and returns readable responses to each caller', async () => {
     const pending = deferred<Response>();
-    const requestMock = vi.fn().mockReturnValue(pending.promise);
-    const requestor = {
-      request: requestMock as PlainUsersRequest
-    } as unknown as PlainUsersRequestor;
-
+    const fetchMock = vi.fn().mockReturnValue(pending.promise);
+    vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
       path: '/users',
       method: 'GET',
       input: { id: 1 },
-      requestor,
+      requestor: createPlainRequestor(),
       cache: new Cache()
     });
 
     const p1 = query.request();
     const p2 = query.request();
 
-    expect(requestMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
 
-    pending.resolve(jsonResponse({ id: 1 }));
+    pending.resolve(jsonFetchResponse({ id: 1 }));
 
     const [response1, response2] = await Promise.all([p1, p2]);
     await expect(response1.json()).resolves.toEqual({ id: 1 });
     await expect(response2.json()).resolves.toEqual({ id: 1 });
   });
 
-  it('caches responses and returns a fresh readable clone on cache hits', async () => {
-    const requestMock = vi.fn().mockResolvedValue(jsonResponse({ id: 1, name: 'Ada' }));
-    const requestor = {
-      request: requestMock as PlainUsersRequest
-    } as unknown as PlainUsersRequestor;
-
+  it('caches responses and returns readable responses on cache hits', async () => {
+    const fetchMock = vi.fn(async () => jsonFetchResponse({ id: 1, name: 'Ada' }));
+    vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
       path: '/users',
       method: 'GET',
       input: { id: 1 },
-      requestor,
+      requestor: createPlainRequestor(),
       cache: new Cache()
     });
 
     const first = await query.request();
     const second = await query.request();
 
-    expect(requestMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(query.isCached).toBe(true);
     await expect(first.json()).resolves.toEqual({ id: 1, name: 'Ada' });
     await expect(second.json()).resolves.toEqual({ id: 1, name: 'Ada' });
@@ -299,22 +334,11 @@ describe('Query', () => {
       devalueFetchResponse({ id: 1, createdAt: new Date('2024-01-01T00:00:00.000Z') })
     );
     vi.stubGlobal('fetch', fetchMock);
-
-    const request = createApiRequest<PlainUsersApi>(
-      {
-        '/users': {
-          GET: v.object({ id: v.number() })
-        }
-      },
-      'https://api.example.test',
-      'test'
-    );
-    const requestor = new Requestor<PlainUsersApi, '/users', 'GET'>('/users', 'GET', request, new Cache());
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
       path: '/users',
       method: 'GET',
       input: { id: 1 },
-      requestor,
+      requestor: createPlainRequestor(),
       cache: new Cache()
     });
 
@@ -337,18 +361,14 @@ describe('Query', () => {
     });
   });
 
-  it('preserves arbitrary response overrides across query clones and cache hits', async () => {
-    const customResponse = withResponseOverrides(jsonResponse({ id: 1 }) as Response);
-    const requestMock = vi.fn().mockResolvedValue(customResponse);
-    const requestor = {
-      request: requestMock as PlainUsersRequest
-    } as unknown as PlainUsersRequestor;
-
+  it('preserves arbitrary response overrides across query responses and cache hits', async () => {
+    const fetchMock = vi.fn(async () => withResponseOverrides(jsonFetchResponse({ id: 1 })));
+    vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
       path: '/users',
       method: 'GET',
       input: { id: 1 },
-      requestor,
+      requestor: createPlainRequestor(),
       cache: new Cache()
     });
 
@@ -361,7 +381,7 @@ describe('Query', () => {
       meta: { source: string };
     };
 
-    expect(requestMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(first.extra()).toBe('copied');
     expect(first.meta).toEqual({ source: 'custom' });
     expect(second.extra()).toBe('copied');
@@ -369,16 +389,13 @@ describe('Query', () => {
   });
 
   it('updates success state from successful responses', async () => {
-    const requestMock = vi.fn().mockResolvedValue(jsonResponse({ id: 1, active: true }));
-    const requestor = {
-      request: requestMock as PlainUsersRequest
-    } as unknown as PlainUsersRequestor;
-
+    const fetchMock = vi.fn(async () => jsonFetchResponse({ id: 1, active: true }));
+    vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
       path: '/users',
       method: 'GET',
       input: { id: 1 },
-      requestor,
+      requestor: createPlainRequestor(),
       cache: new Cache()
     });
 
@@ -391,16 +408,13 @@ describe('Query', () => {
   });
 
   it('updates error state from error responses without throwing', async () => {
-    const requestMock = vi.fn().mockResolvedValue(jsonResponse({ message: 'missing' }, 404));
-    const requestor = {
-      request: requestMock as PlainUsersRequest
-    } as unknown as PlainUsersRequestor;
-
+    const fetchMock = vi.fn(async () => jsonFetchResponse({ message: 'missing' }, 404));
+    vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
       path: '/users',
       method: 'GET',
       input: { id: 99 },
-      requestor,
+      requestor: createPlainRequestor(),
       cache: new Cache()
     });
 
@@ -414,72 +428,75 @@ describe('Query', () => {
   });
 
   it('clears the pending request when the request throws so later retries can succeed', async () => {
-    const requestMock = vi
-      .fn()
-      .mockRejectedValueOnce(new Error('network down'))
-      .mockResolvedValueOnce(jsonResponse({ id: 1, recovered: true }));
-    const requestor = {
-      request: requestMock as PlainUsersRequest
-    } as unknown as PlainUsersRequestor;
+    let callCount = 0;
+    const fetchMock = vi.fn(async () => {
+      callCount += 1;
 
+      if (callCount === 1) {
+        throw new Error('network down');
+      }
+
+      return jsonFetchResponse({ id: 1, recovered: true });
+    });
+    vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
       path: '/users',
       method: 'GET',
       input: { id: 1 },
-      requestor,
+      requestor: createPlainRequestor(),
       cache: new Cache()
     });
 
     await expect(query.request()).rejects.toThrow('network down');
     expect(query.status).toBe('error');
 
-    const response = await query.request();
+    const responsePromise = query.request();
+    await vi.advanceTimersByTimeAsync(100);
+    const response = await responsePromise;
 
-    expect(requestMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(query.status).toBe('success');
     await expect(response.json()).resolves.toEqual({ id: 1, recovered: true });
   });
 
   it('resetCache forces the next request to fetch again', async () => {
-    const requestMock = vi
-      .fn()
-      .mockResolvedValueOnce(jsonResponse({ call: 1 }))
-      .mockResolvedValueOnce(jsonResponse({ call: 2 }));
-    const requestor = {
-      request: requestMock as PlainUsersRequest
-    } as unknown as PlainUsersRequestor;
-
+    let callCount = 0;
+    const fetchMock = vi.fn(async () => {
+      callCount += 1;
+      return jsonFetchResponse({ call: callCount });
+    });
+    vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
       path: '/users',
       method: 'GET',
       input: { id: 1 },
-      requestor,
+      requestor: createPlainRequestor(),
       cache: new Cache()
     });
 
     const first = await query.request();
     query.resetCache();
-    const second = await query.request();
+    const secondPromise = query.request();
+    await vi.advanceTimersByTimeAsync(100);
+    const second = await secondPromise;
 
-    expect(requestMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     await expect(first.json()).resolves.toEqual({ call: 1 });
     await expect(second.json()).resolves.toEqual({ call: 2 });
   });
 
   it('honors custom cache timeout options', async () => {
-    const requestMock = vi
-      .fn()
-      .mockResolvedValueOnce(jsonResponse({ call: 1 }))
-      .mockResolvedValueOnce(jsonResponse({ call: 2 }));
-    const requestor = {
-      request: requestMock as PlainUsersRequest
-    } as unknown as PlainUsersRequestor;
-
+    let callCount = 0;
+    const fetchMock = vi.fn(async () => {
+      callCount += 1;
+      return jsonFetchResponse({ call: callCount });
+    });
+    vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
       path: '/users',
       method: 'GET',
       input: { id: 1 },
-      requestor,
+      requestor: createPlainRequestor(),
       cache: new Cache(),
       opts: {
         cache: { timeout: 50 }
@@ -490,9 +507,11 @@ describe('Query', () => {
     vi.advanceTimersByTime(49);
     const cached = await query.request();
     vi.advanceTimersByTime(1);
-    const refreshed = await query.request();
+    const refreshedPromise = query.request();
+    await vi.advanceTimersByTimeAsync(50);
+    const refreshed = await refreshedPromise;
 
-    expect(requestMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     await expect(first.json()).resolves.toEqual({ call: 1 });
     await expect(cached.json()).resolves.toEqual({ call: 1 });
     await expect(refreshed.json()).resolves.toEqual({ call: 2 });

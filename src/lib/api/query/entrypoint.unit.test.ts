@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ApiEndpoints, ApiRequestFunction } from 'ts-ag';
+import { createApiRequest, type ApiEndpoints } from 'ts-ag';
+import * as v from 'valibot';
 
 type TestResponse = ApiEndpoints['response'];
 
@@ -8,23 +9,29 @@ type BatchedInput = { ids: number[] };
 
 type UsersApi = {
   path: '/users';
-  method: 'GET';
+  method: 'POST';
   requestInput: UserInput | BatchedInput;
   requestOutput: null;
   response: TestResponse;
 };
 
-type UsersRequest = ApiRequestFunction<UsersApi>;
+const API_URL = 'https://api.example.test';
+
+const schemas = {
+  '/users': {
+    POST: v.union([v.object({ id: v.number(), group: v.optional(v.string()) }), v.object({ ids: v.array(v.number()) })])
+  }
+};
 
 function getUserId(input: UsersApi['requestInput']): number {
   return 'id' in input ? input.id : input.ids[0]!;
 }
 
-function jsonResponse(body: unknown, status = 200): TestResponse {
+function jsonFetchResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { 'content-type': 'application/json' }
-  }) as TestResponse;
+  });
 }
 
 describe('createQueryFunction', () => {
@@ -37,17 +44,17 @@ describe('createQueryFunction', () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it('returns the same query instance for the same path, method, and input', async () => {
     const { createQueryFunction } = await import('./entrypoint.svelte.js');
-    const requestMock = vi.fn(async () => jsonResponse({ ok: true }));
-    const request = requestMock as unknown as UsersRequest;
+    const request = createApiRequest<UsersApi>(schemas, API_URL, 'test');
     const createQuery = createQueryFunction<UsersApi>(request, {});
 
-    const query1 = createQuery('/users', 'GET', { id: 1 });
-    const query2 = createQuery('/users', 'GET', { id: 1 });
-    const query3 = createQuery('/users', 'GET', { id: 2 });
+    const query1 = createQuery('/users', 'POST', { id: 1 });
+    const query2 = createQuery('/users', 'POST', { id: 1 });
+    const query3 = createQuery('/users', 'POST', { id: 2 });
 
     expect(query1).toBe(query2);
     expect(query3).not.toBe(query1);
@@ -55,31 +62,44 @@ describe('createQueryFunction', () => {
 
   it('reuses requestors so separate queries can batch together', async () => {
     const { createQueryFunction } = await import('./entrypoint.svelte.js');
-    const requestMock = vi.fn(async () => jsonResponse({ ok: true }));
-    const request = requestMock as unknown as UsersRequest;
+    const fetchMock = vi.fn(async () => jsonFetchResponse({ 1: 'one', 2: 'two' }));
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('fetch', fetchMock);
+    const request = createApiRequest<UsersApi>(schemas, API_URL, 'test');
     const createQuery = createQueryFunction<UsersApi>(request, {
       '/users': {
-        GET: {
+        POST: {
           canBatch: () => 'users',
           batchInput: (inputs) => ({ ids: inputs.map(getUserId) }),
-          unBatchOutput: (inputs) => inputs.map((input) => jsonResponse({ id: getUserId(input) }))
+          unBatchOutput: async (inputs, outputs) => {
+            return inputs.map(() => {
+              return outputs;
+            });
+          }
         }
       }
     });
 
-    const query1 = createQuery('/users', 'GET', { id: 1 });
-    const query2 = createQuery('/users', 'GET', { id: 2 });
+    const query1 = createQuery('/users', 'POST', { id: 1 });
+    const query2 = createQuery('/users', 'POST', { id: 2 });
 
     const p1 = query1.request();
     const p2 = query2.request();
 
     await vi.advanceTimersByTimeAsync(100);
 
-    expect(requestMock).toHaveBeenCalledTimes(1);
-    expect(requestMock).toHaveBeenCalledWith('/users', 'GET', { ids: [1, 2] });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      `${API_URL}//users`,
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ ids: [1, 2] }),
+        credentials: 'include'
+      })
+    );
 
     const [response1, response2] = await Promise.all([p1, p2]);
-    await expect(response1.json()).resolves.toEqual({ id: 1 });
-    await expect(response2.json()).resolves.toEqual({ id: 2 });
+    await expect(response1.json()).resolves.toEqual({ 1: 'one', 2: 'two' });
+    await expect(response2.json()).resolves.toEqual({ 1: 'one', 2: 'two' });
   });
 });

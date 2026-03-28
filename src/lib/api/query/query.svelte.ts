@@ -9,31 +9,6 @@ import { RateLimiter } from './rate.svelte';
 
 export type QueryStatus = 'idle' | 'loading' | 'success' | 'error';
 
-function copyOwnOverrides<T extends object>(source: T, target: T): T {
-  for (const key of Reflect.ownKeys(source)) {
-    const descriptor = Object.getOwnPropertyDescriptor(source, key);
-    if (!descriptor) continue;
-
-    Object.defineProperty(target, key, descriptor);
-  }
-
-  return target;
-}
-
-function cloneResponse<T>(response: T): T {
-  if (
-    response !== null &&
-    typeof response === 'object' &&
-    'clone' in response &&
-    typeof response.clone === 'function'
-  ) {
-    const source = response as T & object;
-    return copyOwnOverrides(source, response.clone() as T & object) as T;
-  }
-
-  return response;
-}
-
 export class Query<
   API extends ApiEndpoints,
   Path extends API['path'],
@@ -97,7 +72,7 @@ export class Query<
   async request(): Promise<ApiResponse<API, Path, Method>> {
     const cachedValue = this.#cache.get(this.#cacheKey);
     if (cachedValue !== null) {
-      return cloneResponse(cachedValue);
+      return cachedValue;
     }
 
     this.#status = 'loading';
@@ -116,9 +91,9 @@ export class Query<
       this.#pendingRequest = null;
     }
 
-    const responseForState = cloneResponse(res);
-    const responseForCaller = cloneResponse(res);
-    this.#cache.set(this.#cacheKey, cloneResponse(res));
+    const responseForState = res;
+    const responseForCaller = res;
+    this.#cache.set(this.#cacheKey, res);
 
     if (responseForState.ok === false) {
       const body = await responseForState.json();
@@ -223,6 +198,8 @@ export class Requestor<
   private async flushBatchQueue(batchId: string): Promise<void> {
     const queue = this.#batchQueue[batchId].splice(0);
 
+    // TODO maybe remove the unBatchOutput function and just always return the
+    // same response and then its on each consumer of each query to find the relevant records
     try {
       const batchedInput = this.#batchInput(queue.map((q) => q.input));
 
