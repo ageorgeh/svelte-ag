@@ -1,11 +1,11 @@
 import type { ApiEndpoints, ApiInput, ApiRequestFunction, ApiSuccessBody, ApiErrorBody, ApiResponse } from 'ts-ag';
 
 import { stringify } from 'devalue';
-import PQueue from 'p-queue';
 import type { Cache } from './cache.svelte';
 
 import { cacheKey } from './utils.svelte.js';
 import type { BatchDetails } from './entrypoint.svelte';
+import { RateLimiter } from './rate.svelte';
 
 export type QueryStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -139,7 +139,7 @@ export class Requestor<
   #batchInput: BatchDetails<API, Path, Method>['batchInput'];
   #unBatchOutput: BatchDetails<API, Path, Method>['unBatchOutput'];
 
-  #limiter: PQueue;
+  #limiter: RateLimiter;
   // #cache: Cache;
 
   // -------- State --------
@@ -163,11 +163,7 @@ export class Requestor<
     this.#path = path;
     this.#method = method;
     this.#request = request;
-    this.#limiter = new PQueue({
-      concurrency: 5,
-      interval: 100,
-      intervalCap: 1
-    });
+    this.#limiter = new RateLimiter();
     // this.#cache = cache;
 
     // TODO
