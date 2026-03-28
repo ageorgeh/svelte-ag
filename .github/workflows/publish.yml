@@ -21,7 +21,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: ageorgeh/pnpm-action-setup@fix/skip-install-if-existing
@@ -29,7 +29,7 @@ jobs:
           cache: true
           run_install: true
           version: 10.28.0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '24'
 

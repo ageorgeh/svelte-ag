@@ -1,10 +1,30 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ApiEndpoints, ApiRequestFunction } from 'ts-ag';
 
-function jsonResponse(body: unknown, status = 200): Response {
+type TestResponse = ApiEndpoints['response'];
+
+type UserInput = { id: number; group?: string };
+type BatchedInput = { ids: number[] };
+
+type UsersApi = {
+  path: '/users';
+  method: 'GET';
+  requestInput: UserInput | BatchedInput;
+  requestOutput: null;
+  response: TestResponse;
+};
+
+type UsersRequest = ApiRequestFunction<UsersApi>;
+
+function getUserId(input: UsersApi['requestInput']): number {
+  return 'id' in input ? input.id : input.ids[0]!;
+}
+
+function jsonResponse(body: unknown, status = 200): TestResponse {
   return new Response(JSON.stringify(body), {
     status,
     headers: { 'content-type': 'application/json' }
-  });
+  }) as TestResponse;
 }
 
 describe('createQueryFunction', () => {
@@ -21,8 +41,9 @@ describe('createQueryFunction', () => {
 
   it('returns the same query instance for the same path, method, and input', async () => {
     const { createQueryFunction } = await import('./entrypoint.svelte.js');
-    const request = vi.fn();
-    const createQuery = createQueryFunction<any>(request, {});
+    const requestMock = vi.fn(async () => jsonResponse({ ok: true }));
+    const request = requestMock as unknown as UsersRequest;
+    const createQuery = createQueryFunction<UsersApi>(request, {});
 
     const query1 = createQuery('/users', 'GET', { id: 1 });
     const query2 = createQuery('/users', 'GET', { id: 1 });
@@ -34,13 +55,14 @@ describe('createQueryFunction', () => {
 
   it('reuses requestors so separate queries can batch together', async () => {
     const { createQueryFunction } = await import('./entrypoint.svelte.js');
-    const request = vi.fn().mockResolvedValue(jsonResponse({ ok: true }));
-    const createQuery = createQueryFunction<any>(request, {
+    const requestMock = vi.fn(async () => jsonResponse({ ok: true }));
+    const request = requestMock as unknown as UsersRequest;
+    const createQuery = createQueryFunction<UsersApi>(request, {
       '/users': {
         GET: {
           canBatch: () => 'users',
-          batchInput: (inputs: any[]) => ({ ids: inputs.map((input) => input.id) }),
-          unBatchOutput: (inputs: any[]) => inputs.map((input) => jsonResponse({ id: input.id }))
+          batchInput: (inputs) => ({ ids: inputs.map(getUserId) }),
+          unBatchOutput: (inputs) => inputs.map((input) => jsonResponse({ id: getUserId(input) }))
         }
       }
     });
@@ -53,8 +75,8 @@ describe('createQueryFunction', () => {
 
     await vi.advanceTimersByTimeAsync(100);
 
-    expect(request).toHaveBeenCalledTimes(1);
-    expect(request).toHaveBeenCalledWith('/users', 'GET', { ids: [1, 2] });
+    expect(requestMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenCalledWith('/users', 'GET', { ids: [1, 2] });
 
     const [response1, response2] = await Promise.all([p1, p2]);
     await expect(response1.json()).resolves.toEqual({ id: 1 });
