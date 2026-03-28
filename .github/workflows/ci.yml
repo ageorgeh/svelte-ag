@@ -34,6 +34,9 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
       - uses: ageorgeh/pnpm-action-setup@fix/skip-install-if-existing
         with:
           cache: true
