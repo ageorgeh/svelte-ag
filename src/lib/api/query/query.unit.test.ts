@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { ApiEndpoints, ApiRequestFunction } from 'ts-ag';
+import { createApiRequest, type ApiEndpoints, type ApiRequestFunction } from 'ts-ag';
 import { Cache } from './cache.svelte.js';
 import { Query, Requestor } from './query.svelte.js';
+import { stringify } from 'devalue';
+import * as v from 'valibot';
 
 type PlainUserInput = { id: number };
 type BatchedUserInput = { id: number; group?: string };
@@ -40,6 +42,34 @@ function jsonResponse(body: unknown, status = 200): TestResponse {
   }) as TestResponse;
 }
 
+function devalueFetchResponse(body: unknown, status = 200): Response {
+  return new Response(stringify(body), {
+    status,
+    headers: { 'content-type': 'application/devalue' }
+  });
+}
+
+function withResponseOverrides<T extends Response>(
+  response: T
+): T & {
+  extra: () => string;
+  meta: { source: string };
+} {
+  Object.defineProperty(response, 'extra', {
+    configurable: true,
+    value: () => 'copied'
+  });
+  Object.defineProperty(response, 'meta', {
+    configurable: true,
+    value: { source: 'custom' }
+  });
+
+  return response as T & {
+    extra: () => string;
+    meta: { source: string };
+  };
+}
+
 function deferred<T>() {
   let resolve!: (value: T | PromiseLike<T>) => void;
   let reject!: (reason?: unknown) => void;
@@ -60,6 +90,7 @@ describe('Requestor', () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it('passes through non-batched requests', async () => {
@@ -71,6 +102,34 @@ describe('Requestor', () => {
 
     expect(requestMock).toHaveBeenCalledTimes(1);
     expect(requestMock).toHaveBeenCalledWith('/users', 'GET', { id: 1 });
+    await expect(response.json()).resolves.toEqual({ id: 1 });
+  });
+
+  it('devalue response', async () => {
+    const fetchMock = vi.fn(async () => devalueFetchResponse({ id: 1 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const request = createApiRequest<PlainUsersApi>(
+      {
+        '/users': {
+          GET: v.object({ id: v.number() })
+        }
+      },
+      'https://api.example.test',
+      'test'
+    );
+    const requestor = new Requestor<PlainUsersApi, '/users', 'GET'>('/users', 'GET', request, new Cache());
+
+    const response = await requestor.request({ id: 1 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.example.test//users?id=1',
+      expect.objectContaining({
+        method: 'GET',
+        credentials: 'include'
+      })
+    );
     await expect(response.json()).resolves.toEqual({ id: 1 });
   });
 
@@ -233,6 +292,80 @@ describe('Query', () => {
     expect(query.isCached).toBe(true);
     await expect(first.json()).resolves.toEqual({ id: 1, name: 'Ada' });
     await expect(second.json()).resolves.toEqual({ id: 1, name: 'Ada' });
+  });
+
+  it('preserves devalue parsing for query state, returned responses, and cache hits', async () => {
+    const fetchMock = vi.fn(async () =>
+      devalueFetchResponse({ id: 1, createdAt: new Date('2024-01-01T00:00:00.000Z') })
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    const request = createApiRequest<PlainUsersApi>(
+      {
+        '/users': {
+          GET: v.object({ id: v.number() })
+        }
+      },
+      'https://api.example.test',
+      'test'
+    );
+    const requestor = new Requestor<PlainUsersApi, '/users', 'GET'>('/users', 'GET', request, new Cache());
+    const query = new Query<PlainUsersApi, '/users', 'GET'>({
+      path: '/users',
+      method: 'GET',
+      input: { id: 1 },
+      requestor,
+      cache: new Cache()
+    });
+
+    const firstResponse = await query.request();
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(query.status).toBe('success');
+    expect(query.data).toEqual({ id: 1, createdAt: new Date('2024-01-01T00:00:00.000Z') });
+    await expect(firstResponse.json()).resolves.toEqual({
+      id: 1,
+      createdAt: new Date('2024-01-01T00:00:00.000Z')
+    });
+
+    const cachedResponse = await query.request();
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    await expect(cachedResponse.json()).resolves.toEqual({
+      id: 1,
+      createdAt: new Date('2024-01-01T00:00:00.000Z')
+    });
+  });
+
+  it('preserves arbitrary response overrides across query clones and cache hits', async () => {
+    const customResponse = withResponseOverrides(jsonResponse({ id: 1 }) as Response);
+    const requestMock = vi.fn().mockResolvedValue(customResponse);
+    const requestor = {
+      request: requestMock as PlainUsersRequest
+    } as unknown as PlainUsersRequestor;
+
+    const query = new Query<PlainUsersApi, '/users', 'GET'>({
+      path: '/users',
+      method: 'GET',
+      input: { id: 1 },
+      requestor,
+      cache: new Cache()
+    });
+
+    const first = (await query.request()) as Response & {
+      extra: () => string;
+      meta: { source: string };
+    };
+    const second = (await query.request()) as Response & {
+      extra: () => string;
+      meta: { source: string };
+    };
+
+    expect(requestMock).toHaveBeenCalledTimes(1);
+    expect(first.extra()).toBe('copied');
+    expect(first.meta).toEqual({ source: 'custom' });
+    expect(second.extra()).toBe('copied');
+    expect(second.meta).toEqual({ source: 'custom' });
   });
 
   it('updates success state from successful responses', async () => {

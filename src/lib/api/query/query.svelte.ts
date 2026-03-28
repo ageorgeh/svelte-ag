@@ -9,6 +9,17 @@ import { RateLimiter } from './rate.svelte';
 
 export type QueryStatus = 'idle' | 'loading' | 'success' | 'error';
 
+function copyOwnOverrides<T extends object>(source: T, target: T): T {
+  for (const key of Reflect.ownKeys(source)) {
+    const descriptor = Object.getOwnPropertyDescriptor(source, key);
+    if (!descriptor) continue;
+
+    Object.defineProperty(target, key, descriptor);
+  }
+
+  return target;
+}
+
 function cloneResponse<T>(response: T): T {
   if (
     response !== null &&
@@ -16,7 +27,8 @@ function cloneResponse<T>(response: T): T {
     'clone' in response &&
     typeof response.clone === 'function'
   ) {
-    return response.clone();
+    const source = response as T & object;
+    return copyOwnOverrides(source, response.clone() as T & object) as T;
   }
 
   return response;
@@ -240,8 +252,8 @@ export class Requestor<
     if (batchId !== false) {
       return new Promise((resolve, reject) => {
         if (!this.#batchQueue[batchId]) this.#batchQueue[batchId] = [];
-
         this.#batchQueue[batchId].push({ input, resolve, reject });
+
         if (!this.#batchTimers[batchId]) {
           this.#batchTimers[batchId] = setTimeout(() => {
             void this.flushBatchQueue(batchId).finally(() => {
