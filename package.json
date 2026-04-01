@@ -12,26 +12,26 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/lib/index.d.ts",
-      "default": "./dist/lib/index.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./vite": {
-      "types": "./dist/lib/vite/index.d.ts",
-      "default": "./dist/lib/vite/index.js"
+      "types": "./dist/vite/index.d.ts",
+      "default": "./dist/vite/index.js"
     },
     "./*": {
-      "types": "./dist/lib/*",
-      "svelte": "./dist/lib/*",
-      "default": "./dist/lib/*"
+      "types": "./dist/*",
+      "svelte": "./dist/*",
+      "default": "./dist/*"
     }
   },
   "files": [
-    "./src",
+    "./src/lib",
     "./dist"
   ],
   "scripts": {
     "prebuild": "svelte-kit sync && svelte-check --fail-on-warnings",
-    "build": "svelte-package -i src",
+    "build": "svelte-package",
     "dev": "vite dev",
     "fmt": "prettier . --write",
     "fmt:check": "prettier . --check",
@@ -42,7 +42,7 @@
     "test": "vitest --run",
     "test:e2e": "playwright test",
     "test:e2e-local": "PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:3005/ pnpm test:e2e",
-    "watch": "svelte-package -i src -w"
+    "watch": "svelte-package -w"
   },
   "dependencies": {
     "@dnd-kit-svelte/svelte": "^0.1.6",
@@ -109,9 +109,6 @@
     "onlyBuiltDependencies": [
       "esbuild",
       "@tailwindcss/oxide"
-    ],
-    "overrides": {
-      "vite": "8.0.3"
-    }
+    ]
   }
 }
