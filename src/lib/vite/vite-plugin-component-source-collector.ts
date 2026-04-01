@@ -65,7 +65,7 @@ async function readPackageNameAt(directory: string): Promise<string | null> {
 export default async function componentSourceCollector(opts: Options = { safePackages: [] }): Promise<Plugin> {
   // constants
   const outFileName = opts.outputFile ?? 'component-sources.css';
-  const classRegex = /class(?:=|:)/;
+  const classAttributeRegex = /\bclass\s*=/;
   const importRegex = /@import\s+['"]([^'"]+)['"]/g;
 
   // state
@@ -75,8 +75,12 @@ export default async function componentSourceCollector(opts: Options = { safePac
   let initialTransformDone = false;
   let initialTransformTimer: NodeJS.Timeout | null = null;
 
-  function shouldAdd(code: string) {
-    return classRegex.test(code);
+  function shouldAdd(code: string, id: string) {
+    // Svelte's `class:` directive toggles local classes and should not be treated as
+    // a Tailwind source signal. Including those files can pull in component-local
+    // style modules that Tailwind should never parse directly.
+    if (id.includes('?svelte&type=style')) return false;
+    return classAttributeRegex.test(code);
   }
 
   async function normalizeCollectedSourceFilePath(file: string): Promise<string> {
@@ -110,22 +114,22 @@ export default async function componentSourceCollector(opts: Options = { safePac
     }
   }
   async function addPath(file: string) {
-    if (outputFilePath && file !== '') {
-      const normalizedFilePath = await normalizeCollectedSourceFilePath(file);
+    if (!outputFilePath || file === '') return;
 
-      if (
-        !/\.svelte-kit/.test(normalizedFilePath) && // No svelte-kit files
-        // No dep files unless marked as safe
-        (!/(?:\.pnpm|\.vite)/.test(normalizedFilePath) ||
-          opts.safePackages.some((p) => normalizedFilePath.includes(`node_modules/${p}`)))
-      ) {
-        const relativeFilePath = toPosixPath(relative(dirname(outputFilePath), normalizedFilePath));
-
-        if (normalizedFilePath === outputFilePath || relativeFilePath === outFileName) return;
-        // Dont add itself
-        componentFiles.add(ensureDotRelative(relativeFilePath));
-      }
+    const normalizedFilePath = await normalizeCollectedSourceFilePath(file);
+    if (
+      /\.svelte-kit/.test(normalizedFilePath) ||
+      (/(?:\.pnpm|\.vite)/.test(normalizedFilePath) &&
+        !opts.safePackages?.some((packageName) => normalizedFilePath.includes(`node_modules/${packageName}`)))
+    ) {
+      return;
     }
+
+    const relativeFilePath = toPosixPath(relative(dirname(outputFilePath), normalizedFilePath));
+    if (normalizedFilePath === outputFilePath || relativeFilePath === outFileName) return;
+
+    // Dont add itself
+    componentFiles.add(ensureDotRelative(relativeFilePath));
   }
 
   function scheduleInitialWrite() {
@@ -135,7 +139,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
         writeOutFile();
         initialTransformDone = true;
       }
-    }, 1000); // adjust delay as needed
+    }, 1000);
   }
 
   const writeOutFile = async () => {
@@ -145,7 +149,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
 
     if (outputFilePath) {
       const didWrite = await writeIfDifferent(outputFilePath, lines.join('\n'));
-      if (didWrite) console.log('Wrote', lines.length);
+      if (didWrite) console.log('tailwind-sources:wrote', lines.length);
     }
   };
 
@@ -178,13 +182,26 @@ export default async function componentSourceCollector(opts: Options = { safePac
         console.log('tailwind-sources: Clearing files list');
         componentFiles.clear();
         firstRound = false;
-      } else if (config.command === 'serve') {
-        if (await exists(outputFilePath)) {
-          const fileLines = (await readFile(outputFilePath, 'utf8')).split('\n');
-          for (const fileLine of fileLines) {
-            await addPath(fileLine.replace(/@source\s+'(.*?)';/, '$1'));
+      } else if (config.command === 'serve' && (await exists(outputFilePath))) {
+        const fileLines = (await readFile(outputFilePath, 'utf8')).split('\n');
+        for (const fileLine of fileLines) {
+          const sourcePath = fileLine.replace(/@source\s+'(.*?)';/, '$1');
+          if (sourcePath === fileLine) continue;
+
+          const resolvedSourcePath = resolve(dirname(outputFilePath), sourcePath);
+          if (resolvedSourcePath.endsWith('.css')) {
+            await addPath(sourcePath);
+            continue;
           }
-          // console.log('config resolved', componentFiles);
+
+          try {
+            const code = await readFile(resolvedSourcePath, 'utf8');
+            if (shouldAdd(code, resolvedSourcePath)) {
+              await addPath(sourcePath);
+            }
+          } catch {
+            // Ignore stale source entries that no longer resolve on disk.
+          }
         }
       }
     },
@@ -237,7 +254,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
       }
 
       // Adds all other files with the classRegex
-      if (shouldAdd(code)) {
+      if (shouldAdd(code, id)) {
         await addPath(id);
       }
 
