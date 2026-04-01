@@ -19,7 +19,7 @@ export default defineProject({
           name: 'unit',
           environment: 'node',
           include: ['**/*.unit.test.ts'],
-          setupFiles: ['src/test/vitest.setup.ts']
+          setupFiles: ['./tests/vitest.setup.ts']
         }
       }
     ]

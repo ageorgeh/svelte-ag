@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './src/lib/components/shader/tests',
+  testDir: './tests',
   snapshotPathTemplate: '{testDir}/.generated-screenshots/{testFilePath}/{arg}{ext}',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
@@ -67,10 +67,10 @@ export default defineConfig({
         //     }
         //   }
         // }
-        // {
-        //   name: 'WebKit <No WebGPU>',
-        //   use: { ...devices['Desktop Safari'] }
-        // }
+        {
+          name: 'WebKit <No WebGPU>',
+          use: { ...devices['Desktop Safari'] }
+        }
       ],
   webServer: {
     command: 'pnpm dev',

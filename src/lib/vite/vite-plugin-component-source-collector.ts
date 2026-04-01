@@ -1,7 +1,7 @@
 import type { Plugin, ResolvedConfig } from 'vite';
 import { exists, writeIfDifferent } from 'ts-ag';
 import { readFile } from 'fs/promises';
-import { resolve, join, relative, dirname } from 'path';
+import { resolve, join, relative, dirname, isAbsolute } from 'path';
 import { open } from 'fs/promises';
 
 interface Options {
@@ -24,10 +24,78 @@ interface Options {
 /** All unique component directories */
 const componentFiles = new Set<string>();
 let firstRound = true;
+const packageJsonCache = new Map<string, Promise<string | null>>();
 
 function ensureDotRelative(filePath: string): string {
   if (filePath.startsWith('.')) return filePath;
   return `./${filePath}`;
+}
+
+function isPathInside(parentPath: string, childPath: string): boolean {
+  const relativePath = relative(parentPath, childPath);
+  return relativePath === '' || (!relativePath.startsWith('..') && !isAbsolute(relativePath));
+}
+
+function toPosixPath(filePath: string): string {
+  return filePath.replaceAll('\\', '/');
+}
+
+async function readPackageNameAt(directory: string): Promise<string | null> {
+  const cached = packageJsonCache.get(directory);
+  if (cached) return cached;
+
+  const packageNamePromise = (async () => {
+    try {
+      const packageJson = await readFile(join(directory, 'package.json'), 'utf8');
+      const parsed = JSON.parse(packageJson) as { name?: string };
+      return parsed.name ?? null;
+    } catch {
+      return null;
+    }
+  })();
+
+  packageJsonCache.set(directory, packageNamePromise);
+  return packageNamePromise;
+}
+
+type NormalizeCollectedSourceFilePathOptions = {
+  outputFilePath: string;
+  root: string;
+  safePackages: string[];
+};
+
+export async function normalizeCollectedSourceFilePath(
+  file: string,
+  opts: NormalizeCollectedSourceFilePathOptions
+): Promise<string> {
+  const cleanedFileName = file.replace(/[?#].*$/, '');
+  const resolvedFilePath = isAbsolute(cleanedFileName)
+    ? resolve(cleanedFileName)
+    : resolve(dirname(opts.outputFilePath), cleanedFileName);
+
+  let currentDirectory = dirname(resolvedFilePath);
+
+  while (true) {
+    const packageName = await readPackageNameAt(currentDirectory);
+    if (packageName !== null) {
+      const currentDirectoryPosix = toPosixPath(currentDirectory);
+      const isExternalPackage =
+        !isPathInside(opts.root, currentDirectory) || currentDirectoryPosix.includes('/node_modules/');
+
+      if (isExternalPackage && opts.safePackages.includes(packageName)) {
+        return resolve(opts.root, 'node_modules', packageName, relative(currentDirectory, resolvedFilePath));
+      }
+
+      return resolvedFilePath;
+    }
+
+    const parentDirectory = dirname(currentDirectory);
+    if (parentDirectory === currentDirectory) {
+      return resolvedFilePath;
+    }
+
+    currentDirectory = parentDirectory;
+  }
 }
 
 export default async function componentSourceCollector(opts: Options = { safePackages: [] }): Promise<Plugin> {
@@ -49,18 +117,27 @@ export default async function componentSourceCollector(opts: Options = { safePac
     return classRegex.test(code);
   }
 
-  function addPath(file: string) {
+  async function addPath(file: string) {
     if (
       outputFilePath &&
       file !== '' && // No nothing
-      !/\.svelte-kit/.test(file) && // No svelte-kit files
-      // No dep files unless marked as safe
-      (!/\.pnpm|.vite/.test(file) || opts.safePackages.some((p) => file.includes(`node_modules/${p}`)))
+      root
     ) {
-      const cleanedFileName = file.replace(/\?v=.*$/, '');
-      const relativeFilePath = relative(dirname(outputFilePath), cleanedFileName);
+      const normalizedFilePath = await normalizeCollectedSourceFilePath(file, {
+        outputFilePath,
+        root,
+        safePackages: opts.safePackages
+      });
 
-      if (relativeFilePath !== outFileName) {
+      if (
+        !/\.svelte-kit/.test(normalizedFilePath) && // No svelte-kit files
+        // No dep files unless marked as safe
+        (!/(?:\.pnpm|\.vite)/.test(normalizedFilePath) ||
+          opts.safePackages.some((p) => normalizedFilePath.includes(`node_modules/${p}`)))
+      ) {
+        const relativeFilePath = toPosixPath(relative(dirname(outputFilePath), normalizedFilePath));
+
+        if (normalizedFilePath === outputFilePath || relativeFilePath === outFileName) return;
         // Dont add itself
         componentFiles.add(ensureDotRelative(relativeFilePath));
       }
@@ -118,7 +195,9 @@ export default async function componentSourceCollector(opts: Options = { safePac
       } else if (config.command === 'serve') {
         if (await exists(outputFilePath)) {
           const fileLines = (await readFile(outputFilePath, 'utf8')).split('\n');
-          fileLines.forEach((l) => addPath(l.replace(/@source\s+'(.*?)';/, '$1')));
+          for (const fileLine of fileLines) {
+            await addPath(fileLine.replace(/@source\s+'(.*?)';/, '$1'));
+          }
           // console.log('config resolved', componentFiles);
         }
       }
@@ -163,7 +242,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
           try {
             const resolved = await this.resolve(match[1], id);
             if (resolved) {
-              addPath(resolved.id);
+              await addPath(resolved.id);
             }
           } catch {
             // Cant resolve: dont add
@@ -173,7 +252,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
 
       // Adds all other files with the classRegex
       if (shouldAdd(code)) {
-        addPath(id);
+        await addPath(id);
       }
 
       if (!initialTransformDone) {
