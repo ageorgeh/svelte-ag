@@ -27,8 +27,12 @@ let firstRound = true;
 const packageJsonCache = new Map<string, Promise<string | null>>();
 
 function ensureDotRelative(filePath: string): string {
-  if (filePath.startsWith('.')) return filePath;
+  if (filePath.startsWith('./')) return filePath;
   return `./${filePath}`;
+}
+async function touch(path: string) {
+  const handle = await open(path, 'a');
+  await handle.close();
 }
 
 function isPathInside(parentPath: string, childPath: string): boolean {
@@ -58,76 +62,56 @@ async function readPackageNameAt(directory: string): Promise<string | null> {
   return packageNamePromise;
 }
 
-type NormalizeCollectedSourceFilePathOptions = {
-  outputFilePath: string;
-  root: string;
-  safePackages: string[];
-};
-
-export async function normalizeCollectedSourceFilePath(
-  file: string,
-  opts: NormalizeCollectedSourceFilePathOptions
-): Promise<string> {
-  const cleanedFileName = file.replace(/[?#].*$/, '');
-  const resolvedFilePath = isAbsolute(cleanedFileName)
-    ? resolve(cleanedFileName)
-    : resolve(dirname(opts.outputFilePath), cleanedFileName);
-
-  let currentDirectory = dirname(resolvedFilePath);
-
-  while (true) {
-    const packageName = await readPackageNameAt(currentDirectory);
-    if (packageName !== null) {
-      const currentDirectoryPosix = toPosixPath(currentDirectory);
-      const isExternalPackage =
-        !isPathInside(opts.root, currentDirectory) || currentDirectoryPosix.includes('/node_modules/');
-
-      if (isExternalPackage && opts.safePackages.includes(packageName)) {
-        return resolve(opts.root, 'node_modules', packageName, relative(currentDirectory, resolvedFilePath));
-      }
-
-      return resolvedFilePath;
-    }
-
-    const parentDirectory = dirname(currentDirectory);
-    if (parentDirectory === currentDirectory) {
-      return resolvedFilePath;
-    }
-
-    currentDirectory = parentDirectory;
-  }
-}
-
 export default async function componentSourceCollector(opts: Options = { safePackages: [] }): Promise<Plugin> {
   // constants
   const outFileName = opts.outputFile ?? 'component-sources.css';
   const classRegex = /class(?:=|:)/;
   const importRegex = /@import\s+['"]([^'"]+)['"]/g;
 
-  let outputFilePath: string | undefined = undefined;
-  let root: string | undefined = undefined;
-
   // state
+  let outputFilePath: string;
+  let nodeModulesPath: string;
   let config: ResolvedConfig;
   let initialTransformDone = false;
   let initialTransformTimer: NodeJS.Timeout | null = null;
 
-  // init
   function shouldAdd(code: string) {
     return classRegex.test(code);
   }
 
+  async function normalizeCollectedSourceFilePath(file: string): Promise<string> {
+    const cleanedFileName = file.replace(/[?#].*$/, '');
+    const resolvedFilePath = isAbsolute(cleanedFileName)
+      ? resolve(cleanedFileName)
+      : resolve(dirname(outputFilePath), cleanedFileName);
+
+    let currentDirectory = dirname(resolvedFilePath);
+
+    while (true) {
+      const packageName = await readPackageNameAt(currentDirectory);
+      if (packageName !== null) {
+        const currentDirectoryPosix = toPosixPath(currentDirectory);
+        const isExternalPackage =
+          !isPathInside(dirname(nodeModulesPath), currentDirectory) || currentDirectoryPosix.includes('/node_modules/');
+
+        if (isExternalPackage && opts.safePackages.includes(packageName)) {
+          return resolve(nodeModulesPath, packageName, relative(currentDirectory, resolvedFilePath));
+        }
+
+        return resolvedFilePath;
+      }
+
+      const parentDirectory = dirname(currentDirectory);
+      if (parentDirectory === currentDirectory) {
+        return resolvedFilePath;
+      }
+
+      currentDirectory = parentDirectory;
+    }
+  }
   async function addPath(file: string) {
-    if (
-      outputFilePath &&
-      file !== '' && // No nothing
-      root
-    ) {
-      const normalizedFilePath = await normalizeCollectedSourceFilePath(file, {
-        outputFilePath,
-        root,
-        safePackages: opts.safePackages
-      });
+    if (outputFilePath && file !== '') {
+      const normalizedFilePath = await normalizeCollectedSourceFilePath(file);
 
       if (
         !/\.svelte-kit/.test(normalizedFilePath) && // No svelte-kit files
@@ -154,11 +138,6 @@ export default async function componentSourceCollector(opts: Options = { safePac
     }, 1000); // adjust delay as needed
   }
 
-  async function touch(path: string) {
-    const handle = await open(path, 'a');
-    await handle.close();
-  }
-
   const writeOutFile = async () => {
     const lines = Array.from(componentFiles)
       .map((d) => `@source '${d}';`)
@@ -181,8 +160,15 @@ export default async function componentSourceCollector(opts: Options = { safePac
      */
     async configResolved(resolved) {
       config = resolved;
-      root = config.root;
-      outputFilePath = resolve(root, outFileName);
+      outputFilePath = resolve(config.root, outFileName);
+
+      let current = config.root;
+      while (true) {
+        if (await exists(join(current, 'package.json'))) {
+          nodeModulesPath = join(current, 'node_modules');
+          break;
+        } else current = dirname(current);
+      }
 
       console.log('tailwind-sources:configResolved: Command is', config.command);
 
@@ -216,7 +202,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
         'npm-shrinkwrap.json',
         // pnpm install-state changes:
         'node_modules/.modules.yaml'
-      ].map((p) => join(root!, p));
+      ].map((p) => join(config.root!, p));
       server.watcher.add(lockFiles);
       const onChange = async (file: string) => {
         if (!lockFiles.includes(file)) return;

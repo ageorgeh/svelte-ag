@@ -1,91 +1,142 @@
-import { afterEach, describe, expect, it } from 'vitest';
-import { mkdir, mkdtemp, rm, writeFile } from 'fs/promises';
-import { dirname, join } from 'path';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'fs/promises';
+import { join } from 'path';
 import { tmpdir } from 'os';
-import { normalizeCollectedSourceFilePath } from './vite-plugin-component-source-collector.js';
+import { build, normalizePath, type Plugin } from 'vite';
 
-const temporaryDirectories: string[] = [];
+const tempDirectories: string[] = [];
 
-async function createTemporaryDirectory() {
-  const directory = await mkdtemp(join(tmpdir(), 'svelte-ag-component-source-collector-'));
-  temporaryDirectories.push(directory);
+function svelteFixtureLoader(): Plugin {
+  return {
+    name: 'svelte-fixture-loader',
+    async load(id) {
+      if (!id.endsWith('.svelte')) return null;
+
+      const source = await readFile(id, 'utf8');
+      return `export default ${JSON.stringify(source)};`;
+    }
+  };
+}
+
+async function createTempDirectory(prefix: string): Promise<string> {
+  const directory = await mkdtemp(join(tmpdir(), prefix));
+  tempDirectories.push(directory);
   return directory;
 }
 
-async function createFile(filePath: string, contents = '') {
-  await mkdir(dirname(filePath), { recursive: true });
-  await writeFile(filePath, contents);
+async function writeJson(filePath: string, value: unknown): Promise<void> {
+  await writeFile(filePath, JSON.stringify(value, null, 2));
 }
 
-afterEach(async () => {
-  await Promise.all(temporaryDirectories.splice(0).map((directory) => rm(directory, { force: true, recursive: true })));
-});
+async function createProjectRoot(): Promise<string> {
+  const root = await createTempDirectory('vite-plugin-component-source-collector-');
 
-describe('normalizeCollectedSourceFilePath', () => {
-  it('canonicalizes pnpm store paths for safe packages', async () => {
-    const baseDirectory = await createTemporaryDirectory();
-    const appRoot = join(baseDirectory, 'app');
-    const outputFilePath = join(appRoot, 'component-sources.css');
-    const pnpmPackageRoot = join(
-      appRoot,
-      'node_modules',
-      '.pnpm',
-      'svelte-ag@1.0.56_hash',
-      'node_modules',
-      'svelte-ag'
-    );
-    const sourceFilePath = join(pnpmPackageRoot, 'dist', 'lib', 'components', 'dnd', 'DndDroppable.svelte');
+  await mkdir(join(root, 'src'), { recursive: true });
+  await mkdir(join(root, 'node_modules'), { recursive: true });
 
-    await createFile(join(pnpmPackageRoot, 'package.json'), JSON.stringify({ name: 'svelte-ag' }));
-    await createFile(sourceFilePath);
+  await writeJson(join(root, 'package.json'), {
+    name: 'collector-test-app',
+    private: true,
+    type: 'module'
+  });
 
-    const normalizedPath = await normalizeCollectedSourceFilePath(sourceFilePath, {
-      outputFilePath,
-      root: appRoot,
-      safePackages: ['svelte-ag']
-    });
+  await writeFile(
+    join(root, 'src', 'main.js'),
+    ["import 'safe-pkg/Button.svelte';", "import './app.css';", ''].join('\n')
+  );
+  await writeFile(join(root, 'src', 'app.css'), ['@import "safe-pkg/theme.css";', ''].join('\n'));
 
-    expect(normalizedPath).toBe(
-      join(appRoot, 'node_modules', 'svelte-ag', 'dist', 'lib', 'components', 'dnd', 'DndDroppable.svelte')
+  return root;
+}
+
+async function createSafePackage(packageRoot: string): Promise<void> {
+  await mkdir(packageRoot, { recursive: true });
+  await writeJson(join(packageRoot, 'package.json'), {
+    name: 'safe-pkg',
+    version: '1.0.0',
+    type: 'module'
+  });
+  await writeFile(join(packageRoot, 'Button.svelte'), '<button class="pkg-button">Click</button>\n');
+  await writeFile(join(packageRoot, 'theme.css'), '.pkg-theme { color: red; }\n');
+}
+
+async function runCollectorBuild(root: string): Promise<string[]> {
+  vi.resetModules();
+  const { default: componentSourceCollector } = await import('./vite-plugin-component-source-collector.js');
+  const collector = await componentSourceCollector({ safePackages: ['safe-pkg'] });
+
+  await build({
+    configFile: false,
+    logLevel: 'silent',
+    publicDir: false,
+    resolve: {
+      preserveSymlinks: false
+    },
+    root,
+    plugins: [collector, svelteFixtureLoader()],
+    build: {
+      write: false,
+      rollupOptions: {
+        input: join(root, 'src', 'main.js')
+      }
+    }
+  });
+
+  const contents = await readFile(join(root, 'component-sources.css'), 'utf8');
+  return contents
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+describe('vite-plugin-component-source-collector', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+  });
+
+  afterEach(async () => {
+    vi.restoreAllMocks();
+
+    await Promise.all(
+      tempDirectories.splice(0).map((directory) =>
+        rm(directory, {
+          recursive: true,
+          force: true
+        })
+      )
     );
   });
 
-  it('canonicalizes linked package paths outside the project root', async () => {
-    const baseDirectory = await createTemporaryDirectory();
-    const appRoot = join(baseDirectory, 'app');
-    const outputFilePath = join(appRoot, 'component-sources.css');
-    const linkedPackageRoot = join(baseDirectory, 'packages', 'svelte-ag');
-    const sourceFilePath = join(linkedPackageRoot, 'dist', 'lib', 'components', 'dnd', 'DndDroppable.svelte');
+  it('collects safe package component and css sources from installed node_modules packages', async () => {
+    const root = await createProjectRoot();
+    await createSafePackage(join(root, 'node_modules', 'safe-pkg'));
 
-    await createFile(join(linkedPackageRoot, 'package.json'), JSON.stringify({ name: 'svelte-ag' }));
-    await createFile(sourceFilePath);
+    const lines = await runCollectorBuild(root);
 
-    const normalizedPath = await normalizeCollectedSourceFilePath(sourceFilePath, {
-      outputFilePath,
-      root: appRoot,
-      safePackages: ['svelte-ag']
-    });
-
-    expect(normalizedPath).toBe(
-      join(appRoot, 'node_modules', 'svelte-ag', 'dist', 'lib', 'components', 'dnd', 'DndDroppable.svelte')
-    );
+    expect(lines).toEqual([
+      "@source './node_modules/safe-pkg/Button.svelte';",
+      "@source './node_modules/safe-pkg/theme.css';"
+    ]);
   });
 
-  it('leaves project files unchanged even when the project matches a safe package name', async () => {
-    const baseDirectory = await createTemporaryDirectory();
-    const appRoot = join(baseDirectory, 'svelte-ag');
-    const outputFilePath = join(appRoot, 'component-sources.css');
-    const sourceFilePath = join(appRoot, 'src', 'lib', 'components', 'Button.svelte');
+  it('normalizes symlinked pnpm-style package sources back to node_modules paths', async () => {
+    const root = await createProjectRoot();
+    const linkedPackageRoot = await createTempDirectory('vite-plugin-component-source-linked-package-');
 
-    await createFile(join(appRoot, 'package.json'), JSON.stringify({ name: 'svelte-ag' }));
-    await createFile(sourceFilePath);
+    await createSafePackage(linkedPackageRoot);
+    await symlink(
+      linkedPackageRoot,
+      join(root, 'node_modules', 'safe-pkg'),
+      process.platform === 'win32' ? 'junction' : 'dir'
+    );
 
-    const normalizedPath = await normalizeCollectedSourceFilePath(sourceFilePath, {
-      outputFilePath,
-      root: appRoot,
-      safePackages: ['svelte-ag']
-    });
+    const lines = await runCollectorBuild(root);
 
-    expect(normalizedPath).toBe(sourceFilePath);
+    expect(lines).toEqual([
+      "@source './node_modules/safe-pkg/Button.svelte';",
+      "@source './node_modules/safe-pkg/theme.css';"
+    ]);
+    expect(lines.join('\n')).not.toContain(normalizePath(linkedPackageRoot));
   });
 });
