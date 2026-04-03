@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { mkdir, mkdtemp, readFile, rm, symlink, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, stat, symlink, unlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
@@ -178,6 +178,8 @@ describe('resolve-paths', () => {
     const watcher = await watchProjects({
       inputs: [join(root, 'tsconfig.json')]
     });
+    const utilsDistPath = join(root, 'dist', 'lib', 'utils.ts');
+    const utilsBefore = await stat(utilsDistPath);
 
     try {
       await writeFile(
@@ -197,6 +199,9 @@ describe('resolve-paths', () => {
           code: 'ENOENT'
         });
       });
+
+      const utilsAfter = await stat(utilsDistPath);
+      expect(utilsAfter.mtimeMs).toBe(utilsBefore.mtimeMs);
     } finally {
       watcher.close();
     }

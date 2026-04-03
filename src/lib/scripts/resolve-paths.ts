@@ -1,8 +1,8 @@
-import { cp, glob, mkdir, rm, stat } from 'node:fs/promises';
+import { cp, glob, mkdir, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { realpathSync, watch, type FSWatcher } from 'node:fs';
-import { basename, dirname, isAbsolute, relative, resolve } from 'node:path';
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { replaceTscAliasPaths } from 'tsc-alias';
+import { prepareSingleFileReplaceTscAliasPaths, replaceTscAliasPaths, type SingleFileReplacer } from 'tsc-alias';
 import { loadConfig, prepareConfig } from 'tsc-alias/dist/helpers/config.js';
 import { Output, TrieNode } from 'tsc-alias/dist/utils/index.js';
 import type { Alias } from 'tsc-alias/dist/interfaces.js';
@@ -53,6 +53,8 @@ interface CliOptions {
   inputs: string[];
   watchMode: boolean;
 }
+
+type ProjectUpdateResult = 'rebuilt' | 'synced';
 
 function formatPath(targetPath: string, cwd = process.cwd()): string {
   return relative(cwd, targetPath) || '.';
@@ -117,13 +119,22 @@ function normalizeAliasPrefix(alias: string): string {
   return alias.replace(/\/\*$/, '').replace(/\/+$/, '');
 }
 
+function normalizeExcludedAliases(excludedAliases: string[] = []): string[] {
+  return [...new Set(excludedAliases.map(normalizeAliasPrefix).filter(Boolean))];
+}
+
+function createTemporaryPath(rootDir: string, prefix: string): string {
+  return resolve(rootDir, `.${prefix}-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.tmp`);
+}
+
 function createSilentOutput(): Output {
   return new Output(false, false);
 }
 
 async function createFilteredAliasTrie(
   project: ResolvePathsProject,
-  excludedAliases: string[]
+  excludedAliases: string[],
+  outDir: string
 ): Promise<TrieNode<Alias> | undefined> {
   if (excludedAliases.length === 0) {
     return undefined;
@@ -146,16 +157,27 @@ async function createFilteredAliasTrie(
       inputGlob: REPLACEABLE_FILE_EXTENSIONS.inputGlob,
       outputCheck: [...REPLACEABLE_FILE_EXTENSIONS.outputCheck]
     },
-    outDir: project.distDir,
+    outDir,
     output
   });
 
   return TrieNode.buildAliasTrie(preparedConfig, filteredPaths);
 }
 
-async function resolveAliases(project: ResolvePathsProject, options: ResolvePathsOptions = {}): Promise<void> {
-  await replaceTscAliasPaths({
-    aliasTrie: await createFilteredAliasTrie(project, options.excludeAliases ?? []),
+function isReplaceableOutputFile(filePath: string): boolean {
+  const normalizedFilePath = filePath.toLowerCase();
+
+  return REPLACEABLE_FILE_EXTENSIONS.outputCheck.some((extension) =>
+    normalizedFilePath.endsWith(`.${extension.toLowerCase()}`)
+  );
+}
+
+async function createSingleFileAliasReplacer(
+  project: ResolvePathsProject,
+  excludedAliases: string[]
+): Promise<SingleFileReplacer> {
+  return prepareSingleFileReplaceTscAliasPaths({
+    aliasTrie: await createFilteredAliasTrie(project, excludedAliases, project.distDir),
     configFile: project.tsconfigPath,
     outDir: project.distDir,
     fileExtensions: {
@@ -165,24 +187,187 @@ async function resolveAliases(project: ResolvePathsProject, options: ResolvePath
   });
 }
 
-async function copyProjectSource(project: ResolvePathsProject): Promise<void> {
-  await rm(project.distDir, {
+async function resolveAliases(
+  project: ResolvePathsProject,
+  outDir: string,
+  options: ResolvePathsOptions = {}
+): Promise<void> {
+  await replaceTscAliasPaths({
+    aliasTrie: await createFilteredAliasTrie(project, options.excludeAliases ?? [], outDir),
+    configFile: project.tsconfigPath,
+    outDir,
+    fileExtensions: {
+      inputGlob: REPLACEABLE_FILE_EXTENSIONS.inputGlob,
+      outputCheck: [...REPLACEABLE_FILE_EXTENSIONS.outputCheck]
+    }
+  });
+}
+
+async function copyProjectSource(project: ResolvePathsProject, outDir: string): Promise<void> {
+  await rm(outDir, {
     force: true,
     recursive: true
   });
-  await mkdir(project.rootDir, { recursive: true });
-  await cp(project.srcDir, project.distDir, {
+  await mkdir(dirname(outDir), { recursive: true });
+  await cp(project.srcDir, outDir, {
     force: true,
     recursive: true
   });
 }
 
-export async function buildProject(project: ResolvePathsProject, options: ResolvePathsOptions = {}): Promise<void> {
-  await copyProjectSource(project);
-  await resolveAliases(project, {
-    ...options,
-    excludeAliases: [...new Set((options.excludeAliases ?? []).map(normalizeAliasPrefix).filter(Boolean))]
+async function collectProjectTree(rootDir: string, currentDir = rootDir): Promise<string[]> {
+  if (!(await pathExists(currentDir))) {
+    return [];
+  }
+
+  const entries = await readdir(currentDir, { withFileTypes: true });
+  const paths: string[] = [];
+
+  for (const entry of entries) {
+    const entryPath = join(currentDir, entry.name);
+    const relativePath = relative(rootDir, entryPath);
+
+    paths.push(relativePath);
+
+    if (entry.isDirectory()) {
+      paths.push(...(await collectProjectTree(rootDir, entryPath)));
+    }
+  }
+
+  return paths;
+}
+
+async function publishStagedProject(stageDir: string, distDir: string): Promise<void> {
+  const stagedPaths = await collectProjectTree(stageDir);
+  const stagedPathSet = new Set(stagedPaths);
+
+  for (const relativePath of stagedPaths
+    .filter((path) => path !== '')
+    .sort((left, right) => left.localeCompare(right))) {
+    const stagedPath = resolve(stageDir, relativePath);
+    const distPath = resolve(distDir, relativePath);
+    const stagedStats = await stat(stagedPath);
+
+    if (stagedStats.isDirectory()) {
+      await mkdir(distPath, { recursive: true });
+      continue;
+    }
+
+    await mkdir(dirname(distPath), { recursive: true });
+    await rename(stagedPath, distPath);
+  }
+
+  if (!(await pathExists(distDir))) {
+    return;
+  }
+
+  const distPaths = await collectProjectTree(distDir);
+
+  for (const relativePath of distPaths.sort((left, right) => right.length - left.length || right.localeCompare(left))) {
+    if (!stagedPathSet.has(relativePath)) {
+      await rm(resolve(distDir, relativePath), {
+        force: true,
+        recursive: true
+      });
+    }
+  }
+}
+
+async function resolveFileContents(
+  project: ResolvePathsProject,
+  distPath: string,
+  sourceContents: string,
+  excludedAliases: string[]
+): Promise<string> {
+  if (!isReplaceableOutputFile(distPath)) {
+    return sourceContents;
+  }
+
+  const resolveAliasesInFile = await createSingleFileAliasReplacer(project, excludedAliases);
+
+  return resolveAliasesInFile({
+    fileContents: sourceContents,
+    filePath: distPath
   });
+}
+
+async function publishFileAtomically(
+  project: ResolvePathsProject,
+  sourcePath: string,
+  distPath: string,
+  excludedAliases: string[]
+): Promise<void> {
+  const tempPath = createTemporaryPath(dirname(distPath), basename(distPath));
+
+  await mkdir(dirname(distPath), { recursive: true });
+
+  if (isReplaceableOutputFile(distPath)) {
+    const sourceContents = await readFile(sourcePath, 'utf8');
+    const resolvedContents = await resolveFileContents(project, distPath, sourceContents, excludedAliases);
+    await writeFile(tempPath, resolvedContents, 'utf8');
+  } else {
+    await cp(sourcePath, tempPath, { force: true });
+  }
+
+  await rename(tempPath, distPath);
+}
+
+async function syncProjectSourcePath(
+  project: ResolvePathsProject,
+  sourceRelativePath: string,
+  excludedAliases: string[]
+): Promise<ProjectUpdateResult> {
+  const sourcePath = resolve(project.srcDir, sourceRelativePath);
+  const normalizedRelativePath = relative(project.srcDir, sourcePath);
+
+  if (normalizedRelativePath.startsWith('..') || isAbsolute(normalizedRelativePath)) {
+    await buildProject(project, {
+      excludeAliases: excludedAliases
+    });
+    return 'rebuilt';
+  }
+
+  const distPath = resolve(project.distDir, normalizedRelativePath);
+
+  if (!(await pathExists(sourcePath))) {
+    await rm(distPath, {
+      force: true,
+      recursive: true
+    });
+    return 'synced';
+  }
+
+  const sourceStats = await stat(sourcePath);
+
+  if (!sourceStats.isFile()) {
+    await buildProject(project, {
+      excludeAliases: excludedAliases
+    });
+    return 'rebuilt';
+  }
+
+  await publishFileAtomically(project, sourcePath, distPath, excludedAliases);
+
+  return 'synced';
+}
+
+export async function buildProject(project: ResolvePathsProject, options: ResolvePathsOptions = {}): Promise<void> {
+  const excludedAliases = normalizeExcludedAliases(options.excludeAliases);
+  const stageDir = createTemporaryPath(project.rootDir, basename(project.distDir));
+
+  try {
+    await copyProjectSource(project, stageDir);
+    await resolveAliases(project, stageDir, {
+      ...options,
+      excludeAliases: excludedAliases
+    });
+    await publishStagedProject(stageDir, project.distDir);
+  } finally {
+    await rm(stageDir, {
+      force: true,
+      recursive: true
+    });
+  }
 }
 
 export async function findProjects(options: ResolvePathsOptions = {}): Promise<ResolvePathsProject[]> {
@@ -255,12 +440,15 @@ function createDebouncedProjectRunner(
   options: ResolvePathsOptions
 ): {
   close(): void;
-  schedule(reason: string): void;
+  schedule(reason: string, sourceRelativePath?: string): void;
 } {
   let closed = false;
   let activeBuild: Promise<void> | undefined;
   let pendingReason: string | undefined;
+  let pendingFullRebuild = false;
+  let pendingSourcePaths = new Set<string>();
   let timer: ReturnType<typeof setTimeout> | undefined;
+  const excludedAliases = normalizeExcludedAliases(options.excludeAliases);
 
   const run = async (): Promise<void> => {
     if (closed) {
@@ -272,11 +460,36 @@ function createDebouncedProjectRunner(
     }
 
     const reason = pendingReason ?? 'change';
+    const fullRebuild = pendingFullRebuild;
+    const sourcePaths = fullRebuild ? [] : [...pendingSourcePaths].sort((left, right) => left.localeCompare(right));
     pendingReason = undefined;
+    pendingFullRebuild = false;
+    pendingSourcePaths = new Set<string>();
 
     activeBuild = (async () => {
-      logInfo(`rebuilding ${formatPath(project.tsconfigPath, cwd)} after ${reason}`);
-      await buildProject(project, options);
+      if (fullRebuild || sourcePaths.length === 0) {
+        logInfo(`rebuilding ${formatPath(project.tsconfigPath, cwd)} after ${reason}`);
+        await buildProject(project, {
+          ...options,
+          excludeAliases: excludedAliases
+        });
+        logInfo(`watch updated ${formatPath(project.distDir, cwd)}`);
+        return;
+      }
+
+      logInfo(
+        `updating ${sourcePaths.length} changed path(s) in ${formatPath(project.tsconfigPath, cwd)} after ${reason}`
+      );
+
+      for (const sourcePath of sourcePaths) {
+        const result = await syncProjectSourcePath(project, sourcePath, excludedAliases);
+
+        if (result === 'rebuilt') {
+          logInfo(`watch updated ${formatPath(project.distDir, cwd)}`);
+          return;
+        }
+      }
+
       logInfo(`watch updated ${formatPath(project.distDir, cwd)}`);
     })();
 
@@ -300,12 +513,20 @@ function createDebouncedProjectRunner(
         timer = undefined;
       }
     },
-    schedule(reason: string) {
+    schedule(reason: string, sourceRelativePath?: string) {
       if (closed) {
         return;
       }
 
       pendingReason = reason;
+      if (sourceRelativePath) {
+        if (!pendingFullRebuild) {
+          pendingSourcePaths.add(sourceRelativePath);
+        }
+      } else {
+        pendingFullRebuild = true;
+        pendingSourcePaths.clear();
+      }
 
       if (timer) {
         clearTimeout(timer);
@@ -326,7 +547,7 @@ function watchProject(project: ResolvePathsProject, cwd: string, options: Resolv
 
   const sourceWatcher = watch(project.srcDir, { recursive: true }, (_eventType, fileName) => {
     const suffix = fileName ? ` (${fileName.toString()})` : '';
-    runner.schedule(`src change${suffix}`);
+    runner.schedule(`src change${suffix}`, fileName?.toString());
   });
   const configWatcher = watch(project.tsconfigPath, () => {
     runner.schedule('tsconfig change');
