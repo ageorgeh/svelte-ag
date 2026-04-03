@@ -62,7 +62,7 @@
     "sveltekit-superforms": "2.30.1",
     "tailwind-merge": "^3.5.0",
     "tailwind-variants": "^3.2.2",
-    "ts-ag": "^1.1.14",
+    "ts-ag": "^1.1.15",
     "tsc-alias": "^1.8.16",
     "valibot": "^1.3.1"
   },
