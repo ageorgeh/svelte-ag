@@ -30,6 +30,7 @@ function ensureDotRelative(filePath: string): string {
   if (filePath.startsWith('./')) return filePath;
   return `./${filePath}`;
 }
+
 async function touch(path: string) {
   const handle = await open(path, 'a');
   await handle.close();
@@ -109,10 +110,10 @@ export default async function componentSourceCollector(opts: Options = { safePac
       if (parentDirectory === currentDirectory) {
         return resolvedFilePath;
       }
-
       currentDirectory = parentDirectory;
     }
   }
+
   async function addPath(file: string) {
     if (!outputFilePath || file === '') return;
 
@@ -128,7 +129,6 @@ export default async function componentSourceCollector(opts: Options = { safePac
     const relativeFilePath = toPosixPath(relative(dirname(outputFilePath), normalizedFilePath));
     if (normalizedFilePath === outputFilePath || relativeFilePath === outFileName) return;
 
-    // Dont add itself
     componentFiles.add(ensureDotRelative(relativeFilePath));
   }
 
@@ -136,7 +136,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
     if (initialTransformTimer) clearTimeout(initialTransformTimer);
     initialTransformTimer = setTimeout(() => {
       if (!initialTransformDone) {
-        writeOutFile();
+        void writeOutFile();
         initialTransformDone = true;
       }
     }, 1000);
@@ -144,7 +144,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
 
   const writeOutFile = async () => {
     const lines = Array.from(componentFiles)
-      .map((d) => `@source '${d}';`)
+      .map((filePath) => `@source '${filePath}';`)
       .sort();
 
     if (outputFilePath) {
@@ -153,15 +153,9 @@ export default async function componentSourceCollector(opts: Options = { safePac
     }
   };
 
-  // ---- plugin ---- //
-
   return {
     name: 'vite-plugin-component-source-collector',
-    enforce: 'pre', // i want to see comments
-
-    /**
-     * Setup. Add exisitng files to internal state if dev
-     */
+    enforce: 'pre' as const,
     async configResolved(resolved) {
       config = resolved;
       outputFilePath = resolve(config.root, outFileName);
@@ -171,13 +165,13 @@ export default async function componentSourceCollector(opts: Options = { safePac
         if (await exists(join(current, 'package.json'))) {
           nodeModulesPath = join(current, 'node_modules');
           break;
-        } else current = dirname(current);
+        }
+        current = dirname(current);
       }
 
       console.log('tailwind-sources:configResolved: Command is', config.command);
 
       await touch(outputFilePath);
-
       if (config.command === 'build' && firstRound) {
         console.log('tailwind-sources: Clearing files list');
         componentFiles.clear();
@@ -217,14 +211,15 @@ export default async function componentSourceCollector(opts: Options = { safePac
         'bun.lockb',
         'bun.lock',
         'npm-shrinkwrap.json',
-        // pnpm install-state changes:
         'node_modules/.modules.yaml'
-      ].map((p) => join(config.root!, p));
+      ].map((path) => join(config.root, path));
+
       server.watcher.add(lockFiles);
       const onChange = async (file: string) => {
         if (!lockFiles.includes(file)) return;
         componentFiles.clear();
       };
+
       server.watcher.on('change', onChange);
       server.watcher.on('add', onChange);
     },
@@ -239,21 +234,18 @@ export default async function componentSourceCollector(opts: Options = { safePac
       // Adds all imports from css files
       if (id.includes('css') && code.includes('@import')) {
         const matches = code.matchAll(importRegex);
-
         for (const match of matches) {
-          // console.log('MATching', match);
           try {
             const resolved = await this.resolve(match[1], id);
             if (resolved) {
               await addPath(resolved.id);
             }
           } catch {
-            // Cant resolve: dont add
+            // Ignore unresolved CSS imports while building the Tailwind source list.
           }
         }
       }
 
-      // Adds all other files with the classRegex
       if (shouldAdd(code, id)) {
         await addPath(id);
       }
@@ -262,16 +254,13 @@ export default async function componentSourceCollector(opts: Options = { safePac
         scheduleInitialWrite();
       }
     },
-
-    async handleHotUpdate(_ctx) {
+    async handleHotUpdate() {
       await writeOutFile();
     },
-
     async buildEnd() {
       console.log('tailwind-sources:buildEnd');
       await writeOutFile();
     },
-
     async generateBundle() {
       console.log('tailwind-sources:generateBundle');
       await writeOutFile();
