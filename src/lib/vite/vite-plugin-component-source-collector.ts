@@ -66,7 +66,7 @@ async function readPackageNameAt(directory: string): Promise<string | null> {
 export default async function componentSourceCollector(opts: Options = { safePackages: [] }): Promise<Plugin> {
   // constants
   const outFileName = opts.outputFile ?? 'component-sources.css';
-  const classAttributeRegex = /\bclass\s*=/;
+  const classAttributeRegex = /(?:^|[^\w-])(?:className|class)\s*(?:=|:)\s*/;
   const importRegex = /@import\s+['"]([^'"]+)['"]/g;
 
   // state
