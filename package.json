@@ -82,7 +82,7 @@
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^24.12.2",
     "@typescript/native-preview": "7.0.0-dev.20260401.1",
-    "eslint": "^10.1.0",
+    "eslint": "^10.2.0",
     "eslint-plugin-better-tailwindcss": "^4.3.2",
     "eslint-plugin-svelte": "^3.17.0",
     "globals": "^17.4.0",
