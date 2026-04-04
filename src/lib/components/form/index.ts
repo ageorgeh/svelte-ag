@@ -24,19 +24,6 @@ export * from './form-message.svelte';
 import { Control } from 'formsnap';
 
 export {
-  Root,
-  Field,
-  FieldFull,
-  Control,
-  Label,
-  Button,
-  Message,
-  FieldErrors,
-  Description,
-  Fieldset,
-  Legend,
-  ElementField,
-  //
   Root as FormRoot,
   Field as FormField,
   FieldFull as FormFieldFull,

@@ -13,7 +13,7 @@
   type Props = {
     width?: string;
     height?: string;
-    code: string | Promise<string>;
+    code: string;
     parameters?: readonly Parameter[];
     forceAnimation?: boolean;
     children?: Snippet;
@@ -28,6 +28,11 @@
     children
   }: Props = $props();
 
+  type Config = {
+    gl: WebGL2RenderingContext;
+    shaderProgram: WebGLProgram;
+  };
+
   const rerenderEveryFrame = $derived(parameters.some((parameter) => parameter.value === 'time'));
 
   const maxTextureSize = 4096;
@@ -35,83 +40,74 @@
   let requestRender = $state<() => void>(() => {});
   let canvasElement = $state<HTMLCanvasElement | null>(null);
 
-  let canRender = $state(typeof WebGL2RenderingContext !== 'undefined');
+  let canRender = $derived(typeof WebGL2RenderingContext !== 'undefined');
+  let config = $state<Config>();
 
-  type Config = {
-    gl: WebGL2RenderingContext;
-    shaderProgram: WebGLProgram;
-  };
-
-  const configPromise = new Promise<Config>((resolve) =>
-    onMount(async () => {
-      try {
-        if (!canRender) return;
-
-        if (canvasElement === null) return;
-        const gl = canvasElement.getContext('webgl2');
-        if (gl === null) throw new Error('Failed to get WebGL2 context.');
-        const shaderProgram = gl.createProgram();
-        if (shaderProgram === null) throw new Error('Failed to create WebGL shader program.');
-
-        const loadShader = (source: string, type: number) => {
-          const shader = gl.createShader(type);
-          if (shader === null) throw new Error('Failed to create texture.');
-          gl.shaderSource(shader, source);
-          gl.compileShader(shader);
-
-          if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-            throw new Error(`An error occurred compiling the shaders: ${gl.getShaderInfoLog(shader)}`);
-
-          gl.attachShader(shaderProgram, shader);
-        };
-
-        // Simple identity function
-        const vertexShaderSource = `#version 300 es
+  onMount(async () => {
+    console.log('MOUNTED WEBGL');
+    try {
+      if (!canRender) return;
+      if (canvasElement === null) return;
+      const gl = canvasElement.getContext('webgl2');
+      if (gl === null) throw new Error('Failed to get WebGL2 context.');
+      const shaderProgram = gl.createProgram();
+      if (shaderProgram === null) throw new Error('Failed to create WebGL shader program.');
+      const loadShader = (source: string, type: number) => {
+        const shader = gl.createShader(type);
+        if (shader === null) throw new Error('Failed to create texture.');
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+          throw new Error(`An error occurred compiling the shaders: ${gl.getShaderInfoLog(shader)}`);
+        gl.attachShader(shaderProgram, shader);
+      };
+      // Simple identity function
+      const vertexShaderSource = `#version 300 es
           in vec4 pos;
           void main() {
               gl_Position = pos;
           }
         `;
-        loadShader(vertexShaderSource, gl.VERTEX_SHADER);
-        loadShader(await code, gl.FRAGMENT_SHADER);
-
-        gl.linkProgram(shaderProgram);
-        gl.useProgram(shaderProgram);
-
-        // Create a rectangle covering the canvas
-        const vertexAttributePosition = gl.getAttribLocation(shaderProgram, 'pos');
-        const positionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        const positions = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-        const numComponents = 2;
-        const type = gl.FLOAT;
-        const normalize = false;
-        const stride = 0;
-        const offset = 0;
-        gl.vertexAttribPointer(vertexAttributePosition, numComponents, type, normalize, stride, offset);
-        gl.enableVertexAttribArray(vertexAttributePosition);
-
-        resolve({ gl, shaderProgram });
-      } catch (error) {
-        console.warn(error);
-        canRender = false;
-      }
-    })
-  );
+      loadShader(vertexShaderSource, gl.VERTEX_SHADER);
+      loadShader(code, gl.FRAGMENT_SHADER);
+      gl.linkProgram(shaderProgram);
+      gl.useProgram(shaderProgram);
+      // Create a rectangle covering the canvas
+      const vertexAttributePosition = gl.getAttribLocation(shaderProgram, 'pos');
+      const positionBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      const positions = [1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, -1.0];
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+      const numComponents = 2;
+      const type = gl.FLOAT;
+      const normalize = false;
+      const stride = 0;
+      const offset = 0;
+      gl.vertexAttribPointer(vertexAttributePosition, numComponents, type, normalize, stride, offset);
+      gl.enableVertexAttribArray(vertexAttributePosition);
+      config = { gl, shaderProgram };
+      console.log('Webgl sucess');
+    } catch (error) {
+      console.warn('WebGlShader.svelte: ', error);
+      canRender = false;
+    }
+  });
 
   async function render() {
-    const { gl } = await configPromise;
+    if (!config) return;
+    const { gl } = config;
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
   async function updateCanvasSize(canvasWidth: number, canvasHeight: number) {
-    const { gl } = await configPromise;
+    if (!config) return;
+    const { gl } = config;
     gl.viewport(0, 0, canvasWidth, canvasHeight);
   }
 
   async function updateContainerSize(containerWidth: number, containerHeight: number) {
-    const { gl, shaderProgram } = await configPromise;
+    if (!config) return;
+    const { gl, shaderProgram } = config;
 
     const resolutionParam = parameters.find(
       (parameter): parameter is BuiltinParameter => parameter.value === 'resolution'
@@ -126,7 +122,8 @@
   }
 
   async function updateOffset(offsetX: number, offsetY: number) {
-    const { gl, shaderProgram } = await configPromise;
+    if (!config) return;
+    const { gl, shaderProgram } = config;
 
     const offsetParam = parameters.find((parameter): parameter is BuiltinParameter => parameter.value === 'offset');
     if (offsetParam !== undefined) {
@@ -139,7 +136,8 @@
   }
 
   async function updateScale(scale: number) {
-    const { gl, shaderProgram } = await configPromise;
+    if (!config) return;
+    const { gl, shaderProgram } = config;
 
     const scaleParam = parameters.find((parameter): parameter is BuiltinParameter => parameter.value === 'scale');
     if (scaleParam !== undefined) {
@@ -152,7 +150,8 @@
   }
 
   async function updateTime(time: number) {
-    const { gl, shaderProgram } = await configPromise;
+    if (!config) return;
+    const { gl, shaderProgram } = config;
 
     const timeParam = parameters.find((parameter): parameter is BuiltinParameter => parameter.value === 'time');
     if (timeParam !== undefined) {
@@ -171,7 +170,8 @@
   }
 
   async function updateParameters(nextParameters: readonly Parameter[]) {
-    const { gl, shaderProgram } = await configPromise;
+    if (!config) return;
+    const { gl, shaderProgram } = config;
 
     for (const parameter of nextParameters) {
       if (parameter.value === undefined) throw new Error('One or more parameters had an undefined value field.');

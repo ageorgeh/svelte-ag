@@ -24,29 +24,6 @@ import Trigger from './sidebar-trigger.svelte';
 import Root from './sidebar.svelte';
 
 export {
-  Content,
-  Footer,
-  Group,
-  GroupAction,
-  GroupContent,
-  GroupLabel,
-  Header,
-  Input,
-  Inset,
-  Menu,
-  MenuAction,
-  MenuBadge,
-  MenuButton,
-  MenuItem,
-  MenuSkeleton,
-  MenuSub,
-  MenuSubButton,
-  MenuSubItem,
-  Provider,
-  Rail,
-  Root,
-  Separator,
-  //
   Root as Sidebar,
   Content as SidebarContent,
   Footer as SidebarFooter,
@@ -70,6 +47,5 @@ export {
   Rail as SidebarRail,
   Separator as SidebarSeparator,
   Trigger as SidebarTrigger,
-  Trigger,
   useSidebar
 };

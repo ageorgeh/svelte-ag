@@ -6,13 +6,6 @@ import Next from './carousel-next.svelte';
 import Dots from './carousel-dots.svelte';
 
 export {
-  Root,
-  Content,
-  Item,
-  Previous,
-  Next,
-  Dots,
-  //
   Root as Carousel,
   Content as CarouselContent,
   Item as CarouselItem,

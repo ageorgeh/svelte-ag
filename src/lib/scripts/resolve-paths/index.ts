@@ -6,10 +6,12 @@ import { prepareSingleFileReplaceTscAliasPaths, replaceTscAliasPaths, type Singl
 import { loadConfig, prepareConfig } from 'tsc-alias/dist/helpers/config.js';
 import { Output, TrieNode } from 'tsc-alias/dist/utils/index.js';
 import type { Alias } from 'tsc-alias/dist/interfaces.js';
+import { exists } from 'ts-ag';
+import { logError, logInfo } from './log.js';
 
 const DEFAULT_INPUTS = ['tsconfig.json'];
 const GLOB_EXCLUDES = ['**/node_modules/**', '**/.git/**', '**/.svelte-kit/**', '**/dist/**'];
-const LABEL = '[resolve-paths]';
+const TEMPORARY_WATCH_FILE_SUFFIXES = ['~', '.swp', '.swo', '.tmp', '.temp', '.bak', '.orig'] as const;
 const REPLACEABLE_FILE_EXTENSIONS = {
   inputGlob: '{ts,tsx,js,jsx,mjs,cjs,svelte,d.{mts,cts,ts,tsx}}',
   outputCheck: [
@@ -60,31 +62,79 @@ function formatPath(targetPath: string, cwd = process.cwd()): string {
   return relative(cwd, targetPath) || '.';
 }
 
-function logInfo(message: string): void {
-  console.log(`${LABEL} ${message}`);
+function normalizeWatchPathSeparators(filePath: string): string {
+  return filePath.replaceAll('\\', '/');
 }
 
-function logError(message: string): void {
-  console.error(`${LABEL} ${message}`);
+function isTemporaryWatchPath(sourceRelativePath: string): boolean {
+  const normalizedSourceRelativePath = normalizeWatchPathSeparators(sourceRelativePath);
+  const fileName = basename(normalizedSourceRelativePath);
+
+  return (
+    TEMPORARY_WATCH_FILE_SUFFIXES.some((suffix) => fileName.endsWith(suffix)) ||
+    fileName.startsWith('.#') ||
+    (fileName.startsWith('#') && fileName.endsWith('#'))
+  );
 }
 
-async function pathExists(targetPath: string): Promise<boolean> {
-  try {
-    await stat(targetPath);
-    return true;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      return false;
+function getCanonicalWatchPathCandidates(sourceRelativePath: string): string[] {
+  const normalizedSourceRelativePath = normalizeWatchPathSeparators(sourceRelativePath);
+  const fileName = basename(normalizedSourceRelativePath);
+  const parentDirectory = dirname(normalizedSourceRelativePath);
+  const parentPrefix = parentDirectory === '.' ? '' : `${parentDirectory}/`;
+  const canonicalFileNames = new Set<string>();
+
+  if (fileName.endsWith('~') && fileName.length > 1) {
+    canonicalFileNames.add(fileName.slice(0, -1));
+  }
+
+  for (const suffix of TEMPORARY_WATCH_FILE_SUFFIXES.filter((value) => value !== '~')) {
+    if (fileName.endsWith(suffix) && fileName.length > suffix.length) {
+      canonicalFileNames.add(fileName.slice(0, -suffix.length));
+    }
+  }
+
+  if (fileName.startsWith('.#') && fileName.length > 2) {
+    canonicalFileNames.add(fileName.slice(2));
+  }
+
+  if (fileName.startsWith('#') && fileName.endsWith('#') && fileName.length > 2) {
+    canonicalFileNames.add(fileName.slice(1, -1));
+  }
+
+  return [...canonicalFileNames].map((candidate) => `${parentPrefix}${candidate}`);
+}
+
+async function resolveWatchedSourcePath(
+  project: ResolvePathsProject,
+  sourceRelativePath: string
+): Promise<string | undefined> {
+  const normalizedSourceRelativePath = normalizeWatchPathSeparators(sourceRelativePath);
+  const temporaryPath = isTemporaryWatchPath(normalizedSourceRelativePath);
+  const candidates = temporaryPath
+    ? [...getCanonicalWatchPathCandidates(normalizedSourceRelativePath), normalizedSourceRelativePath]
+    : [normalizedSourceRelativePath, ...getCanonicalWatchPathCandidates(normalizedSourceRelativePath)];
+
+  for (const candidate of [...new Set(candidates)]) {
+    const sourcePath = resolve(project.srcDir, candidate);
+    const normalizedRelativePath = relative(project.srcDir, sourcePath);
+
+    if (normalizedRelativePath.startsWith('..') || isAbsolute(normalizedRelativePath)) {
+      continue;
     }
 
-    throw error;
+    if (await exists(sourcePath)) {
+      return normalizeWatchPathSeparators(normalizedRelativePath);
+    }
   }
+
+  return temporaryPath ? undefined : normalizedSourceRelativePath;
 }
 
 async function resolveDirectInput(input: string, cwd: string): Promise<string[]> {
   const absoluteInputPath = isAbsolute(input) ? input : resolve(cwd, input);
 
-  if (!(await pathExists(absoluteInputPath))) {
+  if (!(await exists(absoluteInputPath))) {
     return [];
   }
 
@@ -92,7 +142,7 @@ async function resolveDirectInput(input: string, cwd: string): Promise<string[]>
 
   if (inputStats.isDirectory()) {
     const nestedTsconfigPath = resolve(absoluteInputPath, 'tsconfig.json');
-    return (await pathExists(nestedTsconfigPath)) ? [nestedTsconfigPath] : [];
+    return (await exists(nestedTsconfigPath)) ? [nestedTsconfigPath] : [];
   }
 
   return [absoluteInputPath];
@@ -216,7 +266,7 @@ async function copyProjectSource(project: ResolvePathsProject, outDir: string): 
 }
 
 async function collectProjectTree(rootDir: string, currentDir = rootDir): Promise<string[]> {
-  if (!(await pathExists(currentDir))) {
+  if (!(await exists(currentDir))) {
     return [];
   }
 
@@ -257,7 +307,7 @@ async function publishStagedProject(stageDir: string, distDir: string): Promise<
     await rename(stagedPath, distPath);
   }
 
-  if (!(await pathExists(distDir))) {
+  if (!(await exists(distDir))) {
     return;
   }
 
@@ -329,7 +379,7 @@ async function syncProjectSourcePath(
 
   const distPath = resolve(project.distDir, normalizedRelativePath);
 
-  if (!(await pathExists(sourcePath))) {
+  if (!(await exists(sourcePath))) {
     await rm(distPath, {
       force: true,
       recursive: true
@@ -398,7 +448,7 @@ export async function findProjects(options: ResolvePathsOptions = {}): Promise<R
         const rootDir = dirname(tsconfigPath);
         const srcDir = resolve(rootDir, 'src');
 
-        if (!(await pathExists(srcDir))) {
+        if (!(await exists(srcDir))) {
           throw new Error(`Missing src directory for ${formatPath(tsconfigPath, cwd)} at ${formatPath(srcDir, cwd)}`);
         }
 
@@ -477,11 +527,26 @@ function createDebouncedProjectRunner(
         return;
       }
 
-      logInfo(
-        `updating ${sourcePaths.length} changed path(s) in ${formatPath(project.tsconfigPath, cwd)} after ${reason}`
-      );
+      const resolvedSourcePaths = new Set<string>();
 
       for (const sourcePath of sourcePaths) {
+        const resolvedSourcePath = await resolveWatchedSourcePath(project, sourcePath);
+
+        if (resolvedSourcePath) {
+          resolvedSourcePaths.add(resolvedSourcePath);
+        }
+      }
+
+      if (resolvedSourcePaths.size === 0) {
+        logInfo(`ignoring temporary watch path(s) in ${formatPath(project.tsconfigPath, cwd)} after ${reason}`);
+        return;
+      }
+
+      logInfo(
+        `updating ${resolvedSourcePaths.size} changed path(s) in ${formatPath(project.tsconfigPath, cwd)} after ${reason}`
+      );
+
+      for (const sourcePath of [...resolvedSourcePaths].sort((left, right) => left.localeCompare(right))) {
         const result = await syncProjectSourcePath(project, sourcePath, excludedAliases);
 
         if (result === 'rebuilt') {
@@ -546,8 +611,7 @@ function watchProject(project: ResolvePathsProject, cwd: string, options: Resolv
   const runner = createDebouncedProjectRunner(project, cwd, options);
 
   const sourceWatcher = watch(project.srcDir, { recursive: true }, (_eventType, fileName) => {
-    const suffix = fileName ? ` (${fileName.toString()})` : '';
-    runner.schedule(`src change${suffix}`, fileName?.toString());
+    runner.schedule('src change', fileName?.toString());
   });
   const configWatcher = watch(project.tsconfigPath, () => {
     runner.schedule('tsconfig change');

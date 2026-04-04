@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
 
-import { buildProjects, isDirectExecution, watchProjects } from './resolve-paths.js';
+import { buildProjects, isDirectExecution, watchProjects } from './index.js';
 
 const tempDirectories: string[] = [];
 
@@ -202,6 +202,30 @@ describe('resolve-paths', () => {
 
       const utilsAfter = await stat(utilsDistPath);
       expect(utilsAfter.mtimeMs).toBe(utilsBefore.mtimeMs);
+    } finally {
+      watcher.close();
+    }
+  });
+
+  it('ignores temporary backup files reported by the watcher', async () => {
+    const root = await createTempDirectory('resolve-paths-watch-temp-');
+    await createProject(root);
+
+    const watcher = await watchProjects({
+      inputs: [join(root, 'tsconfig.json')]
+    });
+
+    try {
+      await writeFile(join(root, 'src', 'index.ts~'), "import { answer } from '$lib/utils';\n");
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      await expect(readFile(join(root, 'dist', 'index.ts~'), 'utf8')).rejects.toMatchObject({
+        code: 'ENOENT'
+      });
+
+      const indexSource = await readFile(join(root, 'dist', 'index.ts'), 'utf8');
+      expect(indexSource).toContain("from './lib/utils'");
+      expect(indexSource).not.toContain('$lib/utils');
     } finally {
       watcher.close();
     }

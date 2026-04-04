@@ -1,4 +1,5 @@
-import { superForm, defaults, setError, setMessage, type SuperForm, type SuperValidated } from 'sveltekit-superforms';
+import { superForm, defaults, setError, setMessage } from 'sveltekit-superforms';
+import type { SuperForm, SuperValidated } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type {
   ApiRequestFunction,
