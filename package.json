@@ -19,9 +19,6 @@
     "./styles/*": "./dist/styles/*",
     "./package.json": "./package.json"
   },
-  "bin": {
-    "resolve-paths": "dist/scripts/resolve-paths/index.js"
-  },
   "files": [
     "./src/lib",
     "./dist"
