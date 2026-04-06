@@ -29,6 +29,9 @@ jobs:
       - name: build
         run: pnpm build
 
+      - name: check
+        run: pnpm check
+
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 60

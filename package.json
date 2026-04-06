@@ -24,9 +24,10 @@
     "./dist"
   ],
   "scripts": {
-    "prebuild": "svelte-kit sync && svelte-check --fail-on-warnings",
+    "prebuild": "svelte-kit sync",
     "build": "svelte-package",
     "postbuild": "tsx scripts/bundle-public-dts.ts && pnpm check:base-export",
+    "check": "svelte-check --fail-on-warnings",
     "check:base-export": "tsx scripts/check-base-export.ts",
     "dev": "vite dev",
     "fmt": "prettier . --write",

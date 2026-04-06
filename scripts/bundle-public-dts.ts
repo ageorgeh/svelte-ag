@@ -9,7 +9,7 @@ import type { PackageJson } from 'type-fest';
 const projectRoot = process.cwd();
 
 // Add packages here when you want their public types embedded into your shipped declarations.
-const INLINE_TYPE_PACKAGES = new Set(['ts-ag', '@smithy/types']);
+const INLINE_TYPE_PACKAGES = new Set([]);
 
 async function main(): Promise<void> {
   const packageJson = await readPackageJson(path.resolve(projectRoot, 'package.json'));
