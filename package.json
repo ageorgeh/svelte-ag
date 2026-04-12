@@ -70,7 +70,7 @@
     "@lucide/svelte": "^1.8.0",
     "@playwright/test": "1.58.2",
     "@rollup/plugin-typescript": "^12.3.0",
-    "@sveltejs/kit": "^2.56.1",
+    "@sveltejs/kit": "^2.57.1",
     "@sveltejs/package": "^2.5.7",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@tailwindcss/typography": "^0.5.19",
