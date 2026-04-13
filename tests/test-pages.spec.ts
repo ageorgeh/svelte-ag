@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import type { Page, TestInfo } from '@playwright/test';
+import { sleep } from 'radash';
 
 test.beforeEach(async ({ page }) => {
   /** Bind the console to the Playwright test runner, rather than the browser */
@@ -30,6 +31,7 @@ async function assertScreenshot(page: Page, info: TestInfo, name: string, api: '
 
   const fileName = `${name}-${api}${unsupportedString}${mobileString}${numberString}.png`;
 
+  await sleep(1000);
   await expect.soft(page).toHaveScreenshot(fileName, { maxDiffPixelRatio: 0.01 });
 }
 
