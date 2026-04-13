@@ -23,7 +23,10 @@ export default defineConfig({
         {
           name: 'Firefox <No WebGPU>',
           use: {
-            ...devices['Desktop Firefox']
+            ...devices['Desktop Firefox'],
+            firefoxUserPrefs: {
+              'dom.webgpu.enabled': false
+            }
           }
         },
         {
@@ -66,7 +69,7 @@ export default defineConfig({
         //       ]
         //     }
         //   }
-        // }
+        // },
         {
           name: 'WebKit <No WebGPU>',
           use: { ...devices['Desktop Safari'] }

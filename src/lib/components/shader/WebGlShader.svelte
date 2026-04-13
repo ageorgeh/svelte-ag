@@ -44,7 +44,6 @@
   let config = $state<Config>();
 
   onMount(async () => {
-    console.log('MOUNTED WEBGL');
     try {
       if (!canRender) return;
       if (canvasElement === null) return;
@@ -86,7 +85,6 @@
       gl.vertexAttribPointer(vertexAttributePosition, numComponents, type, normalize, stride, offset);
       gl.enableVertexAttribArray(vertexAttributePosition);
       config = { gl, shaderProgram };
-      console.log('Webgl sucess');
     } catch (error) {
       console.warn('WebGlShader.svelte: ', error);
       canRender = false;
