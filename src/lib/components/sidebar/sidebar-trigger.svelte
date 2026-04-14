@@ -22,7 +22,6 @@
   type="button"
   onclick={(e) => {
     onclick?.(e);
-    console.log('TOggling', side);
     sidebar.toggle(side);
   }}
   data-sidebar="trigger"
