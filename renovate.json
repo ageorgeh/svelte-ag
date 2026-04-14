@@ -9,8 +9,11 @@
   "dependencyDashboard": true,
   "separateMajorMinor": true,
   "separateMinorPatch": false,
-  "lockFileMaintenance": { "enabled": true, "schedule": ["before 4am on monday"] },
+  "lockFileMaintenance": { "enabled": false },
   "packageRules": [
+    { "matchUpdateTypes": ["minor", "patch", "digest"], "groupName": "non-major dependencies" },
+    { "matchManagers": ["npm"], "matchDepTypes": ["engines"], "enabled": false },
+    { "matchPackageNames": ["playwright", "@playwright/test"], "groupName": null },
     {
       "matchDepTypes": ["peerDependencies"],
       "rangeStrategy": "widen"
