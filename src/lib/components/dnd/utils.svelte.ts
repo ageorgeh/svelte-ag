@@ -1,8 +1,8 @@
-import { KeyboardSensor, PointerSensor } from '@dnd-kit-svelte/svelte';
-import { RestrictToWindowEdges } from '@dnd-kit-svelte/svelte/modifiers';
+// import { KeyboardSensor, PointerSensor } from '@dnd-kit-svelte/svelte';
+// import { RestrictToWindowEdges } from '@dnd-kit-svelte/svelte/modifiers';
 
-export const sensors = [KeyboardSensor, PointerSensor];
-export const modifiers = [RestrictToWindowEdges];
+// export const sensors = [KeyboardSensor, PointerSensor];
+// export const modifiers = [RestrictToWindowEdges];
 
 /**
  * Finds an item recursively through the dnd.items list and each item's children
@@ -11,6 +11,7 @@ export function findItem<T extends { id: string; children?: T[] }>(
   id: string | number,
   items: T[]
 ): { item: T; list: T[]; index: number } | undefined {
+  // console.log('findItem: ', id, items);
   for (let index = 0; index < items.length; index++) {
     const item = items[index];
 

@@ -1,49 +1,48 @@
 <script lang="ts" module>
-  import { getContext, setContext, type Snippet } from 'svelte';
+  import { createContext, type Snippet } from 'svelte';
 
   export type SortableItemChildProps = {
     isDragging: boolean;
     isOverlay: boolean;
+    sortable?: ReturnType<typeof createSortable>;
   };
 
-  export type DndSortableItemProps = UseSortableInput &
-    HTMLDivAttributes & {
-      child: Snippet<[SortableItemChildProps]>;
-    };
-
-  const itemSymbolKey = 'sortable-item';
+  export type DndSortableItemProps = CreateSortableInput & {
+    child: Snippet<[SortableItemChildProps]>;
+  };
 
   export type ItemContext = {
-    isDragging: ReturnType<typeof useSortable>['isDragging'];
-    handleRef: Attachment<Element>;
+    isDragging: ReturnType<typeof createSortable>['isDragging'];
+    attachHandle: ReturnType<typeof createSortable>['attachHandle'];
   };
 
-  export function setItemContext(item: ItemContext) {
-    setContext(Symbol.for(itemSymbolKey), item);
-  }
-
-  export function getItemContext(): ItemContext {
-    return getContext(Symbol.for(itemSymbolKey));
-  }
+  export const [getItem, setItem] = createContext<ItemContext>();
 </script>
 
 <script lang="ts">
-  import { useSortable, type UseSortableInput } from '@dnd-kit-svelte/svelte/sortable';
-  import type { HTMLDivAttributes } from '$utils/bits.js';
-  import { cn } from '$utils/utils.js';
-  import type { Attachment } from 'svelte/attachments';
+  import { createSortable, type CreateSortableInput } from '@dnd-kit/svelte/sortable';
 
-  let { class: className, child, ...rest }: DndSortableItemProps = $props();
+  let { id, index, child, ...rest }: DndSortableItemProps = $props();
 
-  // svelte-ignore state_referenced_locally
-  const { ref, handleRef, isDragging } = useSortable({ ...rest, feedback: 'move' });
+  const sortable = createSortable({
+    get id() {
+      return id;
+    },
+    transition: { idle: true },
+    get index() {
+      return index;
+    },
+    ...rest
+  });
 
-  setItemContext({ handleRef, isDragging });
+  setItem({
+    attachHandle: sortable.attachHandle,
+    isDragging: sortable.isDragging
+  });
 </script>
 
-<div class={cn('relative', className)} {@attach ref}>
-  {@render child({
-    isDragging: isDragging.current,
-    isOverlay: false
-  })}
-</div>
+{@render child({
+  sortable,
+  isDragging: sortable.isDragging,
+  isOverlay: false
+})}

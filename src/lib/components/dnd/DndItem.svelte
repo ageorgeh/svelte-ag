@@ -1,44 +1,60 @@
+<!--
+@component
+Draggable item. Provide a child to be rendered and modify behaviour based on 
+the props provided to the child. 
+You MUST @attach for it to work 
+
+Usage: 
+```svelte
+<DndItem id={id}>
+  {#snippet child(props)}
+   <div
+    bind:this={
+      () => (props.isOverlay || props.isDragging ? null : listItems[item.id]),
+      (v) => {
+        if (props.isOverlay || props.isDragging) listItems[item.id] = null;
+        else listItems[item.id] = v;
+      }
+    }
+    {@attach props.draggable?.attach}
+  >
+  </div> 
+  {/snippet}
+</DndItem>
+```
+-->
+
 <script module lang="ts">
   export type DndItemChildProps = {
     isDragging: boolean;
     isOverlay: boolean;
+    draggable?: ReturnType<typeof createDraggable>;
   };
 
-  export type DndItemProps = HTMLDivAttributes &
-    UseDraggableInput & {
-      child: Snippet<[DndItemChildProps]>;
-    };
+  export type DndItemProps = CreateDraggableInput & {
+    child: Snippet<[DndItemChildProps]>;
+  };
 </script>
 
 <script lang="ts">
-  /**
-   * This component is a draggable element.
-   * It places the necessary attributes on the div for tracking it.
-   * It styles the position of the div while its being dragged.
-   * Everything else about it needs to be done by the consumer
-   *
-   * It can either facilitate a drag handle with the item context
-   * or it can be draggable itself
-   */
-  import { cn, type HTMLDivAttributes } from '$utils';
-  import { useDraggable, type UseDraggableInput } from '@dnd-kit-svelte/svelte';
-  import { setItemContext } from './DndSortableItem.svelte';
+  import { setItem } from './DndSortableItem.svelte';
   import type { Snippet } from 'svelte';
+  import { createDraggable, type CreateDraggableInput } from '@dnd-kit/svelte';
 
-  let { child, class: className, style: styleName, ...rest }: DndItemProps = $props();
+  let { id, child, ...rest }: DndItemProps = $props();
 
-  // svelte-ignore state_referenced_locally
-  const { isDragging, ref, handleRef } = useDraggable({
+  const draggable = createDraggable({
+    get id() {
+      return id;
+    },
     ...rest
   });
 
   // These are used by the drag handle
-  setItemContext({
-    isDragging,
-    handleRef
+  setItem({
+    attachHandle: draggable.attachHandle,
+    isDragging: draggable.isDragging
   });
 </script>
 
-<div class={cn('relative', className)} style={styleName} {@attach ref}>
-  {@render child?.({ isDragging: isDragging.current, isOverlay: false })}
-</div>
+{@render child?.({ draggable, isDragging: draggable.isDragging, isOverlay: false })}

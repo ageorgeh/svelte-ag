@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { useDroppable, type UseDroppableInput } from '@dnd-kit-svelte/svelte';
+  import { createDroppable, type CreateDroppableInput } from '@dnd-kit/svelte';
   import type { ClassValue } from 'svelte/elements';
   import type { Snippet } from 'svelte';
 
-  interface DroppableProps extends UseDroppableInput {
+  interface DroppableProps extends CreateDroppableInput {
     children: Snippet<[{ isDropTarget: boolean }]>;
     class?: ClassValue;
   }
@@ -11,9 +11,9 @@
   let { children, class: className, ...rest }: DroppableProps = $props();
 
   // svelte-ignore state_referenced_locally
-  const { ref, isDropTarget } = useDroppable(rest);
+  const droppable = createDroppable(rest);
 </script>
 
-<div class={className} {@attach ref}>
-  {@render children({ isDropTarget: isDropTarget.current })}
+<div class={className} {@attach droppable.attach}>
+  {@render children({ isDropTarget: droppable.isDropTarget })}
 </div>

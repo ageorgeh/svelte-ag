@@ -42,7 +42,8 @@
     "watch": "svelte-package -w"
   },
   "dependencies": {
-    "@dnd-kit-svelte/svelte": "^0.1.6",
+    "@dnd-kit/helpers": "^0.4.0",
+    "@dnd-kit/svelte": "^0.4.0",
     "@floating-ui/dom": "^1.7.6",
     "bits-ui": "^2.17.3",
     "clsx": "^2.1.1",
