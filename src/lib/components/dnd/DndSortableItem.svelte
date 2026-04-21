@@ -24,6 +24,7 @@
 
   let { id, index, child, ...rest }: DndSortableItemProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const sortable = createSortable({
     get id() {
       return id;

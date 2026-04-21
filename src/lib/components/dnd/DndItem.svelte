@@ -43,6 +43,7 @@ Usage:
 
   let { id, child, ...rest }: DndItemProps = $props();
 
+  // svelte-ignore state_referenced_locally
   const draggable = createDraggable({
     get id() {
       return id;
