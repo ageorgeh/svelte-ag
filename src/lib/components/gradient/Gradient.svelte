@@ -39,8 +39,7 @@
     return `radial-gradient(ellipse ${sizeX}% ${sizeY}% at ${posX}% ${posY}%, ${centerColorRgba}, ${edgeColorRgba})`;
   });
 
-  const fragment = `
-  #version 300 es
+  const fragment = `#version 300 es
 
   precision highp float;
 
@@ -83,7 +82,7 @@
 
       fragColor = mix(u_centerColor, u_edgeColor, clamp(t + noise, 0.0, 1.0));
   }
-    `;
+`;
 </script>
 
 <div class={cn('size-full', className)}>
