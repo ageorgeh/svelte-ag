@@ -1,4 +1,5 @@
 export * from './types.svelte.js';
+export * from './utils.svelte.js';
 
 export { default as DndContext } from './DndContext.svelte';
 export { default as DndHandle } from './DndHandle.svelte';

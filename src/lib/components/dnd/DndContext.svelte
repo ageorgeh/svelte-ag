@@ -23,11 +23,11 @@ It makes state handling and items sorting easier
 
 <script lang="ts" generics="T extends {id: string; children?: T[]}">
   import { DragDropProvider } from '@dnd-kit/svelte';
-  import { move } from '@dnd-kit/helpers';
+  // import { move } from '@dnd-kit/helpers';
   import { box } from 'svelte-toolbelt';
   import { findItem } from './utils.svelte';
 
-  let { children, items = $bindable(), onDragEnd, ...rest }: DndContextProps<T> = $props();
+  let { children, items = $bindable(), onDragOver, onDragEnd, onDragStart, ...rest }: DndContextProps<T> = $props();
 
   setDnd({
     items: box.with(
@@ -37,22 +37,41 @@ It makes state handling and items sorting easier
   });
 
   let snapshot: Item[] = [];
+  let original: Item[] = [];
 
-  function done(e: Parameters<NonNullable<DndContextProps<T>['onDragEnd']>>[0]) {
+  type Event =
+    | Parameters<NonNullable<DndContextProps<T>['onDragEnd']>>[0]
+    | Parameters<NonNullable<DndContextProps<T>['onDragOver']>>[0];
+
+  /**
+   * Moves items based on the event in place in the snapshot array
+   *
+   * You should set the items array to equal `snapshot` after calling this
+   */
+  function myMove(e: Event) {
     const targetId = e.operation.target?.id;
     const sourceId = e.operation.source?.id;
 
     if (targetId && sourceId) {
-      const sourceDetails = findItem(sourceId, items);
-      const targetList = findItem(targetId, items)?.item.children ?? (targetId !== undefined ? items : undefined);
+      const isSortable =
+        ('index' in e.operation.target! && e.operation.target!.index !== undefined) ||
+        ('index' in e.operation.source! && e.operation.source!.index !== undefined);
 
-      if (sourceDetails && targetList) {
-        const item = sourceDetails.list.splice(sourceDetails.index, 1)[0];
+      const source = findItem(sourceId, snapshot);
+      const target = findItem(targetId, snapshot);
 
-        if (e.operation.source && 'index' in e.operation.source && typeof e.operation.source.index === 'number') {
-          // present in sorted lists
-          targetList.splice(e.operation.source.index, 0, item);
-        } else {
+      if (!target || !source) return;
+      if (isSortable) {
+        if (source.list === target.list && source.index === target.index) return;
+
+        const item = source.list.splice(source.index, 1)[0];
+        target.list.splice(target.index, 0, item);
+      } else {
+        // Non sortable means targets are droppable areas so the list of items
+        // to target is its children
+        const targetList = target.item.children;
+        if (targetList && targetList !== source.list) {
+          const item = source.list.splice(source.index, 1)[0];
           targetList.push(item);
         }
       }
@@ -61,17 +80,25 @@ It makes state handling and items sorting easier
 </script>
 
 <DragDropProvider
-  onDragStart={() => {
-    snapshot = items.slice();
+  onDragStart={(e, m) => {
+    snapshot = structuredClone($state.snapshot(items));
+    original = structuredClone($state.snapshot(items));
+
+    onDragStart?.(e, m);
   }}
-  onDragOver={(event) => {
-    items = move(items, event);
+  onDragOver={(e, m) => {
+    myMove(e);
+    items = structuredClone(snapshot);
+
+    onDragOver?.(e, m);
   }}
   onDragEnd={(e, m) => {
-    if (e.canceled) {
-      items = snapshot;
+    if (e.canceled) items = original;
+    else {
+      myMove(e);
+      items = structuredClone(snapshot);
     }
-    done(e);
+
     onDragEnd?.(e, m);
   }}
   {...rest}

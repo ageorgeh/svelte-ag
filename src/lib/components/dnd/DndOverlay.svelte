@@ -1,24 +1,25 @@
 <script lang="ts" module>
-  import { type Snippet } from 'svelte';
+  import { type ComponentProps, type Snippet } from 'svelte';
   import type { SortableItemChildProps } from './DndSortableItem.svelte';
 
   export type OverlayChildProps<T> = { item: T } & SortableItemChildProps;
-  export type DragOverlayProps<T> = {
+  export type DragOverlayProps<T> = ComponentProps<typeof DragDropProvider> & {
     child: Snippet<[OverlayChildProps<T>]>;
   };
 </script>
 
 <script lang="ts" generics="T extends {id: string; children?: T[]}">
+  import type { DragDropProvider } from '@dnd-kit/svelte';
   import { DragOverlay } from '@dnd-kit/svelte';
   import { getDnd } from './DndContext.svelte';
   import { findItem } from './utils.svelte.js';
 
   const dnd = getDnd();
 
-  let { child }: DragOverlayProps<T> = $props();
+  let { child, ...rest }: DragOverlayProps<T> = $props();
 </script>
 
-<DragOverlay>
+<DragOverlay {...rest}>
   {#snippet children(source)}
     {@const item = findItem(source?.id, dnd.items.current)}
     {#if item}
