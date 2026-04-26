@@ -3,13 +3,12 @@
   import type { SortableItemChildProps } from './DndSortableItem.svelte';
 
   export type OverlayChildProps<T> = { item: T } & SortableItemChildProps;
-  export type DragOverlayProps<T> = ComponentProps<typeof DragDropProvider> & {
+  export type DragOverlayProps<T> = ComponentProps<typeof DragOverlay> & {
     child: Snippet<[OverlayChildProps<T>]>;
   };
 </script>
 
 <script lang="ts" generics="T extends {id: string; children?: T[]}">
-  import type { DragDropProvider } from '@dnd-kit/svelte';
   import { DragOverlay } from '@dnd-kit/svelte';
   import { getDnd } from './DndContext.svelte';
   import { findItem } from './utils.svelte.js';
