@@ -29,10 +29,10 @@ export type ValidInput<E extends ApiEndpoints, P extends E['path'], M extends E[
  * - Maps API errors to `sveltekit-superforms` field errors / messages.
  * - Optionally two-way binds external state through the `bind` adapter.
  */
-export type ApiRequestForm<API extends ApiEndpoints> = <
-  Path extends API['path'],
-  Method extends Extract<API, { path: Path }>['method']
->(a: {
+export type ApiRequestForm<
+  API extends ApiEndpoints
+  // Schemas extends Partial<Record<API['path'], Partial<Record<string, ApiSchema>>>>
+> = <Path extends API['path'], Method extends Extract<API, { path: Path }>['method']>(a: {
   /** API path key used to select a schema and to call `request(path, method, data)` */
   path: Path;
 
@@ -102,6 +102,12 @@ export type ApiRequestForm<API extends ApiEndpoints> = <
    * If you pass `onSubmit` / `onUpdate` here it will override the defaults in this helper.
    */
   formProps?: Parameters<typeof superForm<ValidInput<API, Path, Method>>>[1];
+
+  // /**
+  //  *  Schema override to be used in place of the schemas from the creation of
+  //  *  the form function
+  //  */
+  // schema?: NonNullable<Schemas[Path]>[Method];
 }) => SuperForm<ValidInput<API, Path, Method>>;
 
 /**
@@ -120,10 +126,6 @@ export function createFormFunction<API extends ApiEndpoints>(
     const schema = schemas[path]?.[method];
     if (schema === undefined) throw new Error('Invalid schema for form');
 
-    // if (typeof schema === 'function') {
-    //   schema = schema();
-    // }
-
     const defaultFormData = defaults(defaultValue, valibot(schema));
     const boundFormData =
       bind && schema.async === false
@@ -138,6 +140,7 @@ export function createFormFunction<API extends ApiEndpoints>(
       validators: valibot(schema),
       async onSubmit({ submitter }) {
         // If a submit button has a name/value, include it in JSON forms (common for "intent" buttons).
+        // eg. save with email vs save
         if (
           submitter &&
           'name' in submitter &&
