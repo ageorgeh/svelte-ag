@@ -10,7 +10,7 @@ Anything that is only for a node environment will be exported by the index.ts fi
 files.
 
 Keeping these separate is required so that we dont have any issues with node trying to import svelte files or svelte
-trying to import node stuff
+trying to import node stuff.
 
 ### Typescript
 
