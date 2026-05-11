@@ -88,11 +88,7 @@ else is the same just bind the value prop as so:
 <FormField {form} {name} class={cn(className)} {...restProps}>
   <FormControl>
     {#snippet children({ props })}
-      {@const inProps = mergeProps({
-        class: cn(),
-        ...inputProps,
-        ...props
-      }) as typeof props}
+      {@const inProps = mergeProps(inputProps as any, props) as typeof props}
       <FormLabel>{label}</FormLabel>
 
       <!-- radash.get and radash.set because we need to dynamically index $formData -->
