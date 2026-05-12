@@ -60,6 +60,40 @@ async function createSafePackage(packageRoot: string): Promise<void> {
   await writeFile(join(packageRoot, 'theme.css'), '.pkg-theme { color: red; }\n');
 }
 
+async function createManifestPackage(packageRoot: string): Promise<void> {
+  await mkdir(join(packageRoot, 'search'), { recursive: true });
+  await mkdir(join(packageRoot, 'dist'), { recursive: true });
+
+  await writeJson(join(packageRoot, 'package.json'), {
+    name: 'safe-pkg',
+    version: '1.0.0',
+    type: 'module',
+    exports: {
+      './search': './search/index.js'
+    },
+    tailwindSources: './dist/tailwind-sources.manifest.json'
+  });
+
+  await writeJson(join(packageRoot, 'dist', 'tailwind-sources.manifest.json'), {
+    version: 1,
+    exports: {
+      './search': {
+        classes: ['fallback-manifest-class'],
+        sources: ['./theme.css'],
+        symbols: {
+          SearchPopover: {
+            classes: ['focus-ring', 'h-fit', 'w-full'],
+            sources: ['./theme.css']
+          }
+        }
+      }
+    }
+  });
+
+  await writeFile(join(packageRoot, 'search', 'index.js'), "export const SearchPopover = 'ready';\n");
+  await writeFile(join(packageRoot, 'theme.css'), '.pkg-theme { color: red; }\n');
+}
+
 async function runCollectorBuild(root: string): Promise<string[]> {
   vi.resetModules();
   const { default: componentSourceCollector } = await import('./vite-plugin-component-source-collector.js');
@@ -138,5 +172,23 @@ describe('vite-plugin-component-source-collector', () => {
       "@source './node_modules/safe-pkg/theme.css';"
     ]);
     expect(lines.join('\n')).not.toContain(normalizePath(linkedPackageRoot));
+  });
+
+  it('uses package manifests for external imports when package code has no detectable class attributes', async () => {
+    const root = await createProjectRoot();
+    await createManifestPackage(join(root, 'node_modules', 'safe-pkg'));
+    await writeFile(
+      join(root, 'src', 'main.js'),
+      ["import { SearchPopover } from 'safe-pkg/search';", 'console.log(SearchPopover);', ''].join('\n')
+    );
+    await writeFile(join(root, 'src', 'app.css'), '');
+
+    const lines = await runCollectorBuild(root);
+
+    expect(lines).toContain(`@source './node_modules/safe-pkg/theme.css';`);
+    expect(lines).toContain(`@source inline("focus-ring");`);
+    expect(lines).toContain(`@source inline("h-fit");`);
+    expect(lines).toContain(`@source inline("w-full");`);
+    expect(lines).not.toContain(`@source inline("fallback-manifest-class");`);
   });
 });
