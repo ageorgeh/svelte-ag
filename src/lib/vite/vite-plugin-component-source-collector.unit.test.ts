@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { tmpdir } from 'os';
-import { build, normalizePath, type Plugin } from 'vite';
+import { build, normalizePath, type Plugin, type ResolvedConfig } from 'vite';
 
 const tempDirectories: string[] = [];
 
@@ -60,6 +60,40 @@ async function createSafePackage(packageRoot: string): Promise<void> {
   await writeFile(join(packageRoot, 'theme.css'), '.pkg-theme { color: red; }\n');
 }
 
+async function createManifestPackage(packageRoot: string): Promise<void> {
+  await mkdir(join(packageRoot, 'search'), { recursive: true });
+  await mkdir(join(packageRoot, 'dist'), { recursive: true });
+
+  await writeJson(join(packageRoot, 'package.json'), {
+    name: 'safe-pkg',
+    version: '1.0.0',
+    type: 'module',
+    exports: {
+      './search': './search/index.js'
+    },
+    tailwindSources: './dist/tailwind-sources.manifest.jsonc'
+  });
+
+  await writeJson(join(packageRoot, 'dist', 'tailwind-sources.manifest.jsonc'), {
+    version: 1,
+    exports: {
+      './search': {
+        classes: ['fallback-manifest-class'],
+        sources: ['./theme.css'],
+        symbols: {
+          SearchPopover: {
+            classes: ['focus-ring', 'h-fit', 'w-full'],
+            sources: ['./theme.css']
+          }
+        }
+      }
+    }
+  });
+
+  await writeFile(join(packageRoot, 'search', 'index.js'), "export const SearchPopover = 'ready';\n");
+  await writeFile(join(packageRoot, 'theme.css'), '.pkg-theme { color: red; }\n');
+}
+
 async function runCollectorBuild(root: string): Promise<string[]> {
   vi.resetModules();
   const { default: componentSourceCollector } = await import('./vite-plugin-component-source-collector.js');
@@ -82,7 +116,35 @@ async function runCollectorBuild(root: string): Promise<string[]> {
     }
   });
 
-  const contents = await readFile(join(root, 'component-sources.css'), 'utf8');
+  return readCollectorOutput(root, 'component-sources.css');
+}
+
+async function runCollectorTransform(root: string, id: string, code: string): Promise<string[]> {
+  vi.resetModules();
+  const { default: componentSourceCollector } = await import('./vite-plugin-component-source-collector.js');
+  const collector = await componentSourceCollector({ safePackages: ['safe-pkg'] });
+  const configResolved =
+    typeof collector.configResolved === 'function' ? collector.configResolved : collector.configResolved?.handler;
+  const transform = typeof collector.transform === 'function' ? collector.transform : collector.transform?.handler;
+  const buildEnd = typeof collector.buildEnd === 'function' ? collector.buildEnd : collector.buildEnd?.handler;
+
+  await configResolved?.call(
+    {} as any,
+    {
+      root,
+      command: 'build'
+    } as ResolvedConfig
+  );
+
+  await transform?.call({ resolve: async () => null } as any, code, id);
+
+  await buildEnd?.call({} as any);
+
+  return readCollectorOutput(root, 'component-sources.css');
+}
+
+async function readCollectorOutput(root: string, fileName: string): Promise<string[]> {
+  const contents = await readFile(join(root, fileName), 'utf8');
   return contents
     .split('\n')
     .map((line) => line.trim())
@@ -113,11 +175,17 @@ describe('vite-plugin-component-source-collector', () => {
     await createSafePackage(join(root, 'node_modules', 'safe-pkg'));
 
     const lines = await runCollectorBuild(root);
+    const classLines = await readCollectorOutput(root, 'component-sources.classes.txt');
 
     expect(lines).toEqual([
+      '/* tailwind-source: ./component-sources.classes.txt */',
+      "@source './component-sources.classes.txt';",
+      '/* tailwind-source: ./node_modules/safe-pkg/Button.svelte */',
       "@source './node_modules/safe-pkg/Button.svelte';",
+      '/* tailwind-source: ./node_modules/safe-pkg/theme.css */',
       "@source './node_modules/safe-pkg/theme.css';"
     ]);
+    expect(classLines).toEqual([]);
   });
 
   it('normalizes symlinked pnpm-style package sources back to node_modules paths', async () => {
@@ -132,11 +200,90 @@ describe('vite-plugin-component-source-collector', () => {
     );
 
     const lines = await runCollectorBuild(root);
+    const classLines = await readCollectorOutput(root, 'component-sources.classes.txt');
 
     expect(lines).toEqual([
+      '/* tailwind-source: ./component-sources.classes.txt */',
+      "@source './component-sources.classes.txt';",
+      '/* tailwind-source: ./node_modules/safe-pkg/Button.svelte */',
       "@source './node_modules/safe-pkg/Button.svelte';",
+      '/* tailwind-source: ./node_modules/safe-pkg/theme.css */',
       "@source './node_modules/safe-pkg/theme.css';"
     ]);
     expect(lines.join('\n')).not.toContain(normalizePath(linkedPackageRoot));
+    expect(classLines).toEqual([]);
+  });
+
+  it('uses package manifests for external imports when package code has no detectable class attributes', async () => {
+    const root = await createProjectRoot();
+    await createManifestPackage(join(root, 'node_modules', 'safe-pkg'));
+    await writeFile(
+      join(root, 'src', 'main.js'),
+      ["import { SearchPopover } from 'safe-pkg/search';", 'console.log(SearchPopover);', ''].join('\n')
+    );
+    await writeFile(join(root, 'src', 'app.css'), '');
+
+    const lines = await runCollectorBuild(root);
+    const classLines = await readCollectorOutput(root, 'component-sources.classes.txt');
+
+    expect(lines).toContain(`/* tailwind-source: ./node_modules/safe-pkg/theme.css */`);
+    expect(lines).toContain(`@source './node_modules/safe-pkg/theme.css';`);
+    expect(classLines).toEqual([
+      '/* tailwind-manifest import="safe-pkg/search" export="./search" symbol="SearchPopover" */',
+      'focus-ring',
+      'h-fit',
+      'w-full'
+    ]);
+    expect(classLines).not.toContain(`fallback-manifest-class`);
+  });
+
+  it('uses package manifests for imports inside svelte script blocks', async () => {
+    const root = await createProjectRoot();
+    await createManifestPackage(join(root, 'node_modules', 'safe-pkg'));
+
+    const lines = await runCollectorTransform(
+      root,
+      join(root, 'src', 'App.svelte'),
+      [
+        '<script lang="ts">',
+        "  import { type Ignored, SearchPopover } from 'safe-pkg/search';",
+        '</script>',
+        '',
+        '<div>ready</div>',
+        ''
+      ].join('\n')
+    );
+    const classLines = await readCollectorOutput(root, 'component-sources.classes.txt');
+
+    expect(lines).toContain(`/* tailwind-source: ./node_modules/safe-pkg/theme.css */`);
+    expect(lines).toContain(`@source './node_modules/safe-pkg/theme.css';`);
+    expect(classLines).toEqual([
+      '/* tailwind-manifest import="safe-pkg/search" export="./search" symbol="SearchPopover" */',
+      'focus-ring',
+      'h-fit',
+      'w-full'
+    ]);
+    expect(classLines).not.toContain(`fallback-manifest-class`);
+  });
+
+  it('adds local script files that use properties whose names mention class', async () => {
+    const root = await createProjectRoot();
+
+    const lines = await runCollectorTransform(
+      root,
+      join(root, 'src', 'contrib.ts'),
+      [
+        "export const contrib = defineContrib('admin', {",
+        '  headerItems: [',
+        "    { title: 'Home', iconClass: 'icon-[ic--round-home]' },",
+        "    { title: 'Profile', triggerClassName: 'icon-user' }",
+        '  ]',
+        '});',
+        ''
+      ].join('\n')
+    );
+
+    expect(lines).toContain(`/* tailwind-source: ./src/contrib.ts */`);
+    expect(lines).toContain(`@source './src/contrib.ts';`);
   });
 });
