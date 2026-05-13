@@ -40,7 +40,7 @@ interface ManifestClassOrigin {
   symbolName: string | null;
 }
 
-/** All unique component directories */
+/** All unique component directories. */
 const componentFiles = new Set<string>();
 const manifestClassGroups = new Map<string, Set<string>>();
 let firstRound = true;
