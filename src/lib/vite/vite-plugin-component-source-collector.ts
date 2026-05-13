@@ -2,12 +2,11 @@ import type { Plugin, ResolvedConfig } from 'vite';
 import { init, parse as parseEsm } from 'es-module-lexer';
 import { exists, writeIfDifferent } from 'ts-ag';
 import { readFile } from 'fs/promises';
-import { resolve, join, relative, dirname, isAbsolute } from 'path';
+import { resolve, join, relative, dirname, isAbsolute, parse as parsePath } from 'path';
 import { open } from 'fs/promises';
 import { parse as parseSvelte } from 'svelte/compiler';
 import {
   ensureRelativeManifestSourcePath,
-  escapeInlineTailwindClassName,
   getTailwindSourcesManifestPath,
   parseTailwindSourceManifest,
   splitPackageSpecifier,
@@ -17,15 +16,13 @@ import {
 
 interface Options {
   /**
-   * File (relative to project root) that will contain one
-   * directory per line (e.g. `node_modules/svelte-ag/components/sidebar`)
-   * Defaults to `component-sources.txt`
+   * File (relative to project root) that will contain the legacy
+   * `@source` entries for discovered component and CSS paths.
+   * A sibling `./${name}.classes.txt` file is also generated for
+   * manifest-derived class tokens.
+   * Defaults to `component-sources.css`
    */
   outputFile?: string;
-  /**
-   * Filter for source files (default: `/\.svelte$/`)
-   */
-  include?: RegExp | RegExp[];
   /**
    * node_modules packages that can be added to the component list
    */
@@ -37,13 +34,21 @@ interface ImportRecord {
   useExportLevel: boolean;
 }
 
+interface ManifestClassOrigin {
+  importSpecifier: string;
+  exportKey: string;
+  symbolName: string | null;
+}
+
 /** All unique component directories */
 const componentFiles = new Set<string>();
-const inlineTailwindClasses = new Set<string>();
+const manifestClassGroups = new Map<string, Set<string>>();
 let firstRound = true;
 const packageJsonCache = new Map<string, Promise<string | null>>();
 const packageManifestCache = new Map<string, Promise<TailwindSourceManifest | null>>();
+const TAILWIND_TOKEN_PROPERTY_PATTERN = String.raw`(?:class|(?:"[^"\n]*class[^"\n]*"|'[^'\n]*class[^'\n]*'|[A-Za-z_$][\w$]*class[\w$]*))`;
 
+// TODO replace with ts-ag method
 function ensureDotRelative(filePath: string): string {
   if (filePath.startsWith('./')) return filePath;
   return `./${filePath}`;
@@ -63,10 +68,34 @@ function toPosixPath(filePath: string): string {
   return filePath.replaceAll('\\', '/');
 }
 
-function addInlineClassList(classes: string[]) {
+function getManifestClassGroupKey(origin: ManifestClassOrigin): string {
+  return `${origin.importSpecifier}::${origin.exportKey}::${origin.symbolName ?? '*'}`;
+}
+
+function formatManifestClassGroupComment(origin: ManifestClassOrigin): string {
+  return `/* tailwind-manifest import=${JSON.stringify(origin.importSpecifier)} export=${JSON.stringify(origin.exportKey)} symbol=${JSON.stringify(origin.symbolName ?? '*')} */`;
+}
+
+/** Returns the origin details from a group comment */
+function parseManifestClassGroupComment(line: string): ManifestClassOrigin | null {
+  const match = line.match(/^\/\* tailwind-manifest import=(".*?") export=(".*?") symbol=(".*?") \*\/$/);
+  if (!match) return null;
+
+  return {
+    importSpecifier: JSON.parse(match[1]),
+    exportKey: JSON.parse(match[2]),
+    symbolName: JSON.parse(match[3]) === '*' ? null : JSON.parse(match[3])
+  };
+}
+
+/** Sets the class list for an origin (import specifier,export key,symbol name)  */
+function addManifestClassList(origin: ManifestClassOrigin, classes: string[]) {
+  const key = getManifestClassGroupKey(origin);
+  const classSet = manifestClassGroups.get(key) ?? new Set<string>();
   for (const className of classes) {
-    if (className !== '') inlineTailwindClasses.add(className);
+    if (className !== '') classSet.add(className);
   }
+  manifestClassGroups.set(key, classSet);
 }
 
 function readImportRecord(statement: string): ImportRecord | null {
@@ -131,11 +160,14 @@ async function readPackageNameAt(directory: string): Promise<string | null> {
 export default async function componentSourceCollector(opts: Options = { safePackages: [] }): Promise<Plugin> {
   // constants
   const outFileName = opts.outputFile ?? 'component-sources.css';
-  const classAttributeRegex = /(?:^|[^\w-])(?:className|class)\s*(?:=|:)\s*/;
+  const outFilePath = parsePath(outFileName);
+  const manifestClassesFileName = join(outFilePath.dir, `${outFilePath.name}.classes.txt`);
+  const classAttributeRegex = new RegExp(String.raw`(?:^|[^\w-])${TAILWIND_TOKEN_PROPERTY_PATTERN}\s*(?:=|:)\s*`, 'i');
   const importRegex = /@import\s+['"]([^'"]+)['"]/g;
 
   // state
   let outputFilePath: string;
+  let manifestClassesFilePath: string;
   let nodeModulesPath: string;
   let config: ResolvedConfig;
   let initialTransformDone = false;
@@ -223,14 +255,18 @@ export default async function componentSourceCollector(opts: Options = { safePac
     return manifestPromise;
   }
 
-  async function addManifestLeaf(packageName: string, entry: TailwindSourceManifestLeaf) {
-    addInlineClassList(entry.classes);
+  async function addManifestLeaf(packageName: string, entry: TailwindSourceManifestLeaf, origin: ManifestClassOrigin) {
+    addManifestClassList(origin, entry.classes);
 
     for (const sourcePath of entry.sources) {
       await addPath(resolve(nodeModulesPath, packageName, ensureRelativeManifestSourcePath(sourcePath)));
     }
   }
 
+  /**
+   * Reads the imports present in the code and finds manifests for any of
+   * the packages that it imports
+   */
   async function addManifestSourcesForCode(code: string, id: string) {
     const imports = new Map<string, ImportRecord>();
 
@@ -281,21 +317,36 @@ export default async function componentSourceCollector(opts: Options = { safePac
       if (!exportEntry) continue;
 
       if (importRecord.useExportLevel || importRecord.namedImports.length === 0 || !exportEntry.symbols) {
-        await addManifestLeaf(packageName, exportEntry);
+        await addManifestLeaf(packageName, exportEntry, {
+          importSpecifier: specifier,
+          exportKey,
+          symbolName: null
+        });
         continue;
       }
 
       const symbolEntries = importRecord.namedImports
-        .map((symbolName) => exportEntry.symbols?.[symbolName] ?? null)
-        .filter((entry): entry is TailwindSourceManifestLeaf => entry !== null);
+        .map((symbolName) => ({
+          symbolName,
+          entry: exportEntry.symbols?.[symbolName] ?? null
+        }))
+        .filter((entry): entry is { symbolName: string; entry: TailwindSourceManifestLeaf } => entry.entry !== null);
 
       if (symbolEntries.length !== importRecord.namedImports.length) {
-        await addManifestLeaf(packageName, exportEntry);
+        await addManifestLeaf(packageName, exportEntry, {
+          importSpecifier: specifier,
+          exportKey,
+          symbolName: null
+        });
         continue;
       }
 
       for (const symbolEntry of symbolEntries) {
-        await addManifestLeaf(packageName, symbolEntry);
+        await addManifestLeaf(packageName, symbolEntry.entry, {
+          importSpecifier: specifier,
+          exportKey,
+          symbolName: symbolEntry.symbolName
+        });
       }
     }
   }
@@ -310,29 +361,58 @@ export default async function componentSourceCollector(opts: Options = { safePac
     }, 1000);
   }
 
-  const writeOutFile = async () => {
-    const pathLines = Array.from(componentFiles).sort();
-    const inlineLines = Array.from(inlineTailwindClasses)
-      .sort()
-      .map((className) => `@source inline("${escapeInlineTailwindClassName(className)}");`);
-    const lines = [...pathLines.flatMap((filePath) => formatPathSourceLines(filePath)), ...inlineLines];
+  /**
+   * Compiles and writes the output files if they are different
+   */
+  async function writeOutFile() {
+    const pathLines = Array.from([...componentFiles, `./${manifestClassesFileName}`]).sort();
+    const pathOutput = pathLines.flatMap((filePath) => formatPathSourceLines(filePath)).join('\n');
+    const manifestClassLines = Array.from(manifestClassGroups.entries())
+      .sort(([left], [right]) => left.localeCompare(right))
+      .flatMap(([groupKey, classNames]) => {
+        const [importSpecifier, exportKey, symbolToken] = groupKey.split('::');
+        const origin: ManifestClassOrigin = {
+          importSpecifier,
+          exportKey,
+          symbolName: symbolToken === '*' ? null : symbolToken
+        };
+
+        return [formatManifestClassGroupComment(origin), ...Array.from(classNames).sort(), ''];
+      });
+    const manifestClassOutput = manifestClassLines.join('\n').trimEnd();
 
     if (outputFilePath) {
-      const didWrite = await writeIfDifferent(outputFilePath, lines.join('\n'));
-      if (didWrite) console.log('tailwind-sources:wrote', lines.length);
+      const didWritePaths = await writeIfDifferent(outputFilePath, pathOutput);
+      const didWriteClasses = await writeIfDifferent(manifestClassesFilePath, manifestClassOutput);
+
+      if (didWritePaths || didWriteClasses) {
+        console.log(
+          'tailwind-sources:wrote',
+          pathLines.length,
+          'paths and',
+          Array.from(manifestClassGroups.values()).reduce((count, classSet) => count + classSet.size, 0),
+          'classes'
+        );
+      }
     }
-  };
+  }
 
   return {
     name: 'vite-plugin-component-source-collector',
     enforce: 'pre' as const,
     async buildStart() {
-      await init;
+      await init; // init es-module-lexer
     },
+
+    /**
+     * Reads the existing files and uses them if this is a dev server
+     */
     async configResolved(resolved) {
       config = resolved;
       outputFilePath = resolve(config.root, outFileName);
+      manifestClassesFilePath = resolve(config.root, manifestClassesFileName);
 
+      // walk up and find the node_modules path
       let current = config.root;
       while (true) {
         if (await exists(join(current, 'package.json'))) {
@@ -345,21 +425,16 @@ export default async function componentSourceCollector(opts: Options = { safePac
       console.log('tailwind-sources:configResolved: Command is', config.command);
 
       await touch(outputFilePath);
+      await touch(manifestClassesFilePath);
       if (config.command === 'build' && firstRound) {
         console.log('tailwind-sources: Clearing files list');
         componentFiles.clear();
-        inlineTailwindClasses.clear();
+        manifestClassGroups.clear();
         firstRound = false;
       } else if (config.command === 'serve' && (await exists(outputFilePath))) {
         const fileLines = (await readFile(outputFilePath, 'utf8')).split('\n');
         for (const fileLine of fileLines) {
           if (/^\/\* tailwind-source: .* \*\/$/.test(fileLine)) {
-            continue;
-          }
-
-          const inlineMatch = fileLine.match(/^@source inline\("(.*)"\);$/);
-          if (inlineMatch) {
-            addInlineClassList([inlineMatch[1].replaceAll('\\"', '"').replaceAll('\\\\', '\\')]);
             continue;
           }
 
@@ -379,6 +454,26 @@ export default async function componentSourceCollector(opts: Options = { safePac
             }
           } catch {
             // Ignore stale source entries that no longer resolve on disk.
+          }
+        }
+
+        if (await exists(manifestClassesFilePath)) {
+          const classLines = (await readFile(manifestClassesFilePath, 'utf8')).split('\n');
+          let currentOrigin: ManifestClassOrigin | null = null;
+
+          for (const rawLine of classLines) {
+            const fileLine = rawLine.trim();
+            if (fileLine === '') continue;
+
+            const parsedOrigin = parseManifestClassGroupComment(fileLine);
+            if (parsedOrigin) {
+              currentOrigin = parsedOrigin;
+              continue;
+            }
+
+            if (currentOrigin) {
+              addManifestClassList(currentOrigin, [fileLine]);
+            }
           }
         }
       }
@@ -402,13 +497,19 @@ export default async function componentSourceCollector(opts: Options = { safePac
       const onChange = async (file: string) => {
         if (!lockFiles.includes(file)) return;
         componentFiles.clear();
-        inlineTailwindClasses.clear();
+        manifestClassGroups.clear();
       };
 
       server.watcher.on('change', onChange);
       server.watcher.on('add', onChange);
     },
 
+    /**
+     * Adds @source records based on transformed code that matches the class regex
+     * and is a src file or is in the safe packages list
+     *
+     * Adds manifest sources by analyzing src file imports
+     */
     async transform(code, id) {
       // console.log('tailwind-sources:transform', id);
       if (!toPosixPath(id).includes('/node_modules/') && !toPosixPath(id).includes('/.vite/')) {
@@ -421,22 +522,18 @@ export default async function componentSourceCollector(opts: Options = { safePac
         for (const match of matches) {
           try {
             const resolved = await this.resolve(match[1], id);
-            if (resolved) {
-              await addPath(resolved.id);
-            }
+            if (resolved) await addPath(resolved.id);
           } catch {
             // Ignore unresolved CSS imports while building the Tailwind source list.
           }
         }
       }
 
-      if (shouldAdd(code, id)) {
-        await addPath(id);
-      }
+      // add files matching class regex
+      if (shouldAdd(code, id)) await addPath(id);
 
-      if (!initialTransformDone) {
-        scheduleInitialWrite();
-      }
+      // debounce a write
+      if (!initialTransformDone) scheduleInitialWrite();
     },
     async handleHotUpdate() {
       await writeOutFile();

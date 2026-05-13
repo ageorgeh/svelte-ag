@@ -268,4 +268,40 @@ describe('build-tailwind-manifest', () => {
 
     expect(manifest.exports['./field']?.classes).toEqual(['self-start']);
   });
+
+  it('collects any object properties whose names mention class from script files', async () => {
+    const repoRoot = await createTempDirectory('tailwind-manifest-icon-props-');
+    const packageRoot = join(repoRoot, 'package-a');
+
+    await mkdir(join(packageRoot, 'dist'), { recursive: true });
+    await writeJson(join(packageRoot, 'package.json'), {
+      name: 'package-a',
+      private: true,
+      type: 'module',
+      exports: {
+        './admin': './dist/admin.ts'
+      }
+    });
+
+    await writeFile(
+      join(packageRoot, 'dist', 'admin.ts'),
+      [
+        "export const contrib = defineContrib('admin', {",
+        '  headerItems: [',
+        "    { title: 'Home', link: '/', iconClass: 'icon-[ic--round-home]' },",
+        "    { title: 'Profile', link: '/profile/settings/', triggerClassName: 'icon-user icon-page' }",
+        '  ]',
+        '});',
+        ''
+      ].join('\n')
+    );
+
+    process.chdir(packageRoot);
+    await main([]);
+
+    const manifestContents = await readFile(join(packageRoot, 'dist', 'tailwind-sources.manifest.jsonc'), 'utf8');
+    const manifest = parseTailwindSourceManifest(manifestContents);
+
+    expect(manifest.exports['./admin']?.classes).toEqual(['icon-[ic--round-home]', 'icon-page', 'icon-user']);
+  });
 });

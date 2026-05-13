@@ -267,7 +267,7 @@ function collectClassNamesFromFile(filePath: string, source: string, out: Set<st
         collectStringLiterals(node, out);
       }
 
-      if (ts.isPropertyAssignment(node) && isClassPropertyName(node.name)) {
+      if (ts.isPropertyAssignment(node) && isTailwindTokenPropertyName(node.name)) {
         collectStringLiterals(node.initializer, out);
       }
 
@@ -285,7 +285,7 @@ function collectClassNamesFromFile(filePath: string, source: string, out: Set<st
         collectStringLiterals(node, out);
       }
 
-      if (ts.isPropertyAssignment(node) && isClassPropertyName(node.name)) {
+      if (ts.isPropertyAssignment(node) && isTailwindTokenPropertyName(node.name)) {
         collectStringLiterals(node.initializer, out);
       }
 
@@ -369,9 +369,9 @@ function getExpressionName(expression: ts.Expression): string {
   return '';
 }
 
-/** Match object keys commonly used to hold class name strings. */
-function isClassPropertyName(name: ts.PropertyName): boolean {
-  return (ts.isIdentifier(name) || ts.isStringLiteral(name)) && (name.text === 'class' || name.text === 'className');
+/** Match object keys commonly used to hold Tailwind token strings. */
+function isTailwindTokenPropertyName(name: ts.PropertyName): boolean {
+  return (ts.isIdentifier(name) || ts.isStringLiteral(name)) && /class/i.test(name.text);
 }
 
 /** Find relative imports/exports with module-lexer and CSS imports with a fallback regex. */

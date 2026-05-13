@@ -116,11 +116,7 @@ async function runCollectorBuild(root: string): Promise<string[]> {
     }
   });
 
-  const contents = await readFile(join(root, 'component-sources.css'), 'utf8');
-  return contents
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
+  return readCollectorOutput(root, 'component-sources.css');
 }
 
 async function runCollectorTransform(root: string, id: string, code: string): Promise<string[]> {
@@ -132,22 +128,23 @@ async function runCollectorTransform(root: string, id: string, code: string): Pr
   const transform = typeof collector.transform === 'function' ? collector.transform : collector.transform?.handler;
   const buildEnd = typeof collector.buildEnd === 'function' ? collector.buildEnd : collector.buildEnd?.handler;
 
-  await configResolved?.({
-    root,
-    command: 'build'
-  } as ResolvedConfig);
-
-  await transform?.call(
+  await configResolved?.call(
+    {} as any,
     {
-      resolve: async () => null
-    },
-    code,
-    id
+      root,
+      command: 'build'
+    } as ResolvedConfig
   );
 
-  await buildEnd?.call({});
+  await transform?.call({ resolve: async () => null } as any, code, id);
 
-  const contents = await readFile(join(root, 'component-sources.css'), 'utf8');
+  await buildEnd?.call({} as any);
+
+  return readCollectorOutput(root, 'component-sources.css');
+}
+
+async function readCollectorOutput(root: string, fileName: string): Promise<string[]> {
+  const contents = await readFile(join(root, fileName), 'utf8');
   return contents
     .split('\n')
     .map((line) => line.trim())
@@ -178,13 +175,17 @@ describe('vite-plugin-component-source-collector', () => {
     await createSafePackage(join(root, 'node_modules', 'safe-pkg'));
 
     const lines = await runCollectorBuild(root);
+    const classLines = await readCollectorOutput(root, 'component-sources.classes.txt');
 
     expect(lines).toEqual([
+      '/* tailwind-source: ./component-sources.classes.txt */',
+      "@source './component-sources.classes.txt';",
       '/* tailwind-source: ./node_modules/safe-pkg/Button.svelte */',
       "@source './node_modules/safe-pkg/Button.svelte';",
       '/* tailwind-source: ./node_modules/safe-pkg/theme.css */',
       "@source './node_modules/safe-pkg/theme.css';"
     ]);
+    expect(classLines).toEqual([]);
   });
 
   it('normalizes symlinked pnpm-style package sources back to node_modules paths', async () => {
@@ -199,14 +200,18 @@ describe('vite-plugin-component-source-collector', () => {
     );
 
     const lines = await runCollectorBuild(root);
+    const classLines = await readCollectorOutput(root, 'component-sources.classes.txt');
 
     expect(lines).toEqual([
+      '/* tailwind-source: ./component-sources.classes.txt */',
+      "@source './component-sources.classes.txt';",
       '/* tailwind-source: ./node_modules/safe-pkg/Button.svelte */',
       "@source './node_modules/safe-pkg/Button.svelte';",
       '/* tailwind-source: ./node_modules/safe-pkg/theme.css */',
       "@source './node_modules/safe-pkg/theme.css';"
     ]);
     expect(lines.join('\n')).not.toContain(normalizePath(linkedPackageRoot));
+    expect(classLines).toEqual([]);
   });
 
   it('uses package manifests for external imports when package code has no detectable class attributes', async () => {
@@ -219,13 +224,17 @@ describe('vite-plugin-component-source-collector', () => {
     await writeFile(join(root, 'src', 'app.css'), '');
 
     const lines = await runCollectorBuild(root);
+    const classLines = await readCollectorOutput(root, 'component-sources.classes.txt');
 
     expect(lines).toContain(`/* tailwind-source: ./node_modules/safe-pkg/theme.css */`);
     expect(lines).toContain(`@source './node_modules/safe-pkg/theme.css';`);
-    expect(lines).toContain(`@source inline("focus-ring");`);
-    expect(lines).toContain(`@source inline("h-fit");`);
-    expect(lines).toContain(`@source inline("w-full");`);
-    expect(lines).not.toContain(`@source inline("fallback-manifest-class");`);
+    expect(classLines).toEqual([
+      '/* tailwind-manifest import="safe-pkg/search" export="./search" symbol="SearchPopover" */',
+      'focus-ring',
+      'h-fit',
+      'w-full'
+    ]);
+    expect(classLines).not.toContain(`fallback-manifest-class`);
   });
 
   it('uses package manifests for imports inside svelte script blocks', async () => {
@@ -244,12 +253,37 @@ describe('vite-plugin-component-source-collector', () => {
         ''
       ].join('\n')
     );
+    const classLines = await readCollectorOutput(root, 'component-sources.classes.txt');
 
     expect(lines).toContain(`/* tailwind-source: ./node_modules/safe-pkg/theme.css */`);
     expect(lines).toContain(`@source './node_modules/safe-pkg/theme.css';`);
-    expect(lines).toContain(`@source inline("focus-ring");`);
-    expect(lines).toContain(`@source inline("h-fit");`);
-    expect(lines).toContain(`@source inline("w-full");`);
-    expect(lines).not.toContain(`@source inline("fallback-manifest-class");`);
+    expect(classLines).toEqual([
+      '/* tailwind-manifest import="safe-pkg/search" export="./search" symbol="SearchPopover" */',
+      'focus-ring',
+      'h-fit',
+      'w-full'
+    ]);
+    expect(classLines).not.toContain(`fallback-manifest-class`);
+  });
+
+  it('adds local script files that use properties whose names mention class', async () => {
+    const root = await createProjectRoot();
+
+    const lines = await runCollectorTransform(
+      root,
+      join(root, 'src', 'contrib.ts'),
+      [
+        "export const contrib = defineContrib('admin', {",
+        '  headerItems: [',
+        "    { title: 'Home', iconClass: 'icon-[ic--round-home]' },",
+        "    { title: 'Profile', triggerClassName: 'icon-user' }",
+        '  ]',
+        '});',
+        ''
+      ].join('\n')
+    );
+
+    expect(lines).toContain(`/* tailwind-source: ./src/contrib.ts */`);
+    expect(lines).toContain(`@source './src/contrib.ts';`);
   });
 });
