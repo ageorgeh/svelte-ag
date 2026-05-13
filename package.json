@@ -19,6 +19,9 @@
     "./styles/*": "./dist/styles/*",
     "./package.json": "./package.json"
   },
+  "bin": {
+    "tailwind-manifest": "./dist/bin/build-tailwind-manifest.js"
+  },
   "files": [
     "./src/lib",
     "./dist"
@@ -26,7 +29,7 @@
   "scripts": {
     "prebuild": "svelte-kit sync",
     "build": "svelte-package",
-    "postbuild": "tsx scripts/bundle-public-dts.ts && pnpm check:base-export && tsx scripts/build-tailwind-manifest.ts",
+    "postbuild": "tsx scripts/bundle-public-dts.ts && pnpm check:base-export && node dist/bin/build-tailwind-manifest.js",
     "check": "svelte-check --fail-on-warnings",
     "check:base-export": "tsx scripts/check-base-export.ts",
     "dev": "vite dev",
@@ -52,6 +55,7 @@
     "dequal": "^2.0.3",
     "devalue": "^5.8.0",
     "embla-carousel-svelte": "8.6.0",
+    "es-module-lexer": "^2.1.0",
     "formsnap": "2.0.1",
     "radash": "12.1.1",
     "runed": "0.37.1",

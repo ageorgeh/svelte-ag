@@ -40,8 +40,55 @@ export function getTailwindSourcesManifestPath(
   packageRoot: string,
   packageJson: TailwindSourcePackageJsonLike
 ): string {
-  const manifestPath = packageJson.tailwindSources ?? './dist/tailwind-sources.manifest.json';
+  const configuredPath = packageJson.tailwindSources ?? './dist/tailwind-sources.manifest.jsonc';
+  const manifestPath = configuredPath.endsWith('.json')
+    ? `${configuredPath.slice(0, -'.json'.length)}.jsonc`
+    : configuredPath;
   return path.resolve(packageRoot, manifestPath);
+}
+
+function formatManifestSourcesComment(label: string, sources: string[]): string {
+  const summary = sources.length > 0 ? sources.join(', ') : 'inline-only';
+  return `/* tailwind-manifest ${label}; styles from: ${summary} */`;
+}
+
+export function serializeTailwindSourceManifest(manifest: TailwindSourceManifest): string {
+  const exportEntries = Object.entries(manifest.exports).sort(([left], [right]) => left.localeCompare(right));
+  const lines = ['{', `  "version": ${manifest.version},`, '  "exports": {'];
+
+  exportEntries.forEach(([exportKey, exportValue], index) => {
+    lines.push(`    ${formatManifestSourcesComment(`export ${JSON.stringify(exportKey)}`, exportValue.sources)}`);
+    lines.push(`    ${JSON.stringify(exportKey)}: {`);
+    lines.push(`      "classes": ${JSON.stringify(exportValue.classes)},`);
+    lines.push(`      "sources": ${JSON.stringify(exportValue.sources)}${exportValue.symbols ? ',' : ''}`);
+
+    if (exportValue.symbols) {
+      lines.push('      "symbols": {');
+      const symbolEntries = Object.entries(exportValue.symbols).sort(([left], [right]) => left.localeCompare(right));
+
+      symbolEntries.forEach(([symbolName, symbolLeaf], symbolIndex) => {
+        lines.push(
+          `        ${formatManifestSourcesComment(`symbol ${JSON.stringify(symbolName)}`, symbolLeaf.sources)}`
+        );
+        lines.push(`        ${JSON.stringify(symbolName)}: {`);
+        lines.push(`          "classes": ${JSON.stringify(symbolLeaf.classes)},`);
+        lines.push(`          "sources": ${JSON.stringify(symbolLeaf.sources)}`);
+        lines.push(`        }${symbolIndex < symbolEntries.length - 1 ? ',' : ''}`);
+      });
+
+      lines.push('      }');
+    }
+
+    lines.push(`    }${index < exportEntries.length - 1 ? ',' : ''}`);
+  });
+
+  lines.push('  }');
+  lines.push('}');
+  return `${lines.join('\n')}\n`;
+}
+
+export function parseTailwindSourceManifest(source: string): TailwindSourceManifest {
+  return JSON.parse(source.replace(/\/\*[\s\S]*?\*\//g, '')) as TailwindSourceManifest;
 }
 
 export function normalizeManifestExportFilter(filter: string): string {

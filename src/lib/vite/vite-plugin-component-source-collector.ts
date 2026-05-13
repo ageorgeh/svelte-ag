@@ -1,12 +1,15 @@
 import type { Plugin, ResolvedConfig } from 'vite';
+import { init, parse as parseEsm } from 'es-module-lexer';
 import { exists, writeIfDifferent } from 'ts-ag';
 import { readFile } from 'fs/promises';
 import { resolve, join, relative, dirname, isAbsolute } from 'path';
 import { open } from 'fs/promises';
+import { parse as parseSvelte } from 'svelte/compiler';
 import {
   ensureRelativeManifestSourcePath,
   escapeInlineTailwindClassName,
   getTailwindSourcesManifestPath,
+  parseTailwindSourceManifest,
   splitPackageSpecifier,
   type TailwindSourceManifest,
   type TailwindSourceManifestLeaf
@@ -27,6 +30,11 @@ interface Options {
    * node_modules packages that can be added to the component list
    */
   safePackages: string[];
+}
+
+interface ImportRecord {
+  namedImports: string[];
+  useExportLevel: boolean;
 }
 
 /** All unique component directories */
@@ -59,6 +67,47 @@ function addInlineClassList(classes: string[]) {
   for (const className of classes) {
     if (className !== '') inlineTailwindClasses.add(className);
   }
+}
+
+function readImportRecord(statement: string): ImportRecord | null {
+  const trimmedStatement = statement.trim();
+  if (!trimmedStatement.startsWith('import')) return null;
+
+  const fromMatch = trimmedStatement.match(/^import\s+([\s\S]*?)\s+from\s*$/);
+  if (fromMatch) {
+    const importClause = fromMatch[1]?.trim();
+    if (!importClause || importClause.startsWith('type ')) return null;
+
+    const record: ImportRecord = { namedImports: [], useExportLevel: false };
+
+    if (importClause.includes('* as ') || (!importClause.startsWith('{') && !importClause.includes('{'))) {
+      record.useExportLevel = true;
+    }
+
+    const namedImportsMatch = importClause.match(/\{([\s\S]*?)\}/);
+    if (namedImportsMatch) {
+      for (const rawImport of namedImportsMatch[1].split(',')) {
+        const trimmedImport = rawImport.trim();
+        if (trimmedImport === '' || trimmedImport.startsWith('type ')) continue;
+
+        const importedSymbol = trimmedImport.split(/\s+as\s+/i)[0]?.trim();
+        if (importedSymbol) {
+          record.namedImports.push(importedSymbol);
+        }
+      }
+    }
+
+    return record;
+  }
+
+  if (/^import\s*$/.test(trimmedStatement)) {
+    return {
+      namedImports: [],
+      useExportLevel: true
+    };
+  }
+
+  return null;
 }
 
 async function readPackageNameAt(directory: string): Promise<string | null> {
@@ -148,6 +197,10 @@ export default async function componentSourceCollector(opts: Options = { safePac
     componentFiles.add(ensureDotRelative(relativeFilePath));
   }
 
+  function formatPathSourceLines(filePath: string): string[] {
+    return [`/* tailwind-source: ${filePath} */`, `@source '${filePath}';`];
+  }
+
   async function readPackageManifest(packageName: string): Promise<TailwindSourceManifest | null> {
     const cached = packageManifestCache.get(packageName);
     if (cached) return cached;
@@ -159,7 +212,7 @@ export default async function componentSourceCollector(opts: Options = { safePac
           tailwindSources?: string;
         };
         const manifestPath = getTailwindSourcesManifestPath(packageRoot, packageJson);
-        const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as TailwindSourceManifest;
+        const manifest = parseTailwindSourceManifest(await readFile(manifestPath, 'utf8'));
         return manifest.version === 1 ? manifest : null;
       } catch {
         return null;
@@ -178,51 +231,45 @@ export default async function componentSourceCollector(opts: Options = { safePac
     }
   }
 
-  async function addManifestSourcesForCode(code: string) {
-    const strippedCode = code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-    const imports = new Map<string, { namedImports: string[]; useExportLevel: boolean }>();
-    const importPattern = /(?:^|\n)\s*import\s+([\s\S]*?)\s+from\s+['"]([^'"]+)['"]/g;
-    const sideEffectImportPattern = /(?:^|\n)\s*import\s+['"]([^'"]+)['"]/g;
+  async function addManifestSourcesForCode(code: string, id: string) {
+    const imports = new Map<string, ImportRecord>();
 
-    for (const match of strippedCode.matchAll(importPattern)) {
-      const importClause = match[1]?.trim();
-      const specifier = match[2];
-      if (!importClause || !specifier) continue;
+    const rewriteImports = async (snippet: string) => {
+      const [parsedImports] = parseEsm(snippet);
 
-      if (importClause.startsWith('type ')) {
-        continue;
-      }
+      for (const parsedImport of parsedImports) {
+        const specifier = parsedImport.n;
+        if (!specifier) continue;
 
-      const record = imports.get(specifier) ?? { namedImports: [], useExportLevel: false };
+        const statementPrefix = snippet.slice(parsedImport.ss, parsedImport.s - 1);
+        const recordDelta = readImportRecord(statementPrefix);
+        if (!recordDelta) continue;
 
-      if (importClause.includes('* as ') || (!importClause.startsWith('{') && !importClause.includes('{'))) {
-        record.useExportLevel = true;
-      }
-
-      const namedImportsMatch = importClause.match(/\{([\s\S]*?)\}/);
-      if (namedImportsMatch) {
-        for (const rawImport of namedImportsMatch[1].split(',')) {
-          const trimmedImport = rawImport.trim();
-          if (trimmedImport === '' || trimmedImport.startsWith('type ')) continue;
-
-          const importedSymbol = trimmedImport.split(/\s+as\s+/i)[0]?.trim();
-          if (importedSymbol) {
-            record.namedImports.push(importedSymbol);
-          }
+        const record = imports.get(specifier) ?? { namedImports: [], useExportLevel: false };
+        if (recordDelta.useExportLevel) {
+          record.useExportLevel = true;
         }
+        if (recordDelta.namedImports.length > 0) {
+          record.namedImports.push(...recordDelta.namedImports);
+        }
+        imports.set(specifier, record);
       }
+    };
 
-      imports.set(specifier, record);
-    }
+    if (id.replace(/[?#].*$/, '').endsWith('.svelte')) {
+      try {
+        const ast = parseSvelte(code, { filename: id, modern: true });
+        const scripts = [ast.module, ast.instance].filter(Boolean);
 
-    for (const match of strippedCode.matchAll(sideEffectImportPattern)) {
-      const specifier = match[1];
-      if (!specifier || imports.has(specifier)) continue;
-
-      imports.set(specifier, {
-        namedImports: [],
-        useExportLevel: true
-      });
+        for (const script of scripts) {
+          const content = script!.content as unknown as { start: number; end: number };
+          await rewriteImports(code.slice(content.start, content.end));
+        }
+      } catch {
+        await rewriteImports(code);
+      }
+    } else {
+      await rewriteImports(code);
     }
 
     for (const [specifier, importRecord] of imports) {
@@ -264,13 +311,11 @@ export default async function componentSourceCollector(opts: Options = { safePac
   }
 
   const writeOutFile = async () => {
-    const pathLines = Array.from(componentFiles)
-      .map((filePath) => `@source '${filePath}';`)
-      .sort();
+    const pathLines = Array.from(componentFiles).sort();
     const inlineLines = Array.from(inlineTailwindClasses)
       .sort()
       .map((className) => `@source inline("${escapeInlineTailwindClassName(className)}");`);
-    const lines = [...pathLines, ...inlineLines];
+    const lines = [...pathLines.flatMap((filePath) => formatPathSourceLines(filePath)), ...inlineLines];
 
     if (outputFilePath) {
       const didWrite = await writeIfDifferent(outputFilePath, lines.join('\n'));
@@ -281,6 +326,9 @@ export default async function componentSourceCollector(opts: Options = { safePac
   return {
     name: 'vite-plugin-component-source-collector',
     enforce: 'pre' as const,
+    async buildStart() {
+      await init;
+    },
     async configResolved(resolved) {
       config = resolved;
       outputFilePath = resolve(config.root, outFileName);
@@ -305,6 +353,10 @@ export default async function componentSourceCollector(opts: Options = { safePac
       } else if (config.command === 'serve' && (await exists(outputFilePath))) {
         const fileLines = (await readFile(outputFilePath, 'utf8')).split('\n');
         for (const fileLine of fileLines) {
+          if (/^\/\* tailwind-source: .* \*\/$/.test(fileLine)) {
+            continue;
+          }
+
           const inlineMatch = fileLine.match(/^@source inline\("(.*)"\);$/);
           if (inlineMatch) {
             addInlineClassList([inlineMatch[1].replaceAll('\\"', '"').replaceAll('\\\\', '\\')]);
@@ -357,15 +409,10 @@ export default async function componentSourceCollector(opts: Options = { safePac
       server.watcher.on('add', onChange);
     },
 
-    buildStart() {
-      // console.log('tailwind-sources:buildStart', componentFiles);
-      // componentFiles.clear();
-    },
-
     async transform(code, id) {
       // console.log('tailwind-sources:transform', id);
       if (!toPosixPath(id).includes('/node_modules/') && !toPosixPath(id).includes('/.vite/')) {
-        await addManifestSourcesForCode(code);
+        await addManifestSourcesForCode(code, id);
       }
 
       // Adds all imports from css files

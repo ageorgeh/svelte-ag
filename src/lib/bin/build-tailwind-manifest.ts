@@ -1,19 +1,26 @@
 import { existsSync, statSync } from 'node:fs';
-import { readFile, readdir, stat } from 'node:fs/promises';
+import { glob, readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { init, parse as parseEsm } from 'es-module-lexer';
+import { parse as parseSvelte } from 'svelte/compiler';
 import ts from 'typescript';
 import { readPackageJson, writeIfDifferent } from 'ts-ag';
 import {
   ensureRelativeManifestSourcePath,
   getTailwindSourcesManifestPath,
   normalizeManifestExportFilter,
+  serializeTailwindSourceManifest,
   shouldIncludeManifestExport,
   type TailwindSourceManifest,
   type TailwindSourceManifestLeaf
-} from '../src/lib/vite/tailwind-sources-manifest.js';
+} from '../vite/tailwind-sources-manifest.js';
 
-type ExportTarget = string | string[] | Record<string, ExportTarget>;
+interface ExportTargetMap {
+  [key: string]: ExportTarget;
+}
+
+type ExportTarget = string | string[] | ExportTargetMap;
 
 type PackageJsonWithExports = {
   name?: string;
@@ -40,6 +47,7 @@ const WATCH_POLL_INTERVAL_MS = 700;
 const CLASS_COLLECTOR_CALLS = new Set(['cn', 'clsx', 'cva', 'tv']);
 const IGNORED_DIRECTORIES = new Set(['.git', '.svelte-kit', 'node_modules']);
 
+/** Build a Tailwind source manifest for one package export map. */
 export async function generateTailwindManifestForPackage(
   packageDir: string,
   options: GeneratorOptions
@@ -89,10 +97,11 @@ export async function generateTailwindManifestForPackage(
   }
 
   const outputFile = getTailwindSourcesManifestPath(packageDir, packageJson);
-  const didWrite = await writeIfDifferent(outputFile, `${JSON.stringify(manifest, null, 2)}\n`);
+  const didWrite = await writeIfDifferent(outputFile, serializeTailwindSourceManifest(manifest));
   return { didWrite, outputFile, exportCount: Object.keys(manifest.exports).length };
 }
 
+/** Resolve exported symbols to their own Tailwind class and CSS source sets. */
 async function collectExportSymbols(
   entryFiles: string[],
   packageDir: string
@@ -126,90 +135,85 @@ async function collectExportSymbols(
   );
 }
 
-async function readEntrySymbolTargets(entryFile: string): Promise<Map<string, string>> {
+/** Map re-exported symbol names from an entry file back to local source files. */
+async function readEntrySymbolTargets(entryFile: string, visited = new Set<string>()): Promise<Map<string, string>> {
+  if (visited.has(entryFile)) {
+    return new Map();
+  }
+
+  visited.add(entryFile);
+
   const source = await readFile(entryFile, 'utf8');
-  const sourceFile = createTypeScriptSourceFile(entryFile, source);
   const importBindings = new Map<string, string>();
   const symbolTargets = new Map<string, string>();
 
-  for (const statement of sourceFile.statements) {
-    if (
-      ts.isImportDeclaration(statement) &&
-      statement.moduleSpecifier &&
-      ts.isStringLiteral(statement.moduleSpecifier)
-    ) {
-      const moduleSpecifier = statement.moduleSpecifier.text;
-      if (!isRelativeSpecifier(moduleSpecifier)) continue;
+  for (const snippet of getModuleSnippets(entryFile, source)) {
+    await init;
+    const [imports, exports] = parseEsm(snippet);
 
-      const importClause = statement.importClause;
-      if (!importClause) continue;
-
-      if (importClause.name) {
-        importBindings.set(importClause.name.text, moduleSpecifier);
-      }
-
-      const namedBindings = importClause.namedBindings;
-      if (!namedBindings) continue;
-
-      if (ts.isNamespaceImport(namedBindings)) {
-        importBindings.set(namedBindings.name.text, moduleSpecifier);
+    for (const parsedImport of imports) {
+      const statement = snippet.slice(parsedImport.ss, parsedImport.se).trim();
+      if (statement === '' || /^import\s+type\b/.test(statement) || /^export\s+type\b/.test(statement)) {
         continue;
       }
 
-      for (const element of namedBindings.elements) {
-        importBindings.set(element.name.text, moduleSpecifier);
-      }
-    }
+      if (statement.startsWith('import')) {
+        const specifier = parsedImport.n;
+        if (!specifier || !isRelativeSpecifier(specifier)) continue;
 
-    if (!ts.isExportDeclaration(statement) || statement.isTypeOnly) {
-      continue;
-    }
-
-    if (statement.moduleSpecifier && ts.isStringLiteral(statement.moduleSpecifier)) {
-      const moduleSpecifier = statement.moduleSpecifier.text;
-      if (!isRelativeSpecifier(moduleSpecifier)) continue;
-
-      if (!statement.exportClause) {
+        for (const localName of readImportBindingNames(statement)) {
+          importBindings.set(localName, specifier);
+        }
         continue;
       }
 
-      if (ts.isNamespaceExport(statement.exportClause)) {
-        const targetFile = resolveLocalImportPath(moduleSpecifier, entryFile);
-        if (targetFile) symbolTargets.set(statement.exportClause.name.text, targetFile);
+      if (!statement.startsWith('export')) {
         continue;
       }
 
-      for (const element of statement.exportClause.elements) {
-        if (element.isTypeOnly) continue;
+      const specifier = parsedImport.n;
+      if (!specifier || !isRelativeSpecifier(specifier)) continue;
 
-        const targetFile = resolveLocalImportPath(moduleSpecifier, entryFile);
-        if (targetFile) symbolTargets.set(element.name.text, targetFile);
+      const targetFile = resolveLocalImportPath(specifier, entryFile);
+      if (!targetFile) continue;
+
+      if (/^export\s+\*\s+from\b/.test(statement)) {
+        const nestedTargets = await readEntrySymbolTargets(targetFile, visited);
+        for (const [symbolName, nestedTargetFile] of nestedTargets) {
+          if (!symbolTargets.has(symbolName)) {
+            symbolTargets.set(symbolName, nestedTargetFile);
+          }
+        }
+        continue;
       }
 
-      continue;
+      const statementExports = exports.filter(
+        (exportRecord) => exportRecord.s >= parsedImport.ss && exportRecord.e <= parsedImport.se
+      );
+      for (const exportRecord of statementExports) {
+        symbolTargets.set(exportRecord.n, targetFile);
+      }
     }
 
-    if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
-      continue;
-    }
-
-    for (const element of statement.exportClause.elements) {
-      if (element.isTypeOnly) continue;
-
-      const localName = (element.propertyName ?? element.name).text;
+    for (const exportRecord of exports) {
+      const localName = exportRecord.ln ?? exportRecord.n;
       const localSpecifier = importBindings.get(localName);
       if (!localSpecifier) continue;
 
       const targetFile = resolveLocalImportPath(localSpecifier, entryFile);
-      if (targetFile) {
-        symbolTargets.set(element.name.text, targetFile);
+      if (!targetFile) continue;
+
+      if (!symbolTargets.has(exportRecord.n)) {
+        symbolTargets.set(exportRecord.n, targetFile);
       }
     }
   }
 
+  visited.delete(entryFile);
   return symbolTargets;
 }
 
+/** Walk local imports reachable from entry files and collect classes plus CSS sources. */
 async function scanFileGraph(entryFiles: string[], packageDir: string): Promise<GraphScan> {
   const scan: GraphScan = {
     classes: new Set<string>(),
@@ -231,7 +235,7 @@ async function scanFileGraph(entryFiles: string[], packageDir: string): Promise<
       scan.sources.add(ensureRelativeManifestSourcePath(toPosixPath(path.relative(packageDir, filePath))));
     }
 
-    for (const specifier of extractLocalSpecifiers(source)) {
+    for (const specifier of await extractLocalSpecifiers(filePath, source)) {
       const targetFile = resolveLocalImportPath(specifier, filePath);
       if (!targetFile) continue;
       await visit(targetFile);
@@ -245,12 +249,15 @@ async function scanFileGraph(entryFiles: string[], packageDir: string): Promise<
   return scan;
 }
 
+/** Extract likely Tailwind class tokens from markup and script expressions. */
 function collectClassNamesFromFile(filePath: string, source: string, out: Set<string>): void {
-  for (const match of source.matchAll(/(?:class|className)\s*=\s*(['"`])([\s\S]*?)\1/g)) {
+  const markupSource = getClassAttributeSource(filePath, source);
+
+  for (const match of markupSource.matchAll(/(?:class|className)\s*=\s*(['"`])([\s\S]*?)\1/g)) {
     addClassTokens(match[2] ?? '', out);
   }
 
-  for (const match of source.matchAll(/(?:class|className)\s*=\s*\{([\s\S]*?)\}/g)) {
+  for (const match of markupSource.matchAll(/(?:class|className)\s*=\s*\{([\s\S]*?)\}/g)) {
     const expression = match[1]?.trim();
     if (!expression) continue;
 
@@ -270,11 +277,7 @@ function collectClassNamesFromFile(filePath: string, source: string, out: Set<st
     visit(sourceFile);
   }
 
-  const scriptBlocks = filePath.endsWith('.svelte')
-    ? [...source.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map((match) => match[1] ?? '')
-    : [source];
-
-  for (const scriptBlock of scriptBlocks) {
+  for (const scriptBlock of getModuleSnippets(filePath, source)) {
     const sourceFile = createTypeScriptSourceFile(filePath, scriptBlock);
 
     const visit = (node: ts.Node) => {
@@ -293,6 +296,32 @@ function collectClassNamesFromFile(filePath: string, source: string, out: Set<st
   }
 }
 
+function getClassAttributeSource(filePath: string, source: string): string {
+  if (!filePath.endsWith('.svelte')) {
+    return source;
+  }
+
+  return source.replaceAll(/<!--[\s\S]*?-->/g, '');
+}
+
+function getModuleSnippets(filePath: string, source: string): string[] {
+  if (!filePath.endsWith('.svelte')) {
+    return [source];
+  }
+
+  try {
+    const ast = parseSvelte(source, { filename: filePath, modern: true });
+    const scripts = [ast.module, ast.instance].filter(Boolean);
+    return scripts.map((script) => {
+      const content = script!.content as unknown as { start: number; end: number };
+      return source.slice(content.start, content.end);
+    });
+  } catch {
+    return [source];
+  }
+}
+
+/** Recursively collect class tokens from string literal nodes. */
 function collectStringLiterals(node: ts.Node, out: Set<string>): void {
   if (ts.isStringLiteralLike(node)) {
     addClassTokens(node.text, out);
@@ -305,6 +334,7 @@ function collectStringLiterals(node: ts.Node, out: Set<string>): void {
   ts.forEachChild(node, (child) => collectStringLiterals(child, out));
 }
 
+/** Split whitespace-delimited class strings into manifest tokens. */
 function addClassTokens(value: string, out: Set<string>): void {
   for (const token of value.split(/\s+/)) {
     const trimmed = token.trim();
@@ -313,6 +343,7 @@ function addClassTokens(value: string, out: Set<string>): void {
   }
 }
 
+/** Parse source text with a script kind inferred from the file extension. */
 function createTypeScriptSourceFile(filePath: string, source: string): ts.SourceFile {
   const scriptKind = filePath.endsWith('.js')
     ? ts.ScriptKind.JS
@@ -325,6 +356,7 @@ function createTypeScriptSourceFile(filePath: string, source: string): ts.Source
   return ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true, scriptKind);
 }
 
+/** Get a stable function name from simple call expressions. */
 function getExpressionName(expression: ts.Expression): string {
   if (ts.isIdentifier(expression)) {
     return expression.text;
@@ -337,69 +369,73 @@ function getExpressionName(expression: ts.Expression): string {
   return '';
 }
 
+/** Match object keys commonly used to hold class name strings. */
 function isClassPropertyName(name: ts.PropertyName): boolean {
   return (ts.isIdentifier(name) || ts.isStringLiteral(name)) && (name.text === 'class' || name.text === 'className');
 }
 
-function extractLocalSpecifiers(source: string): string[] {
-  const stripped = stripComments(source);
+/** Find relative imports/exports with module-lexer and CSS imports with a fallback regex. */
+async function extractLocalSpecifiers(filePath: string, source: string): Promise<string[]> {
   const matches = new Set<string>();
-  const patterns = [
-    /(?:^|\n)\s*import\s+["']([^"']+)["']/g,
-    /(?:^|\n)\s*import\s+(?!type\b)[\w\s{},*$]+\s+from\s+["']([^"']+)["']/g,
-    /(?:^|\n)\s*export\s+(?!type\b)(?:\*|\{[\s\S]*?\})\s+from\s+["']([^"']+)["']/g,
-    /@import\s+['"]([^'"]+)['"]/g
-  ];
 
-  for (const pattern of patterns) {
-    for (const match of stripped.matchAll(pattern)) {
-      const specifier = match[1];
-      if (specifier && isRelativeSpecifier(specifier)) {
-        matches.add(specifier);
+  await init;
+
+  const collectEsmSpecifiers = async (snippet: string) => {
+    const [imports] = parseEsm(snippet);
+
+    for (const parsedImport of imports) {
+      const specifier = parsedImport.n;
+      if (!specifier || !isRelativeSpecifier(specifier)) continue;
+
+      const statement = snippet.slice(parsedImport.ss, parsedImport.se).trim();
+      if (statement === '' || /^import\s+type\b/.test(statement) || /^export\s+type\b/.test(statement)) {
+        continue;
       }
+
+      if (!statement.startsWith('import') && !statement.startsWith('export')) continue;
+      matches.add(specifier);
+    }
+  };
+
+  if (filePath.endsWith('.svelte')) {
+    for (const snippet of getModuleSnippets(filePath, source)) {
+      await collectEsmSpecifiers(snippet);
+    }
+  } else {
+    await collectEsmSpecifiers(source);
+  }
+
+  for (const match of source.matchAll(/@import\s+['"]([^'"]+)['"]/g)) {
+    const specifier = match[1];
+    if (specifier && isRelativeSpecifier(specifier)) {
+      matches.add(specifier);
     }
   }
 
   return [...matches];
 }
 
-function stripComments(source: string): string {
-  return source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
-}
-
+/** Check whether a module specifier resolves to a local file. */
 function isRelativeSpecifier(specifier: string): boolean {
   return specifier.startsWith('./') || specifier.startsWith('../') || specifier.startsWith('/');
 }
 
+/** Resolve a relative import from one file to an on-disk source file. */
 function resolveLocalImportPath(specifier: string, importerPath: string): string | null {
   const cleanSpecifier = specifier.split('?')[0]?.split('#')[0] ?? specifier;
   const targetPath = path.resolve(path.dirname(importerPath), cleanSpecifier);
   return resolveFileCandidate(targetPath);
 }
 
+/** Resolve a package export target to its runtime source file. */
 function resolvePackageEntryFile(packageDir: string, entryTarget: string): string | null {
   const normalizedTarget = entryTarget.startsWith('./') ? entryTarget : `./${entryTarget}`;
   return resolveFileCandidate(path.resolve(packageDir, normalizedTarget));
 }
 
+/** Try supported source extensions and index files for a target path. */
 function resolveFileCandidate(targetPath: string): string | null {
-  const candidates = [
-    targetPath,
-    `${targetPath}.js`,
-    `${targetPath}.mjs`,
-    `${targetPath}.cjs`,
-    `${targetPath}.ts`,
-    `${targetPath}.tsx`,
-    `${targetPath}.svelte`,
-    `${targetPath}.css`,
-    path.join(targetPath, 'index.js'),
-    path.join(targetPath, 'index.mjs'),
-    path.join(targetPath, 'index.cjs'),
-    path.join(targetPath, 'index.ts'),
-    path.join(targetPath, 'index.tsx'),
-    path.join(targetPath, 'index.svelte'),
-    path.join(targetPath, 'index.css')
-  ];
+  const candidates = [...buildBaseCandidates(targetPath), ...buildBaseCandidates(path.join(targetPath, 'index'))];
 
   for (const candidate of candidates) {
     if (existsSync(candidate) && statSync(candidate).isFile()) {
@@ -410,6 +446,87 @@ function resolveFileCandidate(targetPath: string): string | null {
   return null;
 }
 
+function buildBaseCandidates(basePath: string): string[] {
+  const candidates = new Set<string>();
+  const addCandidatesForBase = (candidateBase: string) => {
+    candidates.add(candidateBase);
+    candidates.add(`${candidateBase}.js`);
+    candidates.add(`${candidateBase}.mjs`);
+    candidates.add(`${candidateBase}.cjs`);
+    candidates.add(`${candidateBase}.ts`);
+    candidates.add(`${candidateBase}.tsx`);
+    candidates.add(`${candidateBase}.jsx`);
+    candidates.add(`${candidateBase}.svelte`);
+    candidates.add(`${candidateBase}.svelte.ts`);
+    candidates.add(`${candidateBase}.css`);
+  };
+
+  addCandidatesForBase(basePath);
+
+  const emittedBasePath = stripEmittedModuleExtension(basePath);
+  if (emittedBasePath !== basePath) {
+    addCandidatesForBase(emittedBasePath);
+  }
+
+  return [...candidates];
+}
+
+function stripEmittedModuleExtension(targetPath: string): string {
+  return targetPath.replace(/\.(?:mjs|cjs|js)$/i, '');
+}
+
+function readImportBindingNames(statement: string): string[] {
+  const fromMatch = statement.match(/^import\s+([\s\S]*?)\s+from\s*['"][^'"]+['"]\s*;?$/);
+  if (!fromMatch) {
+    return [];
+  }
+
+  const importClause = fromMatch[1]?.trim();
+  if (!importClause || importClause.startsWith('type ')) {
+    return [];
+  }
+
+  const bindingNames: string[] = [];
+  const namedImportsMatch = importClause.match(/\{([\s\S]*?)\}/);
+
+  if (namedImportsMatch) {
+    for (const rawImport of namedImportsMatch[1].split(',')) {
+      const trimmedImport = rawImport.trim();
+      if (trimmedImport === '' || trimmedImport.startsWith('type ')) continue;
+
+      const aliasParts = trimmedImport.split(/\s+as\s+/i).map((part) => part.trim());
+      const localName = aliasParts.at(-1);
+      if (localName) {
+        bindingNames.push(localName);
+      }
+    }
+  }
+
+  const remainingClause = importClause
+    .replace(/\{[\s\S]*?\}/, '')
+    .trim()
+    .replace(/,$/, '')
+    .trim();
+  if (remainingClause !== '') {
+    for (const segment of remainingClause
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean)) {
+      if (segment.startsWith('* as ')) {
+        bindingNames.push(segment.slice(5).trim());
+        continue;
+      }
+
+      if (!segment.startsWith('type ')) {
+        bindingNames.push(segment);
+      }
+    }
+  }
+
+  return bindingNames;
+}
+
+/** Flatten runtime export targets while skipping type-only branches. */
 function collectRuntimeTargets(target: ExportTarget): string[] {
   if (typeof target === 'string') {
     return target.endsWith('.d.ts') ? [] : [target];
@@ -428,6 +545,7 @@ function collectRuntimeTargets(target: ExportTarget): string[] {
   });
 }
 
+/** Detect wildcard exports that cannot be resolved to fixed source files. */
 function hasWildcardTarget(target: ExportTarget): boolean {
   if (typeof target === 'string') {
     return target.includes('*');
@@ -440,6 +558,7 @@ function hasWildcardTarget(target: ExportTarget): boolean {
   return Object.values(target).some(hasWildcardTarget);
 }
 
+/** Convert collected sets into the manifest's sorted JSON shape. */
 function toManifestLeaf(scan: GraphScan): TailwindSourceManifestLeaf {
   return {
     classes: [...scan.classes].sort(),
@@ -447,52 +566,46 @@ function toManifestLeaf(scan: GraphScan): TailwindSourceManifestLeaf {
   };
 }
 
+/** Guard graph traversal so scans stay inside the current package. */
 function isPathInside(parentPath: string, childPath: string): boolean {
   const relativePath = path.relative(parentPath, childPath);
   return relativePath === '' || (!relativePath.startsWith('..') && !path.isAbsolute(relativePath));
 }
 
+/** Normalize file paths for manifest stability across platforms. */
 function toPosixPath(filePath: string): string {
   return filePath.replaceAll('\\', '/');
 }
 
+/** Resolve package directories from `package.json` globs relative to the working directory. */
 async function discoverPackageDirectories(rootDir: string, packagePatterns: string[]): Promise<string[]> {
   const rootPackageJson = path.join(rootDir, 'package.json');
   if (packagePatterns.length === 0 && existsSync(rootPackageJson)) {
     return [rootDir];
   }
 
-  const patternMatchers = packagePatterns.map((pattern) => globToRegExp(pattern));
-  const packageDirs: string[] = [];
-  const queue = [rootDir];
+  const packageJsonPaths = new Set<string>();
 
-  while (queue.length > 0) {
-    const currentDir = queue.shift();
-    if (!currentDir) break;
-
-    const entries = await readdir(currentDir, { withFileTypes: true });
-    const relativeDir = toPosixPath(path.relative(rootDir, currentDir)) || '.';
-
-    if (entries.some((entry) => entry.isFile() && entry.name === 'package.json')) {
-      if (patternMatchers.length === 0 || patternMatchers.some((matcher) => matcher.test(relativeDir))) {
-        packageDirs.push(currentDir);
+  for (const pattern of packagePatterns) {
+    for await (const matchedPath of glob(pattern, { cwd: rootDir })) {
+      const absolutePath = path.resolve(rootDir, matchedPath);
+      if (path.basename(absolutePath) !== 'package.json') {
+        continue;
       }
-    }
 
-    for (const entry of entries) {
-      if (!entry.isDirectory() || IGNORED_DIRECTORIES.has(entry.name)) continue;
-      queue.push(path.join(currentDir, entry.name));
+      packageJsonPaths.add(absolutePath);
     }
   }
 
-  return packageDirs.sort();
+  return [...packageJsonPaths].map((packageJsonPath) => path.dirname(packageJsonPath)).sort();
 }
 
+/** Generate manifests for every matching package and report what changed. */
 async function runBuild(rootDir: string, options: CliOptions): Promise<string[]> {
   const packageDirs = await discoverPackageDirectories(rootDir, options.packagePatterns);
 
   if (packageDirs.length === 0) {
-    throw new Error('[tailwind-manifest] No matching package directories found.');
+    throw new Error('[tailwind-manifest] No matching package.json files found.');
   }
 
   for (const packageDir of packageDirs) {
@@ -508,6 +621,7 @@ async function runBuild(rootDir: string, options: CliOptions): Promise<string[]>
   return packageDirs;
 }
 
+/** Rebuild manifests when any tracked package directory snapshot changes. */
 async function runWatch(rootDir: string, options: CliOptions): Promise<void> {
   const packageDirs = await runBuild(rootDir, options);
   const snapshots = new Map<string, string>();
@@ -549,6 +663,7 @@ async function runWatch(rootDir: string, options: CliOptions): Promise<void> {
   await new Promise(() => {});
 }
 
+/** Hash directory contents into a cheap polling snapshot for watch mode. */
 async function createDirectorySnapshot(packageDir: string): Promise<string> {
   const files: string[] = [];
   const queue = [packageDir];
@@ -575,35 +690,7 @@ async function createDirectorySnapshot(packageDir: string): Promise<string> {
   return files.sort().join('|');
 }
 
-function globToRegExp(pattern: string): RegExp {
-  let regex = '^';
-
-  for (let i = 0; i < pattern.length; i += 1) {
-    const char = pattern[i];
-    const nextChar = pattern[i + 1];
-
-    if (char === '*' && nextChar === '*') {
-      regex += '.*';
-      i += 1;
-      continue;
-    }
-
-    if (char === '*') {
-      regex += '[^/]*';
-      continue;
-    }
-
-    if (char === '?') {
-      regex += '.';
-      continue;
-    }
-
-    regex += /[|\\{}()[\]^$+?.]/.test(char) ? `\\${char}` : char;
-  }
-
-  return new RegExp(regex.replaceAll('\\/', '/').concat('$'));
-}
-
+/** Parse manifest builder CLI flags into runtime options. */
 function parseCliArgs(argv: string[]): CliOptions {
   const packagePatterns: string[] = [];
   const exportFilters: string[] = [];
@@ -649,6 +736,7 @@ function parseCliArgs(argv: string[]): CliOptions {
   return { exportFilters, packagePatterns, watch };
 }
 
+/** Run the manifest builder once or in watch mode from the current working directory. */
 export async function main(argv = process.argv.slice(2)): Promise<void> {
   const options = parseCliArgs(argv);
   const rootDir = process.cwd();
