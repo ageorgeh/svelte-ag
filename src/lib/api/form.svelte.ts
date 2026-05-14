@@ -1,5 +1,5 @@
 import { superForm, defaults, setError, setMessage } from 'sveltekit-superforms';
-import type { SuperForm, SuperValidated } from 'sveltekit-superforms';
+import type { SuperForm } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type {
   ApiRequestFunction,
@@ -18,6 +18,35 @@ import { safeParse, safeParseAsync } from 'valibot';
 export type ValidInput<E extends ApiEndpoints, P extends E['path'], M extends E['method']> = NonNullable<
   ApiInput<E, P, M>
 >;
+
+type FormProps<T extends ApiEndpoints, P extends T['path'], M extends Extract<T, { path: P }>['method']> = NonNullable<
+  Parameters<typeof superForm<ValidInput<T, P, M>>>[1]
+>;
+
+type FormOnUpdateArgs<
+  T extends ApiEndpoints,
+  P extends T['path'],
+  M extends Extract<T, { path: P }>['method']
+> = Parameters<NonNullable<FormProps<T, P, M>['onUpdate']>>[0];
+
+type FormActionArgs<
+  T extends ApiEndpoints,
+  P extends T['path'],
+  M extends Extract<T, { path: P }>['method'],
+  B = undefined
+> = FormOnUpdateArgs<T, P, M> & { body: B };
+
+type FormErrorBody<
+  T extends ApiEndpoints,
+  P extends T['path'],
+  M extends Extract<T, { path: P }>['method']
+> = ApiErrorBody<T, P, M> & {
+  message: string;
+  field?: {
+    name: string;
+    value: string;
+  };
+};
 
 /**
  * Creates a strongly-typed form factory for an API schema.
@@ -44,17 +73,13 @@ export type ApiRequestForm<
    * - `beforeRequest`: called before sending the api call
    * - `onSuccess`: called after a successful response body is parsed.
    * - `onFail`: called after an error response body is parsed and mapped to form errors/messages.
+   *
+   * Each hook receives the `onUpdate` event object plus a `body` field.
    */
   actions?: {
-    beforeRequest?: (form: SuperValidated<ValidInput<API, Path, Method>>) => void | Promise<void>;
-    onSuccess?: (
-      form: SuperValidated<ValidInput<API, Path, Method>>,
-      response: ApiSuccessBody<API, Path, Method>
-    ) => void | Promise<void>;
-    onFail?: (
-      form: SuperValidated<ValidInput<API, Path, Method>>,
-      response: ApiErrorBody<API, Path, Method>
-    ) => void | Promise<void>;
+    beforeRequest?: (args: FormActionArgs<API, Path, Method>) => void | Promise<void>;
+    onSuccess?: (args: FormActionArgs<API, Path, Method, ApiSuccessBody<API, Path, Method>>) => void | Promise<void>;
+    onFail?: (args: FormActionArgs<API, Path, Method, ApiErrorBody<API, Path, Method>>) => void | Promise<void>;
   };
 
   /**
@@ -156,32 +181,31 @@ export function createFormFunction<API extends ApiEndpoints>(
           });
         }
       },
-      async onUpdate({ form }) {
-        if (actions && actions.beforeRequest) await actions.beforeRequest(form);
-
-        if (!form.valid) return;
+      async onUpdate(props) {
+        if (actions && actions.beforeRequest) await actions.beforeRequest({ ...props, body: undefined });
+        if (!props.form.valid) return;
 
         // console.log('onUpdate: sending data', form.data);
-        const res = await request(path, method, form.data);
+        const res = await request(path, method, props.form.data);
 
         if (res.ok === false) {
-          const body = await res.json();
+          const body = (await res.json()) as FormErrorBody<API, typeof path, typeof method>;
 
           // TODO set some kind of overall form error if there is no field
           if (!body.field) {
-            setMessage(form, body.message);
+            setMessage(props.form, body.message);
             // setError(form, '', body.message);
           } else {
-            setError(form, body.field!.name as any, body.field.value, { status: res.status });
+            setError(props.form, body.field!.name as any, body.field.value, { status: res.status });
           }
           if (actions && actions.onFail) {
-            await actions.onFail(form, body as ApiErrorBody<API, typeof path, typeof method>);
+            await actions.onFail({ ...props, body });
           }
         } else {
-          setMessage(form, 'Success');
+          setMessage(props.form, 'Success');
           if (actions && actions.onSuccess) {
-            const body = await res.json();
-            await actions.onSuccess(form, body);
+            const body = (await res.json()) as ApiSuccessBody<API, typeof path, typeof method>;
+            await actions.onSuccess({ ...props, body });
           }
         }
       },
