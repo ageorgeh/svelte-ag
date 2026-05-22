@@ -70,12 +70,12 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import type { Snippet } from 'svelte';
+  import { SvelteMap } from 'svelte/reactivity';
 
   import BaseShader from './BaseShader.svelte';
-  import { zip } from './utils.js';
   import type { WebGpuParameter as Parameter, WebGpuBuiltinParameter as BuiltinParameter } from './types.js';
   import { isBuiltinValue } from './types.js';
-  import { SvelteMap } from 'svelte/reactivity';
+  import { zip } from './utils.js';
 
   type Props = {
     width?: string;

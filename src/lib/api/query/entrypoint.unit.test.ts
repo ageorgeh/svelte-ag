@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApiRequest, type ApiEndpoints } from 'ts-ag';
 import * as v from 'valibot';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 type TestResponse = ApiEndpoints['response'];
 

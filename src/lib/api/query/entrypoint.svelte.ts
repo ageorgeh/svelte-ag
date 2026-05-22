@@ -1,7 +1,8 @@
 import { SvelteMap } from 'svelte/reactivity';
 import type { ApiEndpoints, ApiRequestFunction, ApiInput, ApiResponse } from 'ts-ag';
-import { Requestor, Query } from './query.svelte.js';
+
 import { Cache } from './cache.svelte.js';
+import { Requestor, Query } from './query.svelte.js';
 import { batchQueryKey, cacheKey } from './utils.svelte.js';
 
 // ---------------- Global state ----------------

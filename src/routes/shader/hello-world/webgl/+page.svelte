@@ -1,5 +1,6 @@
 <script>
   import { WebGlShader } from '$components/shader/index.js';
+
   import shaderCode from './shader.frag?raw';
 </script>
 

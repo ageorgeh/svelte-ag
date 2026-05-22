@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { box, mergeProps } from 'svelte-toolbelt';
-  import type { SearchListProps } from '../types';
   import { useId } from 'bits-ui';
-  import { useSearchList } from '../search.svelte';
-  import { cn } from '$utils';
+  import { box, mergeProps } from 'svelte-toolbelt';
+
   import { Button } from '$shadcn/button/index.js';
+  import { cn } from '$utils';
+
+  import { useSearchList } from '../search.svelte';
+  import type { SearchListProps } from '../types';
 
   let { children, child, id = useId(), ref = $bindable(null), item, ...restProps }: SearchListProps = $props();
 

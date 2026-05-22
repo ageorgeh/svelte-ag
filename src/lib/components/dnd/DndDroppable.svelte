@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createDroppable, type CreateDroppableInput } from '@dnd-kit/svelte';
-  import type { ClassValue } from 'svelte/elements';
   import type { Snippet } from 'svelte';
+  import type { ClassValue } from 'svelte/elements';
 
   interface DroppableProps extends CreateDroppableInput {
     children: Snippet<[{ isDropTarget: boolean }]>;

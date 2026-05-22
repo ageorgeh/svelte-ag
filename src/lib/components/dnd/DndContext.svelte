@@ -25,6 +25,7 @@ It makes state handling and items sorting easier
   import { DragDropProvider } from '@dnd-kit/svelte';
   // import { move } from '@dnd-kit/helpers';
   import { box } from 'svelte-toolbelt';
+
   import { findItem } from './utils.svelte';
 
   let { children, items = $bindable(), onDragOver, onDragEnd, onDragStart, ...rest }: DndContextProps<T> = $props();

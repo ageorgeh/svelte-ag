@@ -47,12 +47,13 @@ Usage:
 </script>
 
 <script lang="ts" generics="T extends {id: string; children?: T[]}">
-  import type { ClassValue } from 'svelte/elements';
   import type { Snippet } from 'svelte';
-  import type { SortableItemChildProps } from '../DndSortableItem.svelte';
-  import DndSortableItem from '../DndSortableItem.svelte';
+  import type { ClassValue } from 'svelte/elements';
+
   import DndContext, { type DndContextProps } from '../DndContext.svelte';
   import DndOverlay, { type OverlayChildProps } from '../DndOverlay.svelte';
+  import type { SortableItemChildProps } from '../DndSortableItem.svelte';
+  import DndSortableItem from '../DndSortableItem.svelte';
 
   let { class: className, item: itemSnippet, items = $bindable(), ...rest }: SimpleSortableProps<T> = $props();
 </script>

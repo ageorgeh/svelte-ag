@@ -1,9 +1,11 @@
-import { afterEach, describe, expect, it } from 'vitest';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'fs/promises';
-import { join } from 'path';
 import { tmpdir } from 'os';
-import { main } from './build-tailwind-manifest.js';
+import { join } from 'path';
+
+import { afterEach, describe, expect, it } from 'vitest';
+
 import { parseTailwindSourceManifest } from '../vite/tailwind-sources-manifest.js';
+import { main } from './build-tailwind-manifest.js';
 
 const tempDirectories: string[] = [];
 const originalWorkingDirectory = process.cwd();

@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { type CarouselAPI, type CarouselProps, type EmblaContext, setEmblaContext } from './context.js';
-  import { cn } from '$utils/utils.js';
   import emblaCarouselSvelte from 'embla-carousel-svelte';
   import { watch } from 'runed';
+
+  import { cn } from '$utils/utils.js';
+
+  import { type CarouselAPI, type CarouselProps, type EmblaContext, setEmblaContext } from './context.js';
 
   let {
     opts = {},

@@ -37,9 +37,10 @@ Usage:
 </script>
 
 <script lang="ts">
-  import { setItem } from './DndSortableItem.svelte';
-  import type { Snippet } from 'svelte';
   import { createDraggable, type CreateDraggableInput } from '@dnd-kit/svelte';
+  import type { Snippet } from 'svelte';
+
+  import { setItem } from './DndSortableItem.svelte';
 
   let { id, child, ...rest }: DndItemProps = $props();
 

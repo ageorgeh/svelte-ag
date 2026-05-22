@@ -1,11 +1,10 @@
+import { stringify } from 'devalue';
 import type { ApiEndpoints, ApiInput, ApiRequestFunction, ApiSuccessBody, ApiErrorBody, ApiResponse } from 'ts-ag';
 
-import { stringify } from 'devalue';
 import type { Cache } from './cache.svelte';
-
-import { cacheKey } from './utils.svelte.js';
 import type { BatchDetails } from './entrypoint.svelte';
 import { RateLimiter } from './rate.svelte';
+import { cacheKey } from './utils.svelte.js';
 
 export type QueryStatus = 'idle' | 'loading' | 'success' | 'error';
 

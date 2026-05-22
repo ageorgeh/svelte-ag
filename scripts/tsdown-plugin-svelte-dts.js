@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 import process from 'node:process';
+
 import { emitDts } from 'svelte2tsx';
 
 export function svelteDtsPlugin(options = {}) {

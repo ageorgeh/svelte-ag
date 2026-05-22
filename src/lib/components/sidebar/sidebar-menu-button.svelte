@@ -49,12 +49,13 @@
 
 <script lang="ts">
   import { mergeProps, type WithElementRef, type WithoutChildrenOrChild } from 'bits-ui';
-  import * as Tooltip from '$shadcn/tooltip/index.js';
-  import * as AlertDialog from '$shadcn/alert-dialog/index.js';
-
-  import { cn } from '$utils/utils.js';
   import type { ComponentProps, Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
+
+  import * as AlertDialog from '$shadcn/alert-dialog/index.js';
+  import * as Tooltip from '$shadcn/tooltip/index.js';
+  import { cn } from '$utils/utils.js';
+
   import { useSidebar } from './context.svelte.js';
 
   let {

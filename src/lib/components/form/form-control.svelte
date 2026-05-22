@@ -5,9 +5,10 @@
 
 <script lang="ts">
   import { Control } from 'formsnap';
-  import { getFormContext, type FormContext } from './form.svelte';
   import type { Snippet } from 'svelte';
   import type { Expand } from 'svelte-toolbelt';
+
+  import { getFormContext, type FormContext } from './form.svelte';
 
   let {
     children: childrenProp,

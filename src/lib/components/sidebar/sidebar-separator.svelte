@@ -1,7 +1,8 @@
 <script lang="ts">
+  import type { ComponentProps } from 'svelte';
+
   import { Separator } from '$shadcn/separator/index.js';
   import { cn } from '$utils/utils.js';
-  import type { ComponentProps } from 'svelte';
 
   let { ref = $bindable(null), class: className, ...restProps }: ComponentProps<typeof Separator> = $props();
 </script>

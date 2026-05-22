@@ -5,8 +5,9 @@
 </script>
 
 <script lang="ts">
-  import { getItem } from './DndSortableItem.svelte';
   import { cn } from '$utils/utils.js';
+
+  import { getItem } from './DndSortableItem.svelte';
   let { class: className }: DragHandleProps = $props();
 
   const item = $derived.by(() => {

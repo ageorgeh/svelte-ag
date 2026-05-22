@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { sleep } from 'radash';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+
 import { RateLimiter } from './rate.svelte.js';
 
 describe('RateLimiter', () => {

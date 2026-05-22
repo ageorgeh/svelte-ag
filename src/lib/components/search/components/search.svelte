@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { box, mergeProps } from 'svelte-toolbelt';
-  import type { SearchProps } from '../types.js';
   import { useId } from 'bits-ui';
-  import { useSearchRoot } from '../search.svelte.js';
+  import { box, mergeProps } from 'svelte-toolbelt';
+
   import { cn } from '$utils/index.js';
+
+  import { useSearchRoot } from '../search.svelte.js';
+  import type { SearchProps } from '../types.js';
 
   let {
     children,

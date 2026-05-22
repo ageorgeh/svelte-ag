@@ -1,12 +1,14 @@
 <script lang="ts">
+  import type { WithElementRef } from 'bits-ui';
+  import { box } from 'svelte-toolbelt';
+  import type { HTMLAttributes } from 'svelte/elements';
+
+  import { browser } from '$app/environment';
   import * as Tooltip from '$shadcn/tooltip/index.js';
   import { cn } from '$utils/utils.js';
-  import type { WithElementRef } from 'bits-ui';
-  import type { HTMLAttributes } from 'svelte/elements';
+
   import { SIDEBAR_COOKIE_MAX_AGE, SIDEBAR_COOKIE_NAME, SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from './constants.js';
   import { setSidebar } from './context.svelte.js';
-  import { browser } from '$app/environment';
-  import { box } from 'svelte-toolbelt';
 
   let {
     ref = $bindable(null),
