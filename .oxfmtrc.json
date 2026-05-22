@@ -9,6 +9,13 @@
   "svelte": {
     "sortOrder": "scripts-options-markup-styles"
   },
+  "sortImports": {
+    "internalPattern": ["~/", "@/", "#", "$"]
+  },
+  // Prefer the eslint plugin still
+  // "sortTailwindcss": {
+  //   "stylesheet": "src/app.css"
+  // },
   "ignorePatterns": [
     "package-lock.json",
     "pnpm-lock.yaml",

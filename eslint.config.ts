@@ -1,8 +1,9 @@
-import svelte from 'eslint-plugin-svelte';
-import globals from 'globals';
 import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
+import svelte from 'eslint-plugin-svelte';
 import { defineConfig, globalIgnores } from 'eslint/config';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
+
 import svelteConfig from './svelte.config.js';
 
 const isWindows = process.platform === 'win32';

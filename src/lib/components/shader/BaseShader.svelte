@@ -2,9 +2,9 @@
   import { onDestroy, onMount } from 'svelte';
   import type { Snippet } from 'svelte';
 
-  import { pixelScale, clamp } from './utils.js';
-  import { intersectionObserver } from './intersectionObserver.js';
   import { devicePixelResizeObserver, type DevicePixelResizeEvent } from './devicePixelResizeObserver.js';
+  import { intersectionObserver } from './intersectionObserver.js';
+  import { pixelScale, clamp } from './utils.js';
 
   type Props = {
     width?: string;

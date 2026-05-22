@@ -50,10 +50,11 @@
 </script>
 
 <script lang="ts">
-  import { cn, type HTMLDivAttributes } from '$utils';
-  import type { WithElementRef } from 'svelte-toolbelt';
-  import { tick } from 'svelte';
   import { watch } from 'runed';
+  import { tick } from 'svelte';
+  import type { WithElementRef } from 'svelte-toolbelt';
+
+  import { cn, type HTMLDivAttributes } from '$utils';
 
   export type Props = WithElementRef<HTMLDivAttributes> & {
     visible: boolean;

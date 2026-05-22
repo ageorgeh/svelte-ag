@@ -7,9 +7,11 @@ Icons:
 -->
 
 <script module lang="ts">
-  import type { FormFieldProps } from './form-field.svelte';
   import type { FormPath } from 'sveltekit-superforms';
+
   import type { Props as ButtonProps } from '$shadcn/button/index.js';
+
+  import type { FormFieldProps } from './form-field.svelte';
 
   // eslint-disable-next-line
   export type FormButtonProps<T extends Record<string, unknown> = {}, U extends FormPath<T> = any> = Omit<
@@ -24,6 +26,7 @@ Icons:
 <script lang="ts" generics="T extends Record<string, unknown>, U extends FormPath<T>">
   import { Button } from '$shadcn/button/index.js';
   import { cn, flyAndScale } from '$utils/utils.js';
+
   import { getFormContext } from './form.svelte';
 
   let {

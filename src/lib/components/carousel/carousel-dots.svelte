@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { WithoutChildren } from 'bits-ui';
-  import { getEmblaContext } from './context.js';
-  import { cn } from '$utils/utils.js';
+
   import { type Props } from '$shadcn/button/index.js';
+  import { cn } from '$utils/utils.js';
+
+  import { getEmblaContext } from './context.js';
 
   let {
     ref = $bindable(null),

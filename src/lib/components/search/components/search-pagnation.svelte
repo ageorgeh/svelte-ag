@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { box, mergeProps } from 'svelte-toolbelt';
-  import type { SearchPagnationProps } from '../types';
   import { useId } from 'bits-ui';
-  import { useSearchPagnation } from '../search.svelte';
+  import { box, mergeProps } from 'svelte-toolbelt';
+
   import * as Pagination from '$shadcn/pagination/index.js';
+
+  import { useSearchPagnation } from '../search.svelte';
+  import type { SearchPagnationProps } from '../types';
 
   let {
     child,

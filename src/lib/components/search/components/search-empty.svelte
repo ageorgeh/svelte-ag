@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { box, mergeProps } from 'svelte-toolbelt';
-  import type { SearchEmptyProps } from '../types';
   import { useId } from 'bits-ui';
-  import { useSearchEmpty } from '../search.svelte';
+  import { box, mergeProps } from 'svelte-toolbelt';
+
   import { cn } from '$utils';
+
+  import { useSearchEmpty } from '../search.svelte';
+  import type { SearchEmptyProps } from '../types';
 
   let { children, child, id = useId(), ref = $bindable(null), ...restProps }: SearchEmptyProps = $props();
 

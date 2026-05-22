@@ -1,9 +1,10 @@
 <script lang="ts">
+  import type { BitsPrimitiveDivAttributes } from 'bits-ui';
+
   import { WebGlShader } from '$components/shader/index.js';
-  import type { Vec2, Vec4 } from '$utils/glsl.js';
   // import fragment from './gradient.frag';
   import { cn } from '$utils';
-  import type { BitsPrimitiveDivAttributes } from 'bits-ui';
+  import type { Vec2, Vec4 } from '$utils/glsl.js';
 
   let {
     class: className,

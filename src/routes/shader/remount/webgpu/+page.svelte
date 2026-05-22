@@ -1,5 +1,6 @@
 <script>
   import { WebGpuShader } from '$components/shader/index.js';
+
   import shaderCode from './shader.wgsl?raw';
 
   let show = $state(true);

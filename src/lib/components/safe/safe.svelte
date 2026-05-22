@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { cn, type HTMLDivAttributes } from '$utils';
   import type { WithElementRef } from 'svelte-toolbelt';
+
+  import { cn, type HTMLDivAttributes } from '$utils';
 
   export type Props = WithElementRef<HTMLDivAttributes> & {
     links?: boolean;

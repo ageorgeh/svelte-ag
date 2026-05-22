@@ -1,8 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'fs/promises';
-import { join } from 'path';
 import { tmpdir } from 'os';
+import { join } from 'path';
+
 import { build, normalizePath, type Plugin, type ResolvedConfig } from 'vite';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const tempDirectories: string[] = [];
 

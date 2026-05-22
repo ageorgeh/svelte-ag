@@ -54,21 +54,23 @@ else is the same just bind the value prop as so:
 </script>
 
 <script lang="ts" generics="T extends Record<string, unknown>, U extends FormPath<T>">
-  import FormField, { type FormFieldProps } from './form-field.svelte';
-  import FormLabel from './form-label.svelte';
+  import { Control as FormControl } from 'formsnap';
+  import { get, set } from 'radash';
+  import type { ComponentProps, Snippet } from 'svelte';
+  import { type WithElementRef, type WithoutChildren } from 'svelte-toolbelt';
+  import { mergeProps } from 'svelte-toolbelt';
+  import type { HTMLAttributes, HTMLInputAttributes } from 'svelte/elements';
+  import { type FormPath } from 'sveltekit-superforms';
+
+  import { Checkbox } from '$shadcn/checkbox/index.js';
+  import { Input } from '$shadcn/input/index.js';
+  import { cn } from '$utils/index.js';
+
   import Description from './form-description.svelte';
   import FieldErrors from './form-field-errors.svelte';
-  import { Input } from '$shadcn/input/index.js';
-  import { Control as FormControl } from 'formsnap';
-  import { type FormPath } from 'sveltekit-superforms';
-  import { get, set } from 'radash';
-  import { type WithElementRef, type WithoutChildren } from 'svelte-toolbelt';
-  import { cn } from '$utils/index.js';
-  import type { HTMLAttributes, HTMLInputAttributes } from 'svelte/elements';
-  import { mergeProps } from 'svelte-toolbelt';
+  import FormField, { type FormFieldProps } from './form-field.svelte';
+  import FormLabel from './form-label.svelte';
   import { getFormContext } from './form.svelte';
-  import type { ComponentProps, Snippet } from 'svelte';
-  import { Checkbox } from '$shadcn/checkbox/index.js';
 
   let {
     ref = $bindable(null),

@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { cn } from '$shadcn/utils.js';
   import { mergeProps, type WithChild, type WithoutChildren } from 'svelte-toolbelt';
+
+  import { cn } from '$shadcn/utils.js';
   import { flyAndScale, type HTMLDivAttributes } from '$utils/index.js';
+
   import { getFormContext } from './form.svelte';
 
   let {

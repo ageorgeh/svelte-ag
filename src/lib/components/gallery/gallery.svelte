@@ -1,10 +1,12 @@
 <!-- src/lib/components/pages/GALLERY.svelte -->
 <script lang="ts" generics="Item">
+  import type { WithElementRef } from 'bits-ui';
   import { onMount, type Snippet } from 'svelte';
+
   import { containerSize, cn, type HTMLDivAttributes } from '$utils/index.js';
+
   import type { Size } from './utils.js';
   import { packGrid, styleForSize } from './utils.js';
-  import type { WithElementRef } from 'bits-ui';
 
   let {
     images = $bindable(),

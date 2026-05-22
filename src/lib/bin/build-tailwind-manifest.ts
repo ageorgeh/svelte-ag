@@ -2,10 +2,12 @@ import { existsSync, statSync } from 'node:fs';
 import { glob, readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+
 import { init, parse as parseEsm } from 'es-module-lexer';
 import { parse as parseSvelte } from 'svelte/compiler';
-import ts from 'typescript';
 import { readPackageJson, writeIfDifferent } from 'ts-ag';
+import ts from 'typescript';
+
 import {
   ensureRelativeManifestSourcePath,
   getTailwindSourcesManifestPath,

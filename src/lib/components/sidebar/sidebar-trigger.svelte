@@ -1,7 +1,9 @@
 <script lang="ts">
+  import type { ComponentProps } from 'svelte';
+
   import { Button } from '$shadcn/button/index.js';
   import { cn } from '$utils/utils.js';
-  import type { ComponentProps } from 'svelte';
+
   import { useSidebar } from './context.svelte.js';
 
   let {

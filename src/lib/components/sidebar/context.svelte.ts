@@ -1,7 +1,8 @@
-import { IsMobile } from './is-mobile.svelte.js';
 import { getContext, setContext } from 'svelte';
-import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants.js';
 import type { WritableBox } from 'svelte-toolbelt';
+
+import { SIDEBAR_KEYBOARD_SHORTCUT } from './constants.js';
+import { IsMobile } from './is-mobile.svelte.js';
 
 export type SidebarStateProps = {
   /**

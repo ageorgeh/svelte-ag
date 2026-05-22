@@ -1,10 +1,12 @@
-import type { Plugin, ResolvedConfig } from 'vite';
-import { init, parse as parseEsm } from 'es-module-lexer';
-import { exists, writeIfDifferent } from 'ts-ag';
 import { readFile } from 'fs/promises';
-import { resolve, join, relative, dirname, isAbsolute, parse as parsePath } from 'path';
 import { open } from 'fs/promises';
+import { resolve, join, relative, dirname, isAbsolute, parse as parsePath } from 'path';
+
+import { init, parse as parseEsm } from 'es-module-lexer';
 import { parse as parseSvelte } from 'svelte/compiler';
+import { exists, writeIfDifferent } from 'ts-ag';
+import type { Plugin, ResolvedConfig } from 'vite';
+
 import {
   ensureRelativeManifestSourcePath,
   getTailwindSourcesManifestPath,

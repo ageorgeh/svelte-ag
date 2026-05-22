@@ -10,11 +10,13 @@
 </script>
 
 <script lang="ts">
-  import { Search } from '../index.js';
+  import type { PopoverTriggerProps } from 'bits-ui';
+
   import { Button } from '$shadcn/button/index.js';
   import * as Popover from '$shadcn/popover/index.js';
-  import type { PopoverTriggerProps } from 'bits-ui';
   import { cn } from '$utils/index.js';
+
+  import { Search } from '../index.js';
 
   let {
     items,

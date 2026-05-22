@@ -1,5 +1,6 @@
-import { clamp } from './utils.js';
 import type { ActionReturn } from 'svelte/action';
+
+import { clamp } from './utils.js';
 
 export type IntersectionEvent = CustomEvent<IntersectionObserverEntry>;
 
