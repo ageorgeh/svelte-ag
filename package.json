@@ -3,11 +3,18 @@
   "version": "1.0.9",
   "description": "Useful svelte components",
   "bugs": "https://github.com/ageorgeh/svelte-ag/issues",
+  "author": "Alexander Hornung",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ageorgeh/svelte-ag.git"
   },
-  "author": "Alexander Hornung",
+  "bin": {
+    "tailwind-manifest": "./dist/bin/build-tailwind-manifest.js"
+  },
+  "files": [
+    "./src/lib",
+    "./dist"
+  ],
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
@@ -19,13 +26,6 @@
     "./styles/*": "./dist/styles/*",
     "./package.json": "./package.json"
   },
-  "bin": {
-    "tailwind-manifest": "./dist/bin/build-tailwind-manifest.js"
-  },
-  "files": [
-    "./src/lib",
-    "./dist"
-  ],
   "scripts": {
     "prebuild": "svelte-kit sync",
     "build": "svelte-package",
@@ -33,8 +33,8 @@
     "check": "svelte-check --fail-on-warnings",
     "check:base-export": "tsx scripts/check-base-export.ts",
     "dev": "vite dev",
-    "fmt": "prettier . --write",
-    "fmt:check": "prettier . --check",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "prepare": "husky",
@@ -90,9 +90,7 @@
     "globals": "^17.6.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.2",
-    "prettier": "^3.8.3",
-    "prettier-plugin-packagejson": "^3.0.1",
-    "prettier-plugin-svelte": "^3.5.1",
+    "oxfmt": "^0.51.0",
     "rolldown": "1.0.0-rc.18",
     "rolldown-plugin-dts": "^0.24.1",
     "rollup-plugin-svelte": "^7.2.3",
