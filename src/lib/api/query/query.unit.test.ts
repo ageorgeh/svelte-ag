@@ -1,5 +1,5 @@
 import { stringify } from 'devalue';
-import { createApiRequest, type ApiEndpoints } from 'ts-ag';
+import { createApiRequest, type ApiEndpointContract, type ApiEndpoints } from 'ts-ag';
 import * as v from 'valibot';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -30,17 +30,17 @@ type BatchedUsersApi = {
 
 const API_URL = 'https://api.example.test';
 
-const plainSchemas = {
-  '/users': {
-    GET: v.object({ id: v.number() })
-  }
-};
+const plainUsers_GET = {
+  path: '/users',
+  method: 'GET',
+  schema: v.object({ id: v.number() })
+} satisfies ApiEndpointContract<PlainUsersApi, '/users', 'GET'>;
 
-const batchedSchemas = {
-  '/users': {
-    POST: v.union([v.object({ id: v.number(), group: v.optional(v.string()) }), v.object({ ids: v.array(v.number()) })])
-  }
-};
+const batchedUsers_POST = {
+  path: '/users',
+  method: 'POST',
+  schema: v.union([v.object({ id: v.number(), group: v.optional(v.string()) }), v.object({ ids: v.array(v.number()) })])
+} satisfies ApiEndpointContract<BatchedUsersApi, '/users', 'POST'>;
 
 function getSingleId(input: BatchedUsersApi['requestInput']): number {
   return 'id' in input ? input.id : input.ids[0]!;
@@ -97,23 +97,22 @@ function deferred<T>() {
 }
 
 function createPlainRequest() {
-  return createApiRequest<PlainUsersApi>(plainSchemas, API_URL, 'test');
+  return createApiRequest<PlainUsersApi>(API_URL, 'test');
 }
 
 function createBatchedRequest() {
-  return createApiRequest<BatchedUsersApi>(batchedSchemas, API_URL, 'test');
+  return createApiRequest<BatchedUsersApi>(API_URL, 'test');
 }
 
 function createPlainRequestor() {
-  return new Requestor<PlainUsersApi, '/users', 'GET'>('/users', 'GET', createPlainRequest(), new Cache());
+  return new Requestor<PlainUsersApi, '/users', 'GET'>(plainUsers_GET, createPlainRequest(), new Cache());
 }
 
 function createBatchedRequestor(
-  batchDetails?: ConstructorParameters<typeof Requestor<BatchedUsersApi, '/users', 'POST'>>[4]
+  batchDetails?: ConstructorParameters<typeof Requestor<BatchedUsersApi, '/users', 'POST'>>[3]
 ) {
   return new Requestor<BatchedUsersApi, '/users', 'POST'>(
-    '/users',
-    'POST',
+    batchedUsers_POST,
     createBatchedRequest(),
     new Cache(),
     batchDetails
@@ -291,8 +290,7 @@ describe('Query', () => {
     const fetchMock = vi.fn().mockReturnValue(pending.promise);
     vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
-      path: '/users',
-      method: 'GET',
+      endpoint: plainUsers_GET,
       input: { id: 1 },
       requestor: createPlainRequestor(),
       cache: new Cache()
@@ -314,8 +312,7 @@ describe('Query', () => {
     const fetchMock = vi.fn(async () => jsonFetchResponse({ id: 1, name: 'Ada' }));
     vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
-      path: '/users',
-      method: 'GET',
+      endpoint: plainUsers_GET,
       input: { id: 1 },
       requestor: createPlainRequestor(),
       cache: new Cache()
@@ -336,8 +333,7 @@ describe('Query', () => {
     );
     vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
-      path: '/users',
-      method: 'GET',
+      endpoint: plainUsers_GET,
       input: { id: 1 },
       requestor: createPlainRequestor(),
       cache: new Cache()
@@ -366,8 +362,7 @@ describe('Query', () => {
     const fetchMock = vi.fn(async () => withResponseOverrides(jsonFetchResponse({ id: 1 })));
     vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
-      path: '/users',
-      method: 'GET',
+      endpoint: plainUsers_GET,
       input: { id: 1 },
       requestor: createPlainRequestor(),
       cache: new Cache()
@@ -393,8 +388,7 @@ describe('Query', () => {
     const fetchMock = vi.fn(async () => jsonFetchResponse({ id: 1, active: true }));
     vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
-      path: '/users',
-      method: 'GET',
+      endpoint: plainUsers_GET,
       input: { id: 1 },
       requestor: createPlainRequestor(),
       cache: new Cache()
@@ -412,8 +406,7 @@ describe('Query', () => {
     const fetchMock = vi.fn(async () => jsonFetchResponse({ message: 'missing' }, 404));
     vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
-      path: '/users',
-      method: 'GET',
+      endpoint: plainUsers_GET,
       input: { id: 99 },
       requestor: createPlainRequestor(),
       cache: new Cache()
@@ -441,8 +434,7 @@ describe('Query', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
-      path: '/users',
-      method: 'GET',
+      endpoint: plainUsers_GET,
       input: { id: 1 },
       requestor: createPlainRequestor(),
       cache: new Cache()
@@ -468,8 +460,7 @@ describe('Query', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
-      path: '/users',
-      method: 'GET',
+      endpoint: plainUsers_GET,
       input: { id: 1 },
       requestor: createPlainRequestor(),
       cache: new Cache()
@@ -494,8 +485,7 @@ describe('Query', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
     const query = new Query<PlainUsersApi, '/users', 'GET'>({
-      path: '/users',
-      method: 'GET',
+      endpoint: plainUsers_GET,
       input: { id: 1 },
       requestor: createPlainRequestor(),
       cache: new Cache(),

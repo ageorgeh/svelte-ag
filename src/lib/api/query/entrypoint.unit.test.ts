@@ -1,4 +1,4 @@
-import { createApiRequest, type ApiEndpoints } from 'ts-ag';
+import { createApiRequest, type ApiEndpointContract, type ApiEndpoints } from 'ts-ag';
 import * as v from 'valibot';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -17,11 +17,11 @@ type UsersApi = {
 
 const API_URL = 'https://api.example.test';
 
-const schemas = {
-  '/users': {
-    POST: v.union([v.object({ id: v.number(), group: v.optional(v.string()) }), v.object({ ids: v.array(v.number()) })])
-  }
-};
+const users_POST = {
+  path: '/users',
+  method: 'POST',
+  schema: v.union([v.object({ id: v.number(), group: v.optional(v.string()) }), v.object({ ids: v.array(v.number()) })])
+} satisfies ApiEndpointContract<UsersApi, '/users', 'POST'>;
 
 function getUserId(input: UsersApi['requestInput']): number {
   return 'id' in input ? input.id : input.ids[0]!;
@@ -49,39 +49,37 @@ describe('createQueryFunction', () => {
 
   it('returns the same query instance for the same path, method, and input', async () => {
     const { createQueryFunction } = await import('./entrypoint.svelte.js');
-    const request = createApiRequest<UsersApi>(schemas, API_URL, 'test');
-    const createQuery = createQueryFunction<UsersApi>(request, {});
+    const request = createApiRequest<UsersApi>(API_URL, 'test');
+    const createQuery = createQueryFunction<UsersApi>(request, []);
 
-    const query1 = createQuery('/users', 'POST', { id: 1 });
-    const query2 = createQuery('/users', 'POST', { id: 1 });
-    const query3 = createQuery('/users', 'POST', { id: 2 });
+    const query1 = createQuery(users_POST, { id: 1 });
+    const query2 = createQuery(users_POST, { id: 1 });
+    const query3 = createQuery(users_POST, { id: 2 });
 
     expect(query1).toBe(query2);
     expect(query3).not.toBe(query1);
   });
 
   it('reuses requestors so separate queries can batch together', async () => {
-    const { createQueryFunction } = await import('./entrypoint.svelte.js');
+    const { batchEndpoint, createQueryFunction } = await import('./entrypoint.svelte.js');
     const fetchMock = vi.fn(async () => jsonFetchResponse({ 1: 'one', 2: 'two' }));
     vi.stubGlobal('fetch', fetchMock);
     vi.stubGlobal('fetch', fetchMock);
-    const request = createApiRequest<UsersApi>(schemas, API_URL, 'test');
-    const createQuery = createQueryFunction<UsersApi>(request, {
-      '/users': {
-        POST: {
-          canBatch: () => 'users',
-          batchInput: (inputs) => ({ ids: inputs.map(getUserId) }),
-          unBatchOutput: async (inputs, outputs) => {
-            return inputs.map(() => {
-              return outputs;
-            });
-          }
+    const request = createApiRequest<UsersApi>(API_URL, 'test');
+    const createQuery = createQueryFunction<UsersApi>(request, [
+      batchEndpoint(users_POST, {
+        canBatch: () => 'users',
+        batchInput: (inputs) => ({ ids: inputs.map(getUserId) }),
+        unBatchOutput: async (inputs, outputs) => {
+          return inputs.map(() => {
+            return outputs;
+          });
         }
-      }
-    });
+      })
+    ]);
 
-    const query1 = createQuery('/users', 'POST', { id: 1 });
-    const query2 = createQuery('/users', 'POST', { id: 2 });
+    const query1 = createQuery(users_POST, { id: 1 });
+    const query2 = createQuery(users_POST, { id: 2 });
 
     const p1 = query1.request();
     const p2 = query2.request();
