@@ -28,4 +28,17 @@ describe('SearchPopover', () => {
 
     expect(trigger.className).toContain('consumer-class');
   });
+
+  it('forwards non-class trigger props to the real popover trigger button', () => {
+    render(SearchPopover, {
+      props: {
+        disabled: true,
+        item: itemSnippet,
+        items: [selectedItem],
+        value: selectedItem
+      }
+    });
+
+    expect(screen.getByRole('combobox')).toHaveProperty('disabled', true);
+  });
 });
