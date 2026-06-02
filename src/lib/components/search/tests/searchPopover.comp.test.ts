@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
 
-import SearchPopover from './searchPopover.svelte';
+import SearchPopover from '../combinations/searchPopover.svelte';
 
 const selectedItem = {
   label: 'Alpha',

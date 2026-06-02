@@ -60,7 +60,7 @@
               <Pagination.Ellipsis />
             </Pagination.Item>
           {:else}
-            <Pagination.Item hidden={currentPage !== page.value}>
+            <Pagination.Item>
               <Pagination.Link {page} isActive={currentPage === page.value}>
                 {page.value}
               </Pagination.Link>
