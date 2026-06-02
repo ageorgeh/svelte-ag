@@ -180,6 +180,9 @@ export default async function componentSourceCollector(opts: Options = { safePac
     // a Tailwind source signal. Including those files can pull in component-local
     // style modules that Tailwind should never parse directly.
     if (id.includes('?svelte&type=style')) return false;
+
+    // TODO what about functions named eg transitionIconClass(t: number)...
+    // they dont get picked up cause no : or = after class
     return classAttributeRegex.test(code);
   }
 
