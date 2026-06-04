@@ -21,12 +21,9 @@ export default defineConfig({
   projects: process.env.CI
     ? [
         {
-          name: 'Firefox',
+          name: 'Firefox <No WebGPU>',
           use: {
             ...devices['Desktop Firefox']
-            // firefoxUserPrefs: {
-            //   'dom.webgpu.enabled': false
-            // }
           }
         },
         {
