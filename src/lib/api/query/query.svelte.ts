@@ -195,19 +195,19 @@ export class Requestor<
    * Then it separates the outputs and resolves each of the promises
    */
   private async flushBatchQueue(batchId: string): Promise<void> {
-    const queue = this.#batchQueue[batchId].splice(0);
+    const queue = this.#batchQueue[batchId]?.splice(0) ?? [];
+    if (queue.length === 0) return;
 
     // TODO maybe remove the unBatchOutput function and just always return the
     // same response and then its on each consumer of each query to find the relevant records
     try {
       const batchedInput = this.#batchInput(queue.map((q) => q.input));
-
       const res = await this.fetch(batchedInput);
+
       const output = await this.#unBatchOutput(
         queue.map((q) => q.input),
         res
       );
-
       if (output.length !== queue.length) {
         throw new Error(`Batch output length mismatch for ${batchId}`);
       }
@@ -232,8 +232,12 @@ export class Requestor<
 
         if (!this.#batchTimers[batchId]) {
           this.#batchTimers[batchId] = setTimeout(() => {
+            delete this.#batchTimers[batchId];
+
             void this.flushBatchQueue(batchId).finally(() => {
-              delete this.#batchTimers[batchId];
+              if (this.#batchQueue[batchId]?.length === 0) {
+                delete this.#batchQueue[batchId];
+              }
             });
           }, this.#batchDelay);
         }
