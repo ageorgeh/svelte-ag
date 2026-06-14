@@ -63,7 +63,7 @@
     "sveltekit-superforms": "2.30.1",
     "tailwind-merge": "^3.5.0",
     "tailwind-variants": "^3.2.2",
-    "ts-ag": "link:/home/alex/code/ts-ag",
+    "ts-ag": "file:/home/alex/code/cmsWrapper/cms/.link/development-packs/ts-ag/ts-ag-1.0.5.tgz",
     "tsc-alias": "^1.8.17",
     "valibot": "^1.4.0"
   },
