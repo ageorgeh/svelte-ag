@@ -8,7 +8,15 @@
   import { useSearchList } from '../search.svelte';
   import type { SearchListProps } from '../types';
 
-  let { children, child, id = useId(), ref = $bindable(null), item, ...restProps }: SearchListProps = $props();
+  let {
+    children,
+    child,
+    class: className,
+    id = useId(),
+    ref = $bindable(null),
+    item,
+    ...restProps
+  }: SearchListProps = $props();
 
   const listState = useSearchList({
     id: box.with(() => id),
@@ -24,7 +32,7 @@
 {#if child}
   {@render child({ props: mergedProps })}
 {:else}
-  <div {...mergedProps} class="grid w-full auto-rows-fr px-2">
+  <div {...mergedProps} class={cn('grid w-full auto-rows-fr px-2', className)}>
     {#each listState.suggestions as listItem (listItem.value)}
       <Button
         variant="ghost"
@@ -34,8 +42,7 @@
             hover:bg-muted
           `,
           listState.selected(listItem) && 'bg-muted',
-          listState.visible(listItem) ? '' : 'hidden!',
-          mergedProps.class
+          listState.visible(listItem) ? '' : 'hidden!'
         )}
         onclick={() => listState.select(listItem)}
       >

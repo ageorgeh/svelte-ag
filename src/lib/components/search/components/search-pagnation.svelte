@@ -3,12 +3,14 @@
   import { box, mergeProps } from 'svelte-toolbelt';
 
   import * as Pagination from '$shadcn/pagination/index.js';
+  import { cn } from '$utils/index.js';
 
   import { useSearchPagnation } from '../search.svelte';
   import type { SearchPagnationProps } from '../types';
 
   let {
     child,
+    class: className,
     id = useId(),
     ref = $bindable(null),
     page = $bindable(1),
@@ -40,7 +42,13 @@
 {#if child}
   {@render child({ props: mergedProps })}
 {:else}
-  <Pagination.Root class="pb-2" count={pagnationState.length} perPage={pagnationState.perPage} bind:page>
+  <Pagination.Root
+    {...mergedProps}
+    class={cn('pb-2', className)}
+    count={pagnationState.length}
+    perPage={pagnationState.perPage}
+    bind:page
+  >
     {#snippet children({ pages, currentPage })}
       <Pagination.Content>
         <Pagination.Item>
@@ -52,7 +60,7 @@
               <Pagination.Ellipsis />
             </Pagination.Item>
           {:else}
-            <Pagination.Item hidden={currentPage !== page.value}>
+            <Pagination.Item>
               <Pagination.Link {page} isActive={currentPage === page.value}>
                 {page.value}
               </Pagination.Link>

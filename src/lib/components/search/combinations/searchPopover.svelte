@@ -47,10 +47,10 @@
   <Popover.Trigger {...restProps}>
     {#snippet child({ props })}
       <Button
+        {...props}
         bind:ref={trigger}
         variant="outline"
-        class={cn('focus-ring h-fit w-full justify-between overflow-hidden', className)}
-        {...props}
+        class={cn(props.class as string, 'focus-ring h-fit w-full justify-between overflow-hidden', className)}
         role="combobox"
       >
         {#if value}

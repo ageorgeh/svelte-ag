@@ -149,6 +149,6 @@
       </Tooltip.Root>
     </Tooltip.Provider>
 
-    <AlertDialog.Content children={alertContent} {...alertContentProps} />
+    {@render alertContent()}
   </AlertDialog.Root>
 {/if}

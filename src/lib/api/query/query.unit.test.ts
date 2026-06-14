@@ -271,6 +271,70 @@ describe('Requestor', () => {
 
     await Promise.all([p1Expectation, p2Expectation]);
   });
+
+  it('schedules a new batch for requests added while a previous batch is in flight', async () => {
+    const firstFetch = deferred<Response>();
+    const secondFetch = deferred<Response>();
+
+    const fetchMock = vi.fn((_url: string, init?: RequestInit) => {
+      if (init?.body === JSON.stringify({ ids: [1] })) {
+        return firstFetch.promise;
+      }
+
+      if (init?.body === JSON.stringify({ ids: [2] })) {
+        return secondFetch.promise;
+      }
+
+      throw new Error(`Unexpected request body: ${String(init?.body)}`);
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const requestor = createBatchedRequestor({
+      canBatch: (input) => ('group' in input && input.group) || false,
+      batchInput: (inputs) => ({ ids: inputs.map(getSingleId) }),
+      unBatchOutput: (inputs) => inputs.map((input) => jsonResponse({ id: getSingleId(input) }))
+    });
+
+    const p1 = requestor.request({ id: 1, group: 'team' });
+
+    await vi.advanceTimersByTimeAsync(100);
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      `${API_URL}//users`,
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ ids: [1] }),
+        credentials: 'include'
+      })
+    );
+
+    const p2 = requestor.request({ id: 2, group: 'team' });
+
+    await vi.advanceTimersByTimeAsync(99);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    await vi.advanceTimersByTimeAsync(1);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenLastCalledWith(
+      `${API_URL}//users`,
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ ids: [2] }),
+        credentials: 'include'
+      })
+    );
+
+    firstFetch.resolve(jsonFetchResponse({ ok: true }));
+    secondFetch.resolve(jsonFetchResponse({ ok: true }));
+
+    const [response1, response2] = await Promise.all([p1, p2]);
+
+    await expect(response1.json()).resolves.toEqual({ id: 1 });
+    await expect(response2.json()).resolves.toEqual({ id: 2 });
+  });
 });
 
 describe('Query', () => {
