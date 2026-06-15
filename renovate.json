@@ -11,9 +11,20 @@
   "separateMinorPatch": false,
   "lockFileMaintenance": { "enabled": false },
   "packageRules": [
-    { "matchUpdateTypes": ["minor", "patch", "digest"], "groupName": "non-major dependencies" },
-    { "matchManagers": ["npm"], "matchDepTypes": ["engines"], "enabled": false },
-    { "matchPackageNames": ["playwright", "@playwright/test"], "groupName": null },
+    {
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "groupName": "non-major dependencies"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["engines"],
+      "enabled": false
+    },
+    { "matchDatasources": ["npm"], "minimumReleaseAge": "1 day" },
+    {
+      "matchPackageNames": ["playwright", "@playwright/test"],
+      "groupName": null
+    },
     {
       "matchDepTypes": ["peerDependencies"],
       "rangeStrategy": "widen"
