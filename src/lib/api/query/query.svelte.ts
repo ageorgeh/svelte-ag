@@ -1,5 +1,13 @@
 import { stringify } from 'devalue';
-import type { ApiEndpoints, ApiInput, ApiRequestFunction, ApiSuccessBody, ApiErrorBody, ApiResponse } from 'ts-ag';
+import type {
+  ApiEndpointContract,
+  ApiEndpoints,
+  ApiInput,
+  ApiRequestFunction,
+  ApiSuccessBody,
+  ApiErrorBody,
+  ApiResponse
+} from 'ts-ag';
 
 import type { Cache } from './cache.svelte';
 import type { BatchDetails } from './entrypoint.svelte';
@@ -17,8 +25,7 @@ export class Query<
   #TIMEOUT = 1000 * 60 * 5; // 5 minutes
 
   // -------- Set in constructor --------
-  #path: Path;
-  #method: Method;
+  #endpoint: ApiEndpointContract<API, Path, Method>;
   #input: ApiInput<API, Path, Method>;
   #inputString: string;
   #cacheKey: string;
@@ -37,15 +44,13 @@ export class Query<
 
   // -------- Functions --------
   constructor({
-    path,
-    method,
+    endpoint,
     input,
     requestor,
     cache,
     opts
   }: {
-    path: Path;
-    method: Method;
+    endpoint: ApiEndpointContract<API, Path, Method>;
     input: ApiInput<API, Path, Method>;
     requestor: Requestor<API, Path, Method>;
     cache: Cache;
@@ -56,14 +61,13 @@ export class Query<
     this.#requestor = requestor;
     this.#cache = cache;
 
-    this.#path = path;
-    this.#method = method;
+    this.#endpoint = endpoint;
 
     // if (this.#cachekey) this.#cache.deregister(this.#cachekey);
 
     this.#input = input;
     this.#inputString = stringify(input);
-    this.#cacheKey = cacheKey(path, method, input);
+    this.#cacheKey = cacheKey(endpoint, input);
 
     this.#cache.register(this.#cacheKey, opts?.cache ?? { timeout: this.#TIMEOUT });
   }
@@ -141,8 +145,7 @@ export class Requestor<
   #batchDelay = 100;
 
   // -------- Set in constructor --------
-  #path: Path;
-  #method: Method;
+  #endpoint: ApiEndpointContract<API, Path, Method>;
   #request: ApiRequestFunction<API>;
 
   #canBatch: BatchDetails<API, Path, Method>['canBatch'];
@@ -164,14 +167,12 @@ export class Requestor<
   #batchTimers: Record<string, NodeJS.Timeout | null> = {};
 
   constructor(
-    path: Path,
-    method: Method,
+    endpoint: ApiEndpointContract<API, Path, Method>,
     request: ApiRequestFunction<API>,
     _cache: Cache,
     batchDetails?: BatchDetails<API, Path, Method>
   ) {
-    this.#path = path;
-    this.#method = method;
+    this.#endpoint = endpoint;
     this.#request = request;
     this.#limiter = new RateLimiter();
     // this.#cache = cache;
@@ -187,7 +188,7 @@ export class Requestor<
     // if ('PUBLIC_ENVIRONMENT' in env && env.PUBLIC_ENVIRONMENT === 'development') {
     //   await sleep(1000);
     // }
-    return await this.#limiter.add(() => this.#request(this.#path, this.#method, input));
+    return await this.#limiter.add(() => this.#request(this.#endpoint, input));
   }
 
   /**

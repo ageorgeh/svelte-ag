@@ -1,5 +1,6 @@
 import { SvelteMap } from 'svelte/reactivity';
-import type { ApiEndpoints, ApiRequestFunction, ApiInput, ApiResponse } from 'ts-ag';
+import { endpointKey } from 'ts-ag';
+import type { ApiEndpointContract, ApiEndpoints, ApiRequestFunction, ApiInput, ApiResponse } from 'ts-ag';
 
 import { Cache } from './cache.svelte.js';
 import { Requestor, Query } from './query.svelte.js';
@@ -29,10 +30,24 @@ export type BatchDetails<
 };
 
 export type ApiBatchDetails<API extends ApiEndpoints> = {
-  [Path in API['path']]?: {
-    [Method in Extract<API, { path: Path }>['method']]?: BatchDetails<API, Path, Method>;
-  };
-};
+  [Path in API['path']]: {
+    [Method in Extract<API, { path: Path }>['method']]: {
+      endpoint: ApiEndpointContract<API, Path, Method>;
+      details: BatchDetails<API, Path, Method>;
+    };
+  }[Extract<API, { path: Path }>['method']];
+}[API['path']][];
+
+export function batchEndpoint<
+  API extends ApiEndpoints,
+  Path extends API['path'],
+  Method extends Extract<API, { path: Path }>['method']
+>(
+  endpoint: ApiEndpointContract<API, Path, Method>,
+  details: BatchDetails<API, Path, Method>
+): ApiBatchDetails<API>[number] {
+  return { endpoint, details };
+}
 
 /**
  * Helper function to use once so that creating queries is easier.
@@ -45,21 +60,23 @@ export function createQueryFunction<API extends ApiEndpoints>(
   request: ApiRequestFunction<API>,
   batchDetails: ApiBatchDetails<API>
 ) {
+  // eslint-disable-next-line
+  const batchDetailsByEndpoint = new Map(batchDetails.map((entry) => [endpointKey(entry.endpoint), entry.details]));
+
   return <Path extends API['path'], Method extends Extract<API, { path: Path }>['method']>(
-    path: Path,
-    method: Method,
+    endpoint: ApiEndpointContract<API, Path, Method>,
     input: ApiInput<API, Path, Method>,
     opts?: ConstructorParameters<typeof Query<API, Path, Method>>[0]['opts']
   ): Query<API, Path, Method> => {
-    const queryKey = cacheKey(path, method, input);
+    const queryKey = cacheKey(endpoint, input);
     if (!queries.has(queryKey)) {
-      const key = batchQueryKey(path, method);
+      const key = batchQueryKey(endpoint);
       if (!requestors.has(key)) {
-        requestors.set(key, new Requestor(path, method, request, cache, batchDetails[path]?.[method]));
+        requestors.set(key, new Requestor(endpoint, request, cache, batchDetailsByEndpoint.get(key)));
       }
       const requestor = requestors.get(key)!;
 
-      queries.set(queryKey, new Query<API, Path, Method>({ path, method, input, requestor, cache, opts }));
+      queries.set(queryKey, new Query<API, Path, Method>({ endpoint, input, requestor, cache, opts }));
     }
     const query = queries.get(queryKey)!;
 

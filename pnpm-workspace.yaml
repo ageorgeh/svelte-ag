@@ -2,3 +2,7 @@ allowBuilds:
   '@tailwindcss/oxide': true
   esbuild: true
   svelte-preprocess: true
+
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - 'ts-ag'

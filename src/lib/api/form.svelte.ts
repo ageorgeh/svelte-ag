@@ -6,12 +6,11 @@ import type { SuperForm } from 'sveltekit-superforms';
 import { valibot } from 'sveltekit-superforms/adapters';
 import type {
   ApiRequestFunction,
-  HTTPMethod,
   ApiEndpoints,
   ApiInput,
   ApiSuccessBody,
   ApiErrorBody,
-  ApiSchema
+  ApiEndpointContract
 } from 'ts-ag';
 import { safeParse, safeParseAsync } from 'valibot';
 
@@ -51,22 +50,19 @@ type FormErrorBody<
 /**
  * Creates a strongly-typed form factory for an API schema.
  *
- * Call the returned function with `{ path, method, ... }` to get a `SuperForm`
+ * Call the returned function with `{ endpoint, ... }` to get a `SuperForm`
  * that:
  * - Validates using the Valibot schema for the given endpoint.
  * - Submits via the provided `request` function on each valid update.
  * - Maps API errors to `sveltekit-superforms` field errors / messages.
  * - Optionally two-way binds external state through the `bind` adapter.
  */
-export type ApiRequestForm<
-  API extends ApiEndpoints
-  // Schemas extends Partial<Record<API['path'], Partial<Record<string, ApiSchema>>>>
-> = <Path extends API['path'], Method extends Extract<API, { path: Path }>['method']>(a: {
-  /** API path key used to select a schema and to call `request(path, method, data)` */
-  path: Path;
-
-  /** HTTP method used to select a schema and to call `request(path, method, data)` */
-  method: Method;
+export type ApiRequestForm<API extends ApiEndpoints> = <
+  Path extends API['path'],
+  Method extends Extract<API, { path: Path }>['method']
+>(a: {
+  /** Endpoint contract used to select a schema and submit the request. */
+  endpoint: ApiEndpointContract<API, Path, Method>;
 
   /**
    * Optional lifecycle hooks for consumers.
@@ -127,37 +123,30 @@ export type ApiRequestForm<
    * If you pass `onSubmit` / `onUpdate` here it will override the defaults in this helper.
    */
   formProps?: Parameters<typeof superForm<ValidInput<API, Path, Method>>>[1];
-
-  // /**
-  //  *  Schema override to be used in place of the schemas from the creation of
-  //  *  the form function
-  //  */
-  // schema?: NonNullable<Schemas[Path]>[Method];
 }) => SuperForm<ValidInput<API, Path, Method>>;
 
 /**
  * Build an endpoint-specific Superforms factory.
  *
- * @param schemas A `{[path]: {[method]: schema}}` mapping used to pick the Valibot schema for each endpoint.
- * @param request An API request function that performs `(path, method, data)` and returns a fetch-like `Response`.
+ * @param request An API request function that performs `(endpoint, data)` and returns a fetch-like `Response`.
  *
- * @returns A function that creates a `SuperForm` for a particular `{path, method}` pair.
+ * @returns A function that creates a `SuperForm` for a particular endpoint contract.
  */
-export function createFormFunction<API extends ApiEndpoints>(
-  schemas: Partial<Record<API['path'], Partial<Record<HTTPMethod, ApiSchema>>>>,
-  request: ApiRequestFunction<API>
-): ApiRequestForm<API> {
-  return ({ path, method, actions, defaultValue, formProps, bind }) => {
-    const schema = schemas[path]?.[method];
-    if (schema === undefined) throw new Error('Invalid schema for form');
+export function createFormFunction<API extends ApiEndpoints>(request: ApiRequestFunction<API>): ApiRequestForm<API> {
+  return ({ endpoint, actions, defaultValue, formProps, bind }) => {
+    const schema = endpoint.schema;
 
     const defaultFormData = defaults(defaultValue, valibot(schema));
     const boundFormData =
       bind && schema.async === false
-        ? (safeParse(schema, bind.get(defaultFormData)).output as ValidInput<API, typeof path, typeof method>)
+        ? (safeParse(schema, bind.get(defaultFormData)).output as ValidInput<
+            API,
+            typeof endpoint.path,
+            typeof endpoint.method
+          >)
         : defaultFormData;
 
-    const form = superForm<ValidInput<API, typeof path, typeof method>>(boundFormData, {
+    const form = superForm<ValidInput<API, typeof endpoint.path, typeof endpoint.method>>(boundFormData, {
       SPA: true,
       resetForm: true,
       applyAction: false, // Prevents the form redirecting to the same page on submit
@@ -186,10 +175,10 @@ export function createFormFunction<API extends ApiEndpoints>(
         if (!props.form.valid) return;
 
         // console.log('onUpdate: sending data', form.data);
-        const res = await request(path, method, props.form.data);
+        const res = await request(endpoint, props.form.data);
 
         if (res.ok === false) {
-          const body = (await res.json()) as FormErrorBody<API, typeof path, typeof method>;
+          const body = (await res.json()) as FormErrorBody<API, typeof endpoint.path, typeof endpoint.method>;
 
           // TODO set some kind of overall form error if there is no field
           if (!body.field) {
@@ -204,7 +193,7 @@ export function createFormFunction<API extends ApiEndpoints>(
         } else {
           setMessage(props.form, 'Success');
           if (actions && actions.onSuccess) {
-            const body = (await res.json()) as ApiSuccessBody<API, typeof path, typeof method>;
+            const body = (await res.json()) as ApiSuccessBody<API, typeof endpoint.path, typeof endpoint.method>;
             await actions.onSuccess({ ...props, body });
           }
         }
@@ -219,7 +208,11 @@ export function createFormFunction<API extends ApiEndpoints>(
        */
       const bindGet = async () => {
         const formData = get(form.form);
-        return (await safeParseAsync(schema, bind.get(formData))).output as ValidInput<API, typeof path, typeof method>;
+        return (await safeParseAsync(schema, bind.get(formData))).output as ValidInput<
+          API,
+          typeof endpoint.path,
+          typeof endpoint.method
+        >;
       };
 
       form.form.subscribe((v) => {
