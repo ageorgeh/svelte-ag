@@ -28,7 +28,6 @@ jobs:
         with:
           cache: true
           run_install: true
-          version: 10.28.0
       - uses: actions/setup-node@v6
         with:
           node-version: '24'

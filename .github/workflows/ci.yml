@@ -19,7 +19,6 @@ jobs:
         with:
           cache: true
           run_install: true
-          version: 10.28.0
 
       - name: format
         run: pnpm fmt:check
@@ -44,7 +43,6 @@ jobs:
         with:
           cache: true
           run_install: true
-          version: 10.28.0
       - name: test
         run: |
           pnpm exec svelte-kit sync
@@ -59,7 +57,6 @@ jobs:
         with:
           cache: true
           run_install: true
-          version: 10.28.0
 
       - name: Restore Playwright browsers cache
         id: playwright-cache
