@@ -5,6 +5,7 @@ import { resolve, join, relative, dirname, isAbsolute, parse as parsePath } from
 import { init, parse as parseEsm } from 'es-module-lexer';
 import { parse as parseSvelte } from 'svelte/compiler';
 import { exists, writeIfDifferent } from 'ts-ag';
+import { ensureDotRelative } from 'ts-ag';
 import type { Plugin, ResolvedConfig } from 'vite';
 
 import {
@@ -49,12 +50,6 @@ let firstRound = true;
 const packageJsonCache = new Map<string, Promise<string | null>>();
 const packageManifestCache = new Map<string, Promise<TailwindSourceManifest | null>>();
 const TAILWIND_TOKEN_PROPERTY_PATTERN = String.raw`(?:class|(?:"[^"\n]*class[^"\n]*"|'[^'\n]*class[^'\n]*'|[A-Za-z_$][\w$]*class[\w$]*))`;
-
-// TODO replace with ts-ag method
-function ensureDotRelative(filePath: string): string {
-  if (filePath.startsWith('./')) return filePath;
-  return `./${filePath}`;
-}
 
 async function touch(path: string) {
   const handle = await open(path, 'a');
